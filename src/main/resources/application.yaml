@@ -1,0 +1,23 @@
+spring.profiles.include: secret
+
+---
+spring.config.activate.on_profile: dev
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/jisik2n?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul
+    username: team2
+    password: jisik2n
+  jpa:
+    show-sql: true
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create
+
+---
+spring.config.activate.on_profile: prod
+spring:
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: none
