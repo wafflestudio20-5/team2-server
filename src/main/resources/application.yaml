@@ -1,5 +1,12 @@
 spring.profiles.include: secret
 
+# TODO: Set AWS S3 info
+#cloud:
+#  aws:
+#    stack:
+#      auto: false
+
+
 ---
 spring.config.activate.on_profile: dev
 spring:
