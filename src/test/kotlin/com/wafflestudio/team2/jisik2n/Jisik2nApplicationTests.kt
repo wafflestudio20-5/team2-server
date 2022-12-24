@@ -5,9 +5,6 @@ import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
 class Jisik2nApplicationTests {
-
-	@Test
-	fun contextLoads() {
-	}
-
+@Test
+fun contextLoads() {                            }
 }
