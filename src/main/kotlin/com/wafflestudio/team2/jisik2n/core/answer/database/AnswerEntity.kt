@@ -6,5 +6,4 @@ import javax.persistence.Entity
 @Entity
 class AnswerEntity(
     var content: String,
-) : BaseTimeEntity() {
-}
+) : BaseTimeEntity()
