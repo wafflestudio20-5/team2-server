@@ -1,0 +1,3 @@
+package com.wafflestudio.team2.jisik2n.core.question.api
+
+class QuestionController

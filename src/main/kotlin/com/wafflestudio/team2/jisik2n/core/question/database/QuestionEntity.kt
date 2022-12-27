@@ -8,5 +8,5 @@ class QuestionEntity(
     var title: String,
     var content: String,
     var like: Long,
-): BaseTimeEntity() {
+) : BaseTimeEntity() {
 }
