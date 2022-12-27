@@ -34,3 +34,6 @@ spring:
     generate-ddl: true
     hibernate:
       ddl-auto: none
+server:
+  port:
+    5000
