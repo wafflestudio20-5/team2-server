@@ -1,11 +1,12 @@
 package com.wafflestudio.team2.jisik2n.core.photo.database
 
-import com.wafflestudio.team2.jisik2n.common.BaseTimeEntity
-import javax.persistence.Column
-import javax.persistence.Entity
+import javax.persistence.*
 
 @Entity
 class PhotoEntity(
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long,
+
     @Column
     val path: String,
-) : BaseTimeEntity()
+)
