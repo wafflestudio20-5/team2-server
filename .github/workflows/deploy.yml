@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-      - hotfix/cicd_deploy
 jobs:
   deploy:
     name: Build docker image & deploy to AWS Elastic Bean
