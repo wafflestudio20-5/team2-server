@@ -30,10 +30,10 @@ class UserEntity(
     @Column(nullable = true)
     var profileImage: String?,
 
-    @OneToMany(cascade = [CascadeType.ALL])
+    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL])
     val questions: MutableSet<QuestionEntity> = mutableSetOf(),
 
-    @OneToMany(cascade = [CascadeType.ALL])
+    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL])
     val answers: MutableSet<AnswerEntity> = mutableSetOf(),
 
 ) : BaseTimeEntity()
