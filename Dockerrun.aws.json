@@ -1,7 +1,7 @@
 {
   "AWSEBDockerrunVersion": "1",
   "Image": {
-    "Name": "{ECR_REGISTRY}/{ECR_REPOSITORY}:latest",
+    "Name": "605647415530.dkr.ecr.ap-northeast-2.amazonaws.com/team2_spring_repo",
     "Update": "true"
   },
   "Ports": [
