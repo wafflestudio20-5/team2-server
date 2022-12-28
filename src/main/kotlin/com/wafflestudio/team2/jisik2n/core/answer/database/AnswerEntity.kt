@@ -4,6 +4,7 @@ import com.wafflestudio.team2.jisik2n.common.BaseTimeEntity
 import com.wafflestudio.team2.jisik2n.core.photo.database.PhotoEntity
 import com.wafflestudio.team2.jisik2n.core.question.database.QuestionEntity
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
+import com.wafflestudio.team2.jisik2n.core.userAnswerInteraction.database.UserAnswerInteractionEntity
 import java.time.LocalDateTime
 import javax.persistence.CascadeType
 import javax.persistence.Column
@@ -21,17 +22,15 @@ class AnswerEntity(
     @Column(columnDefinition = "datetime(6)")
     var selectedAt: LocalDateTime? = null,
 
-    @OneToMany(cascade = [CascadeType.ALL])
-    @JoinColumn
+    @OneToMany(cascade = [CascadeType.ALL]) @JoinColumn
     val photos: MutableSet<PhotoEntity> = mutableSetOf(),
 
-    @ManyToOne
-    @JoinColumn
+    @ManyToOne @JoinColumn
     val user: UserEntity,
 
-    @ManyToOne
-    @JoinColumn
+    @ManyToOne @JoinColumn
     val question: QuestionEntity,
 
-    // TODO: Add agree and disagree
+    @OneToMany(mappedBy = "answer")
+    val userAnswerInteractions: MutableSet<UserAnswerInteractionEntity> = mutableSetOf(),
 ) : BaseTimeEntity()

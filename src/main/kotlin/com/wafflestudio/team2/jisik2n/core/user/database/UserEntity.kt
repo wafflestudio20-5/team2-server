@@ -3,6 +3,7 @@ package com.wafflestudio.team2.jisik2n.core.user.database
 import com.wafflestudio.team2.jisik2n.common.BaseTimeEntity
 import com.wafflestudio.team2.jisik2n.core.answer.database.AnswerEntity
 import com.wafflestudio.team2.jisik2n.core.question.database.QuestionEntity
+import com.wafflestudio.team2.jisik2n.core.userAnswerInteraction.database.UserAnswerInteractionEntity
 import com.wafflestudio.team2.jisik2n.core.userQuestionLike.database.UserQuestionLikeEntity
 import java.time.LocalDateTime
 import javax.persistence.CascadeType
@@ -39,5 +40,8 @@ class UserEntity(
 
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL])
     val answers: MutableSet<AnswerEntity> = mutableSetOf(),
+
+    @OneToMany(mappedBy = "user")
+    val userAnswerInteractions: MutableSet<UserAnswerInteractionEntity> = mutableSetOf(),
 
 ) : BaseTimeEntity()
