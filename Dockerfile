@@ -5,4 +5,4 @@ COPY ./build/libs/*.jar app.jar
 
 EXPOSE 5000
 
-CMD ["java", "-jar", "app.jar", "-Dspring.profiles.active=prod"]
+CMD ["java", "-Dspring.profiles.active=prod", "-jar", "app.jar"]
