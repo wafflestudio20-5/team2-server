@@ -22,6 +22,7 @@ class AnswerEntity(
     var selectedAt: LocalDateTime? = null,
 
     @OneToMany(cascade = [CascadeType.ALL])
+    @JoinColumn
     val photos: MutableSet<PhotoEntity>,
 
     @ManyToOne
