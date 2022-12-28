@@ -4,6 +4,7 @@ import com.wafflestudio.team2.jisik2n.common.BaseTimeEntity
 import com.wafflestudio.team2.jisik2n.core.answer.database.AnswerEntity
 import com.wafflestudio.team2.jisik2n.core.photo.database.PhotoEntity
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
+import com.wafflestudio.team2.jisik2n.core.userQuestionLike.database.UserQuestionLikeEntity
 import java.time.LocalDateTime
 import javax.persistence.CascadeType
 import javax.persistence.Column
@@ -35,6 +36,7 @@ class QuestionEntity(
     @JoinColumn
     val user: UserEntity,
 
-    // TODO: Add likes
+    @OneToMany(mappedBy = "question")
+    val userQuestionLikes: MutableSet<UserQuestionLikeEntity> = mutableSetOf(),
 
 ) : BaseTimeEntity()
