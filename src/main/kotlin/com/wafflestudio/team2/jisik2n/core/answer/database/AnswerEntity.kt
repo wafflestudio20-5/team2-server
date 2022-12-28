@@ -23,7 +23,7 @@ class AnswerEntity(
 
     @OneToMany(cascade = [CascadeType.ALL])
     @JoinColumn
-    val photos: MutableSet<PhotoEntity>,
+    val photos: MutableSet<PhotoEntity> = mutableSetOf(),
 
     @ManyToOne
     @JoinColumn
