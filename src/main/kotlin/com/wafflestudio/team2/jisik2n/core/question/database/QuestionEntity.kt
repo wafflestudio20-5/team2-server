@@ -20,8 +20,7 @@ class QuestionEntity(
 
     var content: String,
 
-    @OneToMany(cascade = [CascadeType.ALL])
-    @JoinColumn
+    @OneToMany(cascade = [CascadeType.ALL]) @JoinColumn
     val photos: MutableSet<PhotoEntity> = mutableSetOf(),
 
     @OneToMany(mappedBy = "question", cascade = [CascadeType.ALL])
@@ -32,8 +31,7 @@ class QuestionEntity(
     @Column(columnDefinition = "datetime(6)", nullable = true)
     var closedAt: LocalDateTime? = null,
 
-    @ManyToOne
-    @JoinColumn
+    @ManyToOne @JoinColumn
     val user: UserEntity,
 
     @OneToMany(mappedBy = "question")
