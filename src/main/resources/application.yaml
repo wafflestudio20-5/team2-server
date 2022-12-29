@@ -6,6 +6,10 @@ spring.profiles.include: secret
 #    stack:
 #      auto: false
 
+spring:
+  mvc: # for swagger-ui
+    pathmatch:
+      matching-strategy: ant_path_matcher
 
 ---
 spring.config.activate.on_profile: dev
