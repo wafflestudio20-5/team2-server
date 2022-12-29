@@ -6,7 +6,10 @@ spring.profiles.include: secret
 #    stack:
 #      auto: false
 
-
+auth.jwt:
+  jwtSecret: thisisourtoyprojectappdlqslek148190
+  issuer: team2.wafflestudio.com
+  jwtExpiration: 86400
 ---
 spring.config.activate.on_profile: dev
 spring:
