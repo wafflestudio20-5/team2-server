@@ -10,13 +10,21 @@ import org.springframework.web.bind.annotation.*
 
 interface AnswerController {
     fun postAnswer(
+        // loginUser: UserEntity // TODO: Automatically gives logged in user
         questionId: Long,
         createAnswerRequest: CreateAnswerRequest,
         bindingResult: BindingResult
     ): ResponseEntity<String>
+
+    fun putAnswer(
+        // loginUser: UserEntity // TODO: Automatically gives logged in user
+        answerId: Long,
+        @RequestBody createAnswerRequest: CreateAnswerRequest,
+        bindingResult: BindingResult,
+    ): ResponseEntity<String>
 }
 @RestController
-@RequestMapping("/answer")
+@RequestMapping("/api/answer")
 class AnswerControllerImpl(
     private val answerService: AnswerService,
     private val userRepository: UserRepository,
@@ -33,5 +41,19 @@ class AnswerControllerImpl(
         val loginUser = userRepository.getReferenceById(1) // Temporary
         answerService.createAnswer(loginUser, questionId, createAnswerRequest)
         ResponseEntity<String>("Created", HttpStatus.OK)
+    }
+
+    @PutMapping("/{answerId}")
+    fun putAnswer(
+        // loginUser: UserEntity // TODO: Automatically gives logged in user
+        @PathVariable(required = true) answerId: Long,
+        @RequestBody createAnswerRequest: CreateAnswerRequest,
+        bindingResult: BindingResult,
+    ) = if (bindingResult.hasErrors()) {
+        TODO("Throw 400 Exception")
+    } else {
+        val loginUser = userRepository.getReferenceById(1) // Temporary
+        answerService.updateAnswer(loginUser, answerId, createAnswerRequest)
+        ResponseEntity<String>("Updated", HttpStatus.OK)
     }
 }
