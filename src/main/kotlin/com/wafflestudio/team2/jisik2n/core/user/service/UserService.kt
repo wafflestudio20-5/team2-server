@@ -44,4 +44,9 @@ class UserService(
         userEntity.lastLogin = lastLogin
         return token
     }
+
+    fun validate(userId: Long): String {
+
+        return "1"
+    }
 }

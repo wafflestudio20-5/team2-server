@@ -2,6 +2,7 @@ package com.wafflestudio.team2.jisik2n.core.user.service
 
 import com.wafflestudio.team2.jisik2n.common.Jisik2n401
 import com.wafflestudio.team2.jisik2n.common.Jisik2n404
+import com.wafflestudio.team2.jisik2n.core.user.database.UserRepository
 import io.jsonwebtoken.*
 import io.jsonwebtoken.security.Keys
 import io.jsonwebtoken.security.SignatureException
@@ -15,8 +16,8 @@ import java.util.*
 @Service
 @EnableConfigurationProperties(AuthProperties::class)
 class AuthTokenService(
-
-    private val authProperties: AuthProperties
+    private val authProperties: AuthProperties,
+    private val userRepository: UserRepository
 ) {
 
     private val tokenPrefix = "Bearer "
@@ -30,7 +31,6 @@ class AuthTokenService(
         val now = System.currentTimeMillis()
         val nowDate = Date(now)
         val expiryDate: Date = Date(nowDate.time+ Duration.ofSeconds(authProperties.jwtExpiration).toMillis())
-        println(expiryDate)
         val resultToken = Jwts.builder().setHeaderParam(Header.TYPE, Header.JWT_TYPE)
             .setClaims(claims)
             .setIssuer(authProperties.issuer).setIssuedAt(nowDate).setExpiration(expiryDate)
@@ -39,6 +39,25 @@ class AuthTokenService(
         return AuthToken(resultToken)
     }
 
+    fun verifyToken(authToken: String): Boolean? {
+        try {
+            val uid = getCurrentUid(authToken)
+            userRepository.findByUid(uid)
+        } catch (exception: Exception) {
+            return false
+        }
+        return true
+    }
+
+    fun getCurrentUserId(authToken: String) : Long {
+        val uid = getCurrentUid(authToken)
+        val userEntity = userRepository.findByUid(uid) ?: throw Jisik2n404("해당 아이디로 가입한 유저가 없습니다.")
+        return userEntity.id
+
+    }
+    fun getCurrentUid(authToken: String) : String {
+        return parse(authToken).body["uid"].toString()
+    }
     fun getCurrentIssuedAt(authToken: String) : LocalDateTime {
         return parse(authToken).body.issuedAt.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime() // Date -> LocalDateTime
     }
