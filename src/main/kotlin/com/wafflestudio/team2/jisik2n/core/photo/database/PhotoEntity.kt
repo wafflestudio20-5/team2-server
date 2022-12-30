@@ -4,8 +4,8 @@ import javax.persistence.*
 
 @Entity
 class PhotoEntity(
-    @Column
     val path: String,
+    val position: Int,
 ) {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L

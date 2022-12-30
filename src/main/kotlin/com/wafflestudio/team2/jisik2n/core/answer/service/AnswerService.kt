@@ -43,8 +43,8 @@ class AnswerServiceImpl(
         }
 
         // Add photos to newAnswer
-        createAnswerRequest.photos.map {
-            PhotoEntity(path = it)
+        createAnswerRequest.photos.mapIndexed { index: Int, path: String ->
+            PhotoEntity(path, position = index)
         }.let {
             photoRepository.saveAll(it)
         }.let {
