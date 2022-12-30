@@ -9,7 +9,8 @@ spring.profiles.include: secret
 auth.jwt:
   jwtSecret: thisisourtoyprojectappdlqslek148190
   issuer: team2.wafflestudio.com
-  jwtExpiration: 86400
+  jwtAccessExpiration: 20
+  jwtRefreshExpiration: 1209600
 ---
 spring.config.activate.on_profile: dev
 spring:

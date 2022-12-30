@@ -31,8 +31,18 @@ class UserController(
 
     @Authenticated
     @GetMapping("validate")
-    fun validate(@RequestHeader("Authorization") token: String, @UserContext userId: Long):String {
-        userService.validate(userId)
-        return "1"
+    fun validate(
+        @RequestHeader("Authorization") accessToken: String,
+        @RequestHeader("RefreshToken") refreshToken: String,
+        @UserContext userId: Long
+    ):AuthToken {
+
+        return userService.validate(userId)
     }
+
+//    @Authenticated
+//    @GetMapping("reissue/{uid}")
+//    fun reissue(@PathVariable uid: String, @RequestHeader("Authorization") refreshToken: String) {
+//        userService.reissue(uid, refreshToken)
+//    }
 }
