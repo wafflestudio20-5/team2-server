@@ -1,12 +1,15 @@
 package com.wafflestudio.team2.jisik2n.core.user.service
 
-import io.jsonwebtoken.Header
-import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.SignatureAlgorithm
+import com.wafflestudio.team2.jisik2n.common.Jisik2n401
+import com.wafflestudio.team2.jisik2n.common.Jisik2n404
+import io.jsonwebtoken.*
 import io.jsonwebtoken.security.Keys
+import io.jsonwebtoken.security.SignatureException
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Service
 import java.time.Duration
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.*
 
 @Service
@@ -34,5 +37,20 @@ class AuthTokenService(
             .signWith(signingKey, SignatureAlgorithm.HS256).compact()
 
         return AuthToken(resultToken)
+    }
+
+    fun getCurrentIssuedAt(authToken: String) : LocalDateTime {
+        return parse(authToken).body.issuedAt.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime() // Date -> LocalDateTime
+    }
+
+    private fun parse(authToken: String): Jws<Claims> {
+        val prefixRemoved = authToken.replace(tokenPrefix, "").trim { it <= ' ' }
+        try {
+            return Jwts.parserBuilder().setSigningKey(signingKey).build().parseClaimsJws(prefixRemoved)
+        } catch (e: SignatureException) {
+            throw Jisik2n404("인증이 되지 않았습니다")
+        } catch (e: ExpiredJwtException) {
+            throw Jisik2n401("인증이 되지 않았습니다")
+        }
     }
 }

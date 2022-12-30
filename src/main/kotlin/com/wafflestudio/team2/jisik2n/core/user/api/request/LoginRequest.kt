@@ -1,4 +1,7 @@
 package com.wafflestudio.team2.jisik2n.core.user.api.request
 
-class LoginRequest {
+data class LoginRequest(
+    val uid: String,
+    val password: String
+) {
 }

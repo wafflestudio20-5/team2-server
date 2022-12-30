@@ -1,5 +1,6 @@
 package com.wafflestudio.team2.jisik2n.core.user.api
 
+import com.wafflestudio.team2.jisik2n.core.user.api.request.LoginRequest
 import com.wafflestudio.team2.jisik2n.core.user.api.request.SignupRequest
 import com.wafflestudio.team2.jisik2n.core.user.service.AuthToken
 import com.wafflestudio.team2.jisik2n.core.user.service.UserService
@@ -25,4 +26,8 @@ class UserController(
         return userService.signup(request)
     }
 
+    @PostMapping("login")
+    fun login(@RequestBody request: LoginRequest): AuthToken {
+        return userService.login(request)
+    }
 }
