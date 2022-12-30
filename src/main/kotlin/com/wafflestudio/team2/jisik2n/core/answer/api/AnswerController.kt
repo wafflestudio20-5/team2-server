@@ -1,3 +1,37 @@
 package com.wafflestudio.team2.jisik2n.core.answer.api
 
-class AnswerController
+import com.wafflestudio.team2.jisik2n.core.answer.dto.CreateAnswerRequest
+import com.wafflestudio.team2.jisik2n.core.answer.service.AnswerService
+import com.wafflestudio.team2.jisik2n.core.user.database.UserRepository
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.validation.BindingResult
+import org.springframework.web.bind.annotation.*
+
+interface AnswerController {
+    fun postAnswer(
+        questionId: Long,
+        createAnswerRequest: CreateAnswerRequest,
+        bindingResult: BindingResult
+    ): ResponseEntity<String>
+}
+@RestController
+@RequestMapping("/answer")
+class AnswerControllerImpl(
+    private val answerService: AnswerService,
+    private val userRepository: UserRepository,
+) {
+    @PostMapping("/{questionId}")
+    fun postAnswer(
+        // loginUser: UserEntity // TODO: Automatically gives logged in user
+        @PathVariable(required = true) questionId: Long,
+        @RequestBody createAnswerRequest: CreateAnswerRequest,
+        bindingResult: BindingResult,
+    ) = if (bindingResult.hasErrors()) {
+        TODO("Throw 400 Exception")
+    } else {
+        val loginUser = userRepository.getReferenceById(1) // Temporary
+        answerService.createAnswer(loginUser, questionId, createAnswerRequest)
+        ResponseEntity<String>("Created", HttpStatus.OK)
+    }
+}
