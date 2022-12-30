@@ -1,6 +1,7 @@
 package com.wafflestudio.team2.jisik2n.core.answer.database
 
 import com.wafflestudio.team2.jisik2n.common.BaseTimeEntity
+import com.wafflestudio.team2.jisik2n.core.answer.dto.AnswerResponse
 import com.wafflestudio.team2.jisik2n.core.photo.database.PhotoEntity
 import com.wafflestudio.team2.jisik2n.core.question.database.QuestionEntity
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
@@ -33,4 +34,18 @@ class AnswerEntity(
 
     @OneToMany(mappedBy = "answer")
     val userAnswerInteractions: MutableSet<UserAnswerInteractionEntity> = mutableSetOf(),
-) : BaseTimeEntity()
+) : BaseTimeEntity() {
+    fun toResponse(answerRepository: AnswerRepository) = AnswerResponse(
+        content = this.content,
+        selected = this.selected,
+        selectedAt = this.selectedAt,
+        photos = this.photos // TODO: Handle photo, optimize query
+            .sortedBy { it.position }
+            .map { it.path },
+        username = this.user.username,
+        profileImagePath = this.user.profileImage,
+        userRecentAnswerDate = answerRepository // TODO: Optimize Query
+            .findFirstByUserOrderByCreatedAt(this.user)!!
+            .createdAt!!,
+    )
+}
