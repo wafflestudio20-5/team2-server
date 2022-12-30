@@ -4,9 +4,9 @@ import javax.persistence.*
 
 @Entity
 class PhotoEntity(
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long,
-
     @Column
     val path: String,
-)
+) {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long = 0L
+}

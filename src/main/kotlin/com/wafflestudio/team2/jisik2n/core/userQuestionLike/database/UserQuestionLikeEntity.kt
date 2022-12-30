@@ -6,12 +6,12 @@ import javax.persistence.*
 
 @Entity
 class UserQuestionLikeEntity(
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long,
-
     @ManyToOne @JoinColumn
     val user: UserEntity,
 
     @ManyToOne @JoinColumn
     val question: QuestionEntity,
-)
+) {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long = 0L
+}
