@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import java.time.LocalDateTime
+import javax.validation.Valid
 
 @RestController
 class QuestionController(
@@ -29,7 +30,7 @@ class QuestionController(
 
     @PostMapping("/api/question")
     fun createQuestion(
-        @RequestBody request: CreateQuestionRequest,
+        @Valid @RequestBody request: CreateQuestionRequest,
     ): QuestionEntity {
         return questionService.createQuestion(request, user)
     }
