@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class PhotoService(
-    private val photoRepository: PhotoRepository
+    private val photoRepository: PhotoRepository,
 ) {
     fun createPhoto(path: String): PhotoEntity {
         val newPhoto = PhotoEntity(path = path)
