@@ -36,8 +36,7 @@ class QuestionController(
 
     @PostMapping("/api/question")
     fun createQuestion(
-        @Valid
-        @RequestBody request: CreateQuestionRequest,
+        @Valid @RequestBody request: CreateQuestionRequest,
     ): QuestionEntity {
         return questionService.createQuestion(request, user)
     }
