@@ -2,7 +2,7 @@ package com.wafflestudio.team2.jisik2n.core.answer.service
 
 import com.wafflestudio.team2.jisik2n.core.answer.database.AnswerEntity
 import com.wafflestudio.team2.jisik2n.core.answer.database.AnswerRepository
-import com.wafflestudio.team2.jisik2n.core.answer.dto.CreateAnswerRequest
+import com.wafflestudio.team2.jisik2n.core.answer.dto.AnswerRequest
 import com.wafflestudio.team2.jisik2n.core.photo.database.PhotoEntity
 import com.wafflestudio.team2.jisik2n.core.photo.database.PhotoRepository
 import com.wafflestudio.team2.jisik2n.core.question.database.QuestionRepository
@@ -16,13 +16,13 @@ interface AnswerService {
     fun createAnswer(
         loginUser: UserEntity,
         questionId: Long,
-        createAnswerRequest: CreateAnswerRequest
+        answerRequest: AnswerRequest
     )
 
     fun updateAnswer(
         loginUser: UserEntity,
         answerId: Long,
-        createAnswerRequest: CreateAnswerRequest
+        answerRequest: AnswerRequest
     )
 
     fun removeAnswer(loginUser: UserEntity, answerId: Long)
@@ -39,14 +39,14 @@ class AnswerServiceImpl(
     override fun createAnswer(
         loginUser: UserEntity,
         questionId: Long,
-        createAnswerRequest: CreateAnswerRequest
+        answerRequest: AnswerRequest
     ) {
         // Get target question
         val question = questionRepository.findByIdOrNull(questionId)
             ?: TODO("Throw 404 Exception")
 
         // Add new answer
-        var newAnswer = createAnswerRequest.let {
+        var newAnswer = answerRequest.let {
             AnswerEntity(
                 content = it.content!!,
                 user = loginUser,
@@ -55,7 +55,7 @@ class AnswerServiceImpl(
         }
 
         // Add photos to newAnswer
-        createAnswerRequest.photos.map { path: String ->
+        answerRequest.photos.map { path: String ->
             PhotoEntity(path, answer = newAnswer)
         }.also {
             newAnswer.photos.addAll(it)
@@ -79,7 +79,7 @@ class AnswerServiceImpl(
     override fun updateAnswer(
         loginUser: UserEntity,
         answerId: Long,
-        createAnswerRequest: CreateAnswerRequest
+        answerRequest: AnswerRequest
     ) {
         val answer = answerRepository.findByIdOrNull(answerId)
             ?: TODO("Throw 404 Not Found Exception")
@@ -89,17 +89,17 @@ class AnswerServiceImpl(
         }
 
         // Update content
-        answer.content = createAnswerRequest.content!!
+        answer.content = answerRequest.content!!
 
         // Remove photo deleted
-        answer.photos.filter { !createAnswerRequest.photos.contains(it.path) }
+        answer.photos.filter { !answerRequest.photos.contains(it.path) }
             .let {
                 answer.photos.removeAll(it)
                 photoRepository.deleteAll(it)
             }
 
         // Add photo, and update positions
-        createAnswerRequest.photos.mapIndexed { index: Int, path: String ->
+        answerRequest.photos.mapIndexed { index: Int, path: String ->
             answer.photos.find { it.path == path }
                 ?. let { // If photo exists, update its position
                     answer.photos.remove(it)
