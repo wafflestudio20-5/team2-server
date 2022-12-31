@@ -18,7 +18,13 @@ class QuestionController(
     private val userRepository: UserRepository,
 ) {
     // TODO: Add authentication
-    final val user: UserEntity = UserEntity(username = "test", password = "test", isMale = true, profileImage = null, lastLogin = LocalDateTime.now())
+    final val user: UserEntity = UserEntity(
+        username = "test",
+        password = "test",
+        isMale = true,
+        profileImage = null,
+        lastLogin = LocalDateTime.now(),
+    )
     init {
         userRepository.save(user)
     }
