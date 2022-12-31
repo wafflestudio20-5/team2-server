@@ -11,6 +11,11 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
 
+auth.jwt:
+  jwtSecret: thisisourtoyprojectappdlqslek148190
+  issuer: team2.wafflestudio.com
+  jwtAccessExpiration: 20
+  jwtRefreshExpiration: 1209600
 ---
 spring.config.activate.on_profile: dev
 spring:

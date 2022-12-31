@@ -4,7 +4,7 @@ import com.wafflestudio.team2.jisik2n.core.answer.database.AnswerEntity
 import com.wafflestudio.team2.jisik2n.core.question.database.QuestionEntity
 import javax.persistence.*
 
-@Entity
+@Entity(name = "photos")
 class PhotoEntity(
     @Column(unique = true)
     val path: String,

@@ -4,7 +4,7 @@ import com.wafflestudio.team2.jisik2n.core.question.database.QuestionEntity
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
 import javax.persistence.*
 
-@Entity
+@Entity(name = "userQuestionLike")
 class UserQuestionLikeEntity(
     @ManyToOne @JoinColumn
     val user: UserEntity,
