@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
+import javax.validation.Valid
 
 interface AnswerController {
     fun postAnswer(
@@ -38,7 +39,7 @@ class AnswerControllerImpl(
     override fun postAnswer(
         // loginUser: UserEntity // TODO: Automatically gives logged in user
         @PathVariable(required = true) questionId: Long,
-        @RequestBody createAnswerRequest: CreateAnswerRequest,
+        @Valid @RequestBody createAnswerRequest: CreateAnswerRequest,
         bindingResult: BindingResult,
     ) = if (bindingResult.hasErrors()) {
         TODO("Throw 400 Exception")
@@ -52,7 +53,7 @@ class AnswerControllerImpl(
     override fun putAnswer(
         // loginUser: UserEntity // TODO: Automatically gives logged in user
         @PathVariable(required = true) answerId: Long,
-        @RequestBody createAnswerRequest: CreateAnswerRequest,
+        @Valid @RequestBody createAnswerRequest: CreateAnswerRequest,
         bindingResult: BindingResult,
     ) = if (bindingResult.hasErrors()) {
         TODO("Throw 400 Exception")
