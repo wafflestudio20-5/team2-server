@@ -13,7 +13,7 @@ import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
 
-@Entity
+@Entity(name = "questions")
 class QuestionEntity(
     @Column(nullable = true)
     var title: String? = null,

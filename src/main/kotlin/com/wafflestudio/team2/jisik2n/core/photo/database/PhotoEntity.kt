@@ -2,8 +2,8 @@ package com.wafflestudio.team2.jisik2n.core.photo.database
 
 import javax.persistence.*
 
-@Entity
-public class PhotoEntity(
+@Entity(name = "photos")
+class PhotoEntity(
     @Column
     val path: String,
 ) {
