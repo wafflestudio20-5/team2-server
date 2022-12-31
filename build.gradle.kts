@@ -7,6 +7,7 @@ plugins {
     kotlin("jvm") version "1.6.21"
     kotlin("plugin.spring") version "1.6.21"
     kotlin("plugin.jpa") version "1.6.21"
+    kotlin("kapt") version "1.7.10"
 }
 
 group = "com.wafflestudio.team2"
@@ -25,9 +26,34 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 // 	implementation("org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE") TODO: Add with s3 config
+    implementation("io.springfox:springfox-boot-starter:3.0.0")
+    implementation("io.springfox:springfox-swagger-ui:3.0.0")
     runtimeOnly("com.mysql:mysql-connector-j")
     testImplementation("com.h2database:h2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+    // jwt 토큰
+    implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+    implementation("io.jsonwebtoken:jjwt-impl:0.11.5")
+    implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
+
+    // configuration-processor
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+
+    // security
+    implementation("org.springframework.boot:spring-boot-starter-security")
+}
+
+noArg {
+    annotation("javax.persistence.Entity")
+    annotation("javax.persistence.MappedSuperclass")
+    annotation("javax.persistence.Embeddable")
+}
+
+allOpen {
+    annotation("javax.persistence.Entity")
+    annotation("javax.persistence.MappedSuperclass")
+    annotation("javax.persistence.Embeddable")
 }
 
 tasks.withType<KotlinCompile> {
