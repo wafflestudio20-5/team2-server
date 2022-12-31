@@ -18,7 +18,7 @@ class QuestionService(
     }
 
     fun createQuestion(request: CreateQuestionRequest, user: UserEntity): QuestionEntity {
-        val newPhotoList = mutableSetOf<PhotoEntity>()
+        val newPhotoList = mutableListOf<PhotoEntity>()
         val newPhoto: PhotoEntity? = if (request.photo != null) photoService.createPhoto(request.photo) else null
         if (newPhoto != null) {
             newPhotoList.add(newPhoto)
