@@ -3,6 +3,7 @@ package com.wafflestudio.team2.jisik2n.core.user.database
 import com.wafflestudio.team2.jisik2n.common.BaseTimeEntity
 import com.wafflestudio.team2.jisik2n.core.answer.database.AnswerEntity
 import com.wafflestudio.team2.jisik2n.core.question.database.QuestionEntity
+import com.wafflestudio.team2.jisik2n.core.user.api.request.SignupRequest
 import com.wafflestudio.team2.jisik2n.core.userAnswerInteraction.database.UserAnswerInteractionEntity
 import com.wafflestudio.team2.jisik2n.core.userQuestionLike.database.UserQuestionLikeEntity
 import java.time.LocalDateTime
@@ -11,7 +12,7 @@ import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.OneToMany
 
-@Entity
+@Entity(name="users")
 class UserEntity(
     @Column(unique = true, nullable = true)
     val uid: String? = null,
@@ -24,8 +25,8 @@ class UserEntity(
 
     var password: String,
 
-    @Column(columnDefinition = "datetime(6) default '1999-01-01'")
-    var lastLogin: LocalDateTime,
+    @Column(columnDefinition = "datetime(6) default '1999-01-01'", nullable = true)
+    var lastLogin: LocalDateTime?,
 
     var isMale: Boolean,
 
@@ -44,4 +45,24 @@ class UserEntity(
     @OneToMany(mappedBy = "user")
     val userAnswerInteractions: MutableSet<UserAnswerInteractionEntity> = mutableSetOf(),
 
-) : BaseTimeEntity()
+) : BaseTimeEntity() {
+
+    companion object{
+        fun of(request: SignupRequest, encodedPassword: String) : UserEntity{
+            request.run {
+                return UserEntity(
+                    uid = request.uid,
+                    snsId = null,
+                    username = request.username,
+                    password = encodedPassword,
+                    lastLogin = null,
+                    isMale = request.isMale,
+                    profileImage = null,
+                    questions = mutableSetOf(),
+                    answers = mutableSetOf()
+                )
+            }
+
+        }
+    }
+}

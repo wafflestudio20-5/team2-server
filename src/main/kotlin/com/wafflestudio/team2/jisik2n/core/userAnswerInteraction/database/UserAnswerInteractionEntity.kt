@@ -4,7 +4,7 @@ import com.wafflestudio.team2.jisik2n.core.answer.database.AnswerEntity
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
 import javax.persistence.*
 
-@Entity
+@Entity(name="userAnswerInteraction")
 class UserAnswerInteractionEntity(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long,
