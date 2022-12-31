@@ -28,7 +28,7 @@ spring:
     show-sql: true
     generate-ddl: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
 
 ---
 spring.config.activate.on_profile: prod
