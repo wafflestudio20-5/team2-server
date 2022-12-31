@@ -1,3 +1,8 @@
 [*.{kt,kts}]
-
-disabled_rules = no-wildcard-imports, annotation-same-line
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+insert_final_newline = true
+disabled_rules = import-ordering, no-wildcard-imports, spacing-between-declarations-with-annotations, annotation, trailing-comma-on-declaration-site, trailing-comma-on-call-site

@@ -60,7 +60,6 @@ class AuthInterceptor(
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
         val handlerCasted = (handler as? HandlerMethod) ?: return true
         if (handlerCasted.hasMethodAnnotation(Authenticated::class.java)) {
-
             val accessToken = request.getHeader("Authorization") ?: throw Jisik2n401("토큰 인증 적절하지 않아 accessToken 생성 실패")
             val refreshToken = request.getHeader("RefreshToken") ?: throw Jisik2n401("토큰 인증 적절하지 않아 refreshToken 생성 실패")
 

@@ -47,7 +47,6 @@ class AuthTokenService(
         return userEntity.id
     }
     fun getCurrentUid(authToken: String): String {
-
         return parse(authToken).body["uid"].toString()
     }
     fun getCurrentIssuedAt(authToken: String): LocalDateTime {

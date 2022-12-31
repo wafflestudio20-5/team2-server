@@ -29,6 +29,7 @@ interface AnswerController {
         answerId: Long,
     ): ResponseEntity<String>
 }
+
 @RestController
 @RequestMapping("/api/answer")
 class AnswerControllerImpl(
