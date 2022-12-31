@@ -56,10 +56,8 @@ class AnswerServiceImpl(
 
         // Add photos to newAnswer
         createAnswerRequest.photos.mapIndexed { index: Int, path: String ->
-            PhotoEntity(path, position = index)
-        }.let {
-            photoRepository.saveAll(it)
-        }.let {
+            PhotoEntity(path, position = index, answer = newAnswer)
+        }.also {
             newAnswer.photos.addAll(it)
         }
         newAnswer = answerRepository.save(newAnswer)
@@ -96,18 +94,16 @@ class AnswerServiceImpl(
         // Remove photo deleted
         answer.photos.filter { !createAnswerRequest.photos.contains(it.path) }
             .let {
-                photoRepository.deleteAll(it)
                 answer.photos.removeAll(it)
+                photoRepository.deleteAll(it)
             }
 
         // Add photo, and update positions
         createAnswerRequest.photos.mapIndexed { index: Int, path: String ->
             answer.photos.find { it.path == path }
                 ?. apply { position = index } // If photo exists, just update index
-                ?: PhotoEntity(path, position = index) // If photo doesn't exist, create new PhotoEntity and add to answer
+                ?: PhotoEntity(path, position = index, answer = answer) // If photo doesn't exist, create new PhotoEntity and add to answer
                     .also { answer.photos.add(it) }
-        }.let {
-            photoRepository.saveAll(it)
         }
 
         answerRepository.save(answer)

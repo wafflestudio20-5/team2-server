@@ -1,5 +1,7 @@
 package com.wafflestudio.team2.jisik2n.core.photo.database
 
+import com.wafflestudio.team2.jisik2n.core.answer.database.AnswerEntity
+import com.wafflestudio.team2.jisik2n.core.question.database.QuestionEntity
 import javax.persistence.*
 
 @Entity
@@ -8,7 +10,13 @@ class PhotoEntity(
     val path: String,
 
     var position: Int,
+
+    @ManyToOne @JoinColumn
+    var question: QuestionEntity? = null,
+
+    @ManyToOne @JoinColumn
+    var answer: AnswerEntity? = null,
 ) {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0L
+    val id: Long? = null
 }

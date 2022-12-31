@@ -20,7 +20,7 @@ class QuestionEntity(
 
     var content: String,
 
-    @OneToMany(cascade = [CascadeType.ALL]) @JoinColumn
+    @OneToMany(mappedBy = "question", cascade = [CascadeType.ALL])
     val photos: MutableSet<PhotoEntity> = mutableSetOf(),
 
     @OneToMany(mappedBy = "question", cascade = [CascadeType.ALL])
