@@ -24,7 +24,7 @@ class AnswerEntity(
     var selectedAt: LocalDateTime? = null,
 
     @OneToMany(mappedBy = "answer", cascade = [CascadeType.ALL])
-    val photos: MutableSet<PhotoEntity> = mutableSetOf(),
+    val photos: MutableList<PhotoEntity> = mutableListOf(),
 
     @ManyToOne @JoinColumn
     val user: UserEntity,
@@ -40,7 +40,6 @@ class AnswerEntity(
         selected = this.selected,
         selectedAt = this.selectedAt,
         photos = this.photos // TODO: Handle photo, optimize query
-            .sortedBy { it.position }
             .map { it.path },
         username = this.user.username,
         profileImagePath = this.user.profileImage,

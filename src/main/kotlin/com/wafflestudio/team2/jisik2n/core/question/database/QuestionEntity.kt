@@ -21,7 +21,7 @@ class QuestionEntity(
     var content: String,
 
     @OneToMany(mappedBy = "question", cascade = [CascadeType.ALL])
-    val photos: MutableSet<PhotoEntity> = mutableSetOf(),
+    val photos: MutableList<PhotoEntity> = mutableListOf(),
 
     @OneToMany(mappedBy = "question", cascade = [CascadeType.ALL])
     val answers: MutableSet<AnswerEntity> = mutableSetOf(),
