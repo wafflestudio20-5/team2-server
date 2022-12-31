@@ -15,6 +15,7 @@ class PhotoEntity(
     @ManyToOne @JoinColumn
     var answer: AnswerEntity? = null,
 ) {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long = 0L
 }
