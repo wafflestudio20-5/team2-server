@@ -3,7 +3,6 @@ package com.wafflestudio.team2.jisik2n.config
 import com.wafflestudio.team2.jisik2n.common.Authenticated
 import com.wafflestudio.team2.jisik2n.common.Jisik2n401
 import com.wafflestudio.team2.jisik2n.common.UserContext
-import com.wafflestudio.team2.jisik2n.core.user.database.TokenEntity
 import com.wafflestudio.team2.jisik2n.core.user.database.TokenRepository
 import com.wafflestudio.team2.jisik2n.core.user.service.AuthTokenService
 import org.springframework.context.annotation.Configuration
@@ -19,7 +18,6 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-import javax.transaction.Transactional
 
 @Configuration
 class WebConfig(
@@ -38,8 +36,8 @@ class WebConfig(
 @Configuration
 class AuthArgumentResolver : HandlerMethodArgumentResolver {
     override fun supportsParameter(parameter: MethodParameter): Boolean {
-        return parameter.hasParameterAnnotation(UserContext::class.java)
-                && parameter.parameterType == Long::class.java
+        return parameter.hasParameterAnnotation(UserContext::class.java) &&
+            parameter.parameterType == Long::class.java
     }
 
     override fun resolveArgument(
@@ -66,19 +64,24 @@ class AuthInterceptor(
             val accessToken = request.getHeader("Authorization") ?: throw Jisik2n401("토큰 인증 적절하지 않아 accessToken 생성 실패")
             val refreshToken = request.getHeader("RefreshToken") ?: throw Jisik2n401("토큰 인증 적절하지 않아 refreshToken 생성 실패")
 
-            if(authTokenService.verifyToken(refreshToken) != true) {
+            if (authTokenService.verifyToken(refreshToken) != true) {
                 throw Jisik2n401("refresh token이 적절하지 않습니다.")
             }
-            if(authTokenService.verifyToken(accessToken) == true){
+            if (authTokenService.verifyToken(accessToken) == true) { // access token 정상적 작동
+
                 val userId = authTokenService.getCurrentUserId(accessToken)
                 request.setAttribute("userId", userId)
             } else { // access token이 만료되었거나, 존재하지도 않거나
-                val prefixRemoved = accessToken.replace("Bearer ", "").trim { it <= ' ' }  // Bearer 제거
+
+                // Bearer 제거
+                val prefixRemoved = accessToken.replace("Bearer ", "").trim { it <= ' ' }
                 val tokenEntity = tokenRepository.findByAccessToken(prefixRemoved)
-                if(tokenEntity == null){ // access token이 존재하지 않음
+                if (tokenEntity == null) { // access token이 존재하지 않음
+
                     throw Jisik2n401("access token이 적절하지 않습니다.")
-                } else{ // access token 만료됨
-                    if(refreshToken.replace("Bearer ", "").trim { it <= ' ' } == tokenEntity.refreshToken){
+                } else { // access token 만료됨
+
+                    if (refreshToken.replace("Bearer ", "").trim { it <= ' ' } == tokenEntity.refreshToken) {
                         val newAccessToken = authTokenService.generateAccessTokenByUid(tokenEntity.keyUid)
                         tokenEntity.accessToken = newAccessToken
                         tokenRepository.save(tokenEntity)
@@ -89,8 +92,6 @@ class AuthInterceptor(
                     }
                 }
             }
-
-
         }
 
         return super.preHandle(request, response, handler)
