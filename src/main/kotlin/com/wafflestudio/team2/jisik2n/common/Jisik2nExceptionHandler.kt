@@ -16,7 +16,6 @@ class Jisik2nExceptionHandler {
         return ResponseEntity(bindingResult.fieldError?.defaultMessage, HttpStatus.BAD_REQUEST)
     }
 
-
     @ExceptionHandler(value = [Jisik2nException::class])
     fun handle(e: Jisik2nException): ResponseEntity<Any> {
         return ResponseEntity(e.message, e.status)

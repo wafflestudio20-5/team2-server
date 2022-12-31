@@ -5,7 +5,7 @@ data class AuthToken(
     val refreshToken: String
 ) {
     companion object {
-        fun of(accessToken: String, refreshToken: String):AuthToken{
+        fun of(accessToken: String, refreshToken: String): AuthToken {
             return AuthToken(accessToken, refreshToken)
         }
     }

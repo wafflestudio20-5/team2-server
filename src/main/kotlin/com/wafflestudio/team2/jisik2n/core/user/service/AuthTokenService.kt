@@ -41,17 +41,16 @@ class AuthTokenService(
         return true
     }
 
-    fun getCurrentUserId(authToken: String) : Long? {
+    fun getCurrentUserId(authToken: String): Long? {
         val uid = getCurrentUid(authToken)
         val userEntity = userRepository.findByUid(uid) ?: throw Jisik2n404("해당 아이디로 가입한 유저가 없습니다.")
         return userEntity.id
-
     }
-    fun getCurrentUid(authToken: String) : String {
+    fun getCurrentUid(authToken: String): String {
 
         return parse(authToken).body["uid"].toString()
     }
-    fun getCurrentIssuedAt(authToken: String) : LocalDateTime {
+    fun getCurrentIssuedAt(authToken: String): LocalDateTime {
         return parse(authToken).body.issuedAt.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime() // Date -> LocalDateTime
     }
 
@@ -64,30 +63,26 @@ class AuthTokenService(
         } catch (e: ExpiredJwtException) {
             throw Jisik2n401("인증이 되지 않았습니다")
         }
-
-
     }
 
-    private fun generateTokenStringByUid(accessOrRefresh: String, uid: String, jwtExpiration: Long):String{
-        val claims : MutableMap<String, Any>
+    private fun generateTokenStringByUid(accessOrRefresh: String, uid: String, jwtExpiration: Long): String {
+        val claims: MutableMap<String, Any>
         val expiryDate: Date
         val now = System.currentTimeMillis()
         val nowDate = Date(now)
 
-        if(accessOrRefresh == "access"){
+        if (accessOrRefresh == "access") {
             claims = Jwts.claims().setSubject("access")
             claims["uid"] = uid
-            expiryDate = Date(nowDate.time+ Duration.ofSeconds(authProperties.jwtAccessExpiration).toMillis())
+            expiryDate = Date(nowDate.time + Duration.ofSeconds(authProperties.jwtAccessExpiration).toMillis())
         } else {
             claims = Jwts.claims().setSubject("refresh")
-            expiryDate = Date(nowDate.time+ Duration.ofSeconds(authProperties.jwtRefreshExpiration).toMillis())
+            expiryDate = Date(nowDate.time + Duration.ofSeconds(authProperties.jwtRefreshExpiration).toMillis())
         }
-
 
         return Jwts.builder().setHeaderParam(Header.TYPE, Header.JWT_TYPE)
             .setClaims(claims)
             .setIssuer(authProperties.issuer).setIssuedAt(nowDate).setExpiration(expiryDate)
             .signWith(signingKey, SignatureAlgorithm.HS256).compact()
-
     }
 }

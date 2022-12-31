@@ -1,6 +1,5 @@
 package com.wafflestudio.team2.jisik2n.common
 
-import org.hibernate.sql.HSQLCaseFragment
 import org.springframework.http.HttpStatus
 
 open class Jisik2nException(msg: String, val status: HttpStatus) : RuntimeException(msg)

@@ -2,7 +2,7 @@ package com.wafflestudio.team2.jisik2n.core.user.database
 
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface TokenRepository: JpaRepository<TokenEntity, Long> {
+interface TokenRepository : JpaRepository<TokenEntity, Long> {
 
     fun save(TokenEntity: TokenEntity): TokenEntity
 

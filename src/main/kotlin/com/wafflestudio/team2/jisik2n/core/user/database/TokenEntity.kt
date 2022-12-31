@@ -8,7 +8,7 @@ import javax.persistence.Entity
 class TokenEntity(
 
     @Column
-    var accessToken : String,
+    var accessToken: String,
 
     @Column(nullable = false)
     val refreshToken: String,
@@ -19,8 +19,8 @@ class TokenEntity(
 ) : BaseTimeEntity() {
 
     companion object {
-        fun of(accessToken: String, refreshToken: String, uid: String) : TokenEntity {
-            return TokenEntity(accessToken, refreshToken,uid)
+        fun of(accessToken: String, refreshToken: String, uid: String): TokenEntity {
+            return TokenEntity(accessToken, refreshToken, uid)
         }
     }
 }

@@ -13,15 +13,15 @@ import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
 
-@Entity(name="questions")
+@Entity(name = "questions")
 class QuestionEntity(
     @Column(nullable = true)
     var title: String? = null,
 
     var content: String,
 
-    @OneToMany(cascade = [CascadeType.ALL]) @JoinColumn
-    val photos: MutableSet<PhotoEntity> = mutableSetOf(),
+    @OneToMany(mappedBy = "question", cascade = [CascadeType.ALL])
+    val photos: MutableList<PhotoEntity> = mutableListOf(),
 
     @OneToMany(mappedBy = "question", cascade = [CascadeType.ALL])
     val answers: MutableSet<AnswerEntity> = mutableSetOf(),

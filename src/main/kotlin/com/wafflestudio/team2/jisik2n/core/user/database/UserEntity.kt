@@ -12,7 +12,7 @@ import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.OneToMany
 
-@Entity(name="users")
+@Entity(name = "users")
 class UserEntity(
     @Column(unique = true, nullable = true)
     val uid: String? = null,
@@ -47,8 +47,8 @@ class UserEntity(
 
 ) : BaseTimeEntity() {
 
-    companion object{
-        fun of(request: SignupRequest, encodedPassword: String) : UserEntity{
+    companion object {
+        fun of(request: SignupRequest, encodedPassword: String): UserEntity {
             request.run {
                 return UserEntity(
                     uid = request.uid,
@@ -62,7 +62,6 @@ class UserEntity(
                     answers = mutableSetOf()
                 )
             }
-
         }
     }
 }

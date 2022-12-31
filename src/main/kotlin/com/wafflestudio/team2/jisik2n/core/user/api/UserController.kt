@@ -35,7 +35,7 @@ class UserController(
         @RequestHeader("Authorization") accessToken: String,
         @RequestHeader("RefreshToken") refreshToken: String,
         @UserContext userId: Long
-    ):AuthToken {
+    ): AuthToken {
 
         return userService.validate(userId)
     }
