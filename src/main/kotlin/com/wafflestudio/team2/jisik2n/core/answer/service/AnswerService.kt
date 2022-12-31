@@ -24,6 +24,8 @@ interface AnswerService {
         answerId: Long,
         createAnswerRequest: CreateAnswerRequest
     )
+
+    fun removeAnswer(loginUser: UserEntity, answerId: Long)
 }
 
 @Service
@@ -109,5 +111,17 @@ class AnswerServiceImpl(
         }
 
         answerRepository.save(answer)
+    }
+
+    @Transactional
+    override fun removeAnswer(loginUser: UserEntity, answerId: Long) {
+        val answer = answerRepository.findByIdOrNull(answerId)
+
+        if (answer != null) {
+            if (answer.user.id != loginUser.id || answer.selected) {
+                TODO("Throw 403 Forbidden Exception")
+            }
+            answerRepository.deleteById(answerId)
+        }
     }
 }

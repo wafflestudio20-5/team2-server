@@ -22,15 +22,20 @@ interface AnswerController {
         @RequestBody createAnswerRequest: CreateAnswerRequest,
         bindingResult: BindingResult,
     ): ResponseEntity<String>
+
+    fun deleteAnswer(
+        // loginUser: UserEntity // TODO: Automatically gives logged in user
+        answerId: Long,
+    ): ResponseEntity<String>
 }
 @RestController
 @RequestMapping("/api/answer")
 class AnswerControllerImpl(
     private val answerService: AnswerService,
     private val userRepository: UserRepository,
-) {
+) : AnswerController {
     @PostMapping("/{questionId}")
-    fun postAnswer(
+    override fun postAnswer(
         // loginUser: UserEntity // TODO: Automatically gives logged in user
         @PathVariable(required = true) questionId: Long,
         @RequestBody createAnswerRequest: CreateAnswerRequest,
@@ -44,7 +49,7 @@ class AnswerControllerImpl(
     }
 
     @PutMapping("/{answerId}")
-    fun putAnswer(
+    override fun putAnswer(
         // loginUser: UserEntity // TODO: Automatically gives logged in user
         @PathVariable(required = true) answerId: Long,
         @RequestBody createAnswerRequest: CreateAnswerRequest,
@@ -55,5 +60,15 @@ class AnswerControllerImpl(
         val loginUser = userRepository.getReferenceById(1) // Temporary
         answerService.updateAnswer(loginUser, answerId, createAnswerRequest)
         ResponseEntity<String>("Updated", HttpStatus.OK)
+    }
+
+    @DeleteMapping("/{answerId}")
+    override fun deleteAnswer(
+        // loginUser: UserEntity // TODO: Automatically gives logged in user
+        @PathVariable(required = true) answerId: Long,
+    ): ResponseEntity<String> {
+        val loginUser = userRepository.getReferenceById(1) // Temporary
+        answerService.removeAnswer(loginUser, answerId)
+        return ResponseEntity<String>("Deleted", HttpStatus.OK)
     }
 }
