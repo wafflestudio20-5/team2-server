@@ -21,9 +21,7 @@ class UserService(
 ) {
 
     fun signup(request: SignupRequest): AuthToken {
-        if (request.password != request.password2) {
-            throw Jisik2n400("비밀번호가 일치하지 않습니다")
-        }
+
         val encodedPassword = this.passwordEncoder.encode(request.password)
         val userEntity = UserEntity.of(request, encodedPassword)
         userRepository.save(userEntity)
@@ -60,8 +58,5 @@ class UserService(
 
         val token = tokenRepository.findByKeyUid(uid) ?: throw Jisik2n400("token을 찾지 못했습니다")
         return AuthToken.of(token.accessToken, token.refreshToken)
-
-
     }
-
 }
