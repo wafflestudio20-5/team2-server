@@ -21,7 +21,6 @@ class UserService(
 ) {
 
     fun signup(request: SignupRequest): AuthToken {
-
         val encodedPassword = this.passwordEncoder.encode(request.password)
         val userEntity = UserEntity.of(request, encodedPassword)
         userRepository.save(userEntity)
