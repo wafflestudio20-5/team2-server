@@ -10,6 +10,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
+import java.util.*
 import javax.transaction.Transactional
 
 @Service
@@ -43,11 +44,17 @@ class UserService(
         }
 
         val accessToken = authTokenService.generateAccessTokenByUid(request.uid)
+
         val lastLogin = LocalDateTime.from(authTokenService.getCurrentIssuedAt(accessToken))
         userEntity.lastLogin = lastLogin
 
         val tokenEntity = tokenRepository.findByKeyUid(request.uid)!!
         tokenEntity.accessToken = accessToken
+
+        if (authTokenService.getCurrentExpiration(tokenEntity.refreshToken) < LocalDateTime.now()) {
+            val refreshToken = authTokenService.generateRefreshTokenByUid(request.uid)
+            tokenEntity.refreshToken = refreshToken
+        }
 
         return AuthToken.of(tokenEntity.accessToken, tokenEntity.refreshToken)
     }
