@@ -21,12 +21,14 @@ interface QuestionService {
 class QuestionServiceImpl(
     private val questionRepository: QuestionRepository,
 ) : QuestionService {
+    @Transactional
     override fun searchQuestion(): MutableList<QuestionDto> {
         return questionRepository.findAll()
             .map { QuestionDto.of(it) }
             .toMutableList()
     }
 
+    @Transactional
     override fun getQuestion(questionId: Long): QuestionDto {
         val question: Optional<QuestionEntity> = questionRepository.findById(questionId)
         if (question.isEmpty) throw Jisik2n400("존재하지 않는 질문 번호 입니다.(questionId: $questionId)")
