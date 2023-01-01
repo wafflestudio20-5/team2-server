@@ -3,6 +3,7 @@ package com.wafflestudio.team2.jisik2n.core.user.service
 import com.wafflestudio.team2.jisik2n.common.Jisik2n400
 import com.wafflestudio.team2.jisik2n.common.Jisik2n401
 import com.wafflestudio.team2.jisik2n.common.Jisik2n404
+import com.wafflestudio.team2.jisik2n.common.Jisik2n409
 import com.wafflestudio.team2.jisik2n.core.user.api.request.LoginRequest
 import com.wafflestudio.team2.jisik2n.core.user.api.request.SignupRequest
 import com.wafflestudio.team2.jisik2n.core.user.database.*
@@ -13,15 +14,24 @@ import java.time.LocalDateTime
 import java.util.*
 import javax.transaction.Transactional
 
+interface UserService {
+    fun signup(signupRequest: SignupRequest): AuthToken
+
+    fun login(loginRequest: LoginRequest): AuthToken
+
+    fun validate(userEntity: UserEntity): AuthToken
+}
 @Service
-class UserService(
+class UserServiceImpl(
     private val userRepository: UserRepository,
     private val tokenRepository: TokenRepository,
     private val authTokenService: AuthTokenService,
     private val passwordEncoder: PasswordEncoder
-) {
+) : UserService {
 
-    fun signup(request: SignupRequest): AuthToken {
+    override fun signup(request: SignupRequest): AuthToken {
+        checkDuplicatedUid(request.uid)
+        checkDuplicatedUsername(request.username)
         val encodedPassword = this.passwordEncoder.encode(request.password)
         val userEntity = UserEntity.of(request, encodedPassword)
         userRepository.save(userEntity)
@@ -36,7 +46,7 @@ class UserService(
     }
 
     @Transactional
-    fun login(request: LoginRequest): AuthToken {
+    override fun login(request: LoginRequest): AuthToken {
         val userEntity = userRepository.findByUid(request.uid) ?: throw Jisik2n404("해당 아이디로 가입한 유저가 없습니다.")
 
         if (!this.passwordEncoder.matches(request.password, userEntity.password)) {
@@ -59,10 +69,17 @@ class UserService(
         return AuthToken.of(tokenEntity.accessToken, tokenEntity.refreshToken)
     }
 
-    fun validate(userEntity: UserEntity): AuthToken {
+    override fun validate(userEntity: UserEntity): AuthToken {
         val uid = userRepository.findByIdOrNull(userEntity.id)?.uid ?: throw Jisik2n400("user가 존재하지 않습니다")
-
         val token = tokenRepository.findByKeyUid(uid) ?: throw Jisik2n400("token을 찾지 못했습니다")
         return AuthToken.of(token.accessToken, token.refreshToken)
+    }
+
+    private fun checkDuplicatedUid(uid: String) {
+        userRepository.findByUid(uid)?.let { throw Jisik2n409("이미 가입한 아이디입니다.") }
+    }
+
+    private fun checkDuplicatedUsername(username: String) {
+        userRepository.findByUsername(username)?.let { throw Jisik2n409("이미 생성된 별명입니다.") }
     }
 }

@@ -20,15 +20,14 @@ class UserController(
         return "Hello World"
     }
 
-    @PostMapping("/signup")
-    fun signup(@RequestBody @Valid request: SignupRequest): AuthToken {
-        println("test")
-        return userService.signup(request)
+    @PostMapping("signup")
+    fun signup(@RequestBody @Valid signupRequest: SignupRequest): AuthToken {
+        return userService.signup(signupRequest)
     }
 
-    @PostMapping("/login")
-    fun login(@RequestBody request: LoginRequest): AuthToken {
-        return userService.login(request)
+    @PostMapping("login")
+    fun login(@RequestBody loginRequest: LoginRequest): AuthToken {
+        return userService.login(loginRequest)
     }
 
     @Authenticated
