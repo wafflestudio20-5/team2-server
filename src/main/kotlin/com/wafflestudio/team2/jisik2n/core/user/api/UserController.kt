@@ -10,27 +10,27 @@ import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/users")
 class UserController(
     private val userService: UserService
 ) {
-    @GetMapping("/users")
+    @GetMapping
     fun getUsers(): String {
         return "Hello World"
     }
 
-    @PostMapping("signup")
+    @PostMapping("/signup")
     fun signup(@RequestBody @Valid request: SignupRequest): AuthToken {
         return userService.signup(request)
     }
 
-    @PostMapping("login")
+    @PostMapping("/login")
     fun login(@RequestBody request: LoginRequest): AuthToken {
         return userService.login(request)
     }
 
     @Authenticated
-    @GetMapping("validate")
+    @GetMapping("/validate")
     fun validate(
         @RequestHeader("Authorization") accessToken: String,
         @RequestHeader("RefreshToken") refreshToken: String,
