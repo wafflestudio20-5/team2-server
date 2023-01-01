@@ -1,6 +1,6 @@
 package com.wafflestudio.team2.jisik2n.core.question
 
-import com.wafflestudio.team2.jisik2n.core.question.api.request.CreateQuestionRequest
+import com.wafflestudio.team2.jisik2n.core.question.dto.CreateQuestionRequest
 import com.wafflestudio.team2.jisik2n.core.question.database.QuestionRepository
 import com.wafflestudio.team2.jisik2n.core.question.service.QuestionService
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
@@ -29,7 +29,7 @@ class QuestionServiceTest @Autowired constructor(
         val createQuestionRequest = CreateQuestionRequest(
             title = "test",
             content = "test",
-            photo = null,
+            photos = listOf("test"),
         )
         val user = createTestUser(1)
 
