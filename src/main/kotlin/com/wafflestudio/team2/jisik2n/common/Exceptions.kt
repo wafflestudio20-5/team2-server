@@ -6,6 +6,6 @@ open class Jisik2nException(msg: String, val status: HttpStatus) : RuntimeExcept
 
 class Jisik2n400(msg: String) : Jisik2nException(msg, HttpStatus.BAD_REQUEST)
 class Jisik2n401(msg: String) : Jisik2nException(msg, HttpStatus.UNAUTHORIZED)
+class Jisik2n403(msg: String) : Jisik2nException(msg, HttpStatus.FORBIDDEN)
 class Jisik2n404(msg: String) : Jisik2nException(msg, HttpStatus.NOT_FOUND)
-
 class Jisik2n409(msg: String) : Jisik2nException(msg, HttpStatus.CONFLICT)

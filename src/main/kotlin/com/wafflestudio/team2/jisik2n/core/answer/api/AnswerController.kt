@@ -1,75 +1,66 @@
 package com.wafflestudio.team2.jisik2n.core.answer.api
 
+import com.wafflestudio.team2.jisik2n.common.Authenticated
+import com.wafflestudio.team2.jisik2n.common.UserContext
 import com.wafflestudio.team2.jisik2n.core.answer.dto.AnswerRequest
 import com.wafflestudio.team2.jisik2n.core.answer.service.AnswerService
+import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
 import com.wafflestudio.team2.jisik2n.core.user.database.UserRepository
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
-interface AnswerController {
-    fun postAnswer(
-        // loginUser: UserEntity // TODO: Automatically gives logged in user
-        questionId: Long,
-        answerRequest: AnswerRequest,
-        bindingResult: BindingResult
-    ): ResponseEntity<String>
-
-    fun putAnswer(
-        // loginUser: UserEntity // TODO: Automatically gives logged in user
-        answerId: Long,
-        @RequestBody answerRequest: AnswerRequest,
-        bindingResult: BindingResult,
-    ): ResponseEntity<String>
-
-    fun deleteAnswer(
-        // loginUser: UserEntity // TODO: Automatically gives logged in user
-        answerId: Long,
-    ): ResponseEntity<String>
-}
-
 @RestController
 @RequestMapping("/api/answer")
-class AnswerControllerImpl(
+class AnswerController(
     private val answerService: AnswerService,
     private val userRepository: UserRepository,
-) : AnswerController {
+) {
+    @GetMapping("/{questionId}")
+    fun getAnswers(
+        @PathVariable(required = true) questionId: Long,
+    ) = answerService.getAnswersOfQuestion(questionId)
+
+    @Authenticated
     @PostMapping("/{questionId}")
-    override fun postAnswer(
-        // loginUser: UserEntity // TODO: Automatically gives logged in user
+    fun postAnswer(
+        @UserContext loginUser: UserEntity,
         @PathVariable(required = true) questionId: Long,
         @Valid @RequestBody answerRequest: AnswerRequest,
-        bindingResult: BindingResult,
-    ) = if (bindingResult.hasErrors()) {
-        TODO("Throw 400 Exception")
-    } else {
-        val loginUser = userRepository.getReferenceById(1) // Temporary
+    ) = let {
         answerService.createAnswer(loginUser, questionId, answerRequest)
         ResponseEntity<String>("Created", HttpStatus.OK)
     }
 
+    @Authenticated
     @PutMapping("/{answerId}")
-    override fun putAnswer(
-        // loginUser: UserEntity // TODO: Automatically gives logged in user
+    fun putAnswer(
+        @UserContext loginUser: UserEntity,
         @PathVariable(required = true) answerId: Long,
         @Valid @RequestBody answerRequest: AnswerRequest,
-        bindingResult: BindingResult,
-    ) = if (bindingResult.hasErrors()) {
-        TODO("Throw 400 Exception")
-    } else {
-        val loginUser = userRepository.getReferenceById(1) // Temporary
+    ) = let {
         answerService.updateAnswer(loginUser, answerId, answerRequest)
         ResponseEntity<String>("Updated", HttpStatus.OK)
     }
 
+    @Authenticated
+    @PutMapping("/{answerId}/select/{toSelect}")
+    fun selectAnswer(
+        @UserContext loginUser: UserEntity,
+        @PathVariable(required = true) answerId: Long,
+        @PathVariable(required = true) toSelect: Boolean,
+    ) = let {
+        answerService.toggleSelectAnswer(loginUser, answerId, toSelect)
+        ResponseEntity<String>(if (toSelect) { "Selected" } else { "Unselected" }, HttpStatus.OK)
+    }
+
+    @Authenticated
     @DeleteMapping("/{answerId}")
-    override fun deleteAnswer(
-        // loginUser: UserEntity // TODO: Automatically gives logged in user
+    fun deleteAnswer(
+        @UserContext loginUser: UserEntity,
         @PathVariable(required = true) answerId: Long,
     ): ResponseEntity<String> {
-        val loginUser = userRepository.getReferenceById(1) // Temporary
         answerService.removeAnswer(loginUser, answerId)
         return ResponseEntity<String>("Deleted", HttpStatus.OK)
     }

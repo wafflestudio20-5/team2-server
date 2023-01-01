@@ -31,7 +31,7 @@ class UserController(
     }
 
     @Authenticated
-    @GetMapping("validate")
+    @GetMapping("/validate")
     fun validate(
         @RequestHeader("Authorization") accessToken: String,
         @RequestHeader("RefreshToken") refreshToken: String,
