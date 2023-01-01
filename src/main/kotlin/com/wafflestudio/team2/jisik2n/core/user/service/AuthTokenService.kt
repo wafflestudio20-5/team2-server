@@ -53,6 +53,10 @@ class AuthTokenService(
         return parse(authToken).body.issuedAt.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime() // Date -> LocalDateTime
     }
 
+    fun getCurrentExpiration(authToken: String): LocalDateTime {
+        return parse(authToken).body.expiration.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime() // Date -> LocalDateTime
+    }
+
     private fun parse(authToken: String): Jws<Claims> {
         val prefixRemoved = authToken.replace(tokenPrefix, "").trim { it <= ' ' }
         try {

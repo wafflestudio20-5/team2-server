@@ -86,18 +86,6 @@ class AnswerServiceImpl(
             newAnswer.photos.addAll(it)
         }
         newAnswer = answerRepository.save(newAnswer)
-
-        // Add newAnswer to question
-        question.let {
-            it.answers.add(newAnswer)
-            questionRepository.save(it)
-        }
-
-        // Add newAnswer to user answers
-        loginUser.let {
-            it.answers.add(newAnswer)
-            userRepository.save(it)
-        }
     }
 
     @Transactional
