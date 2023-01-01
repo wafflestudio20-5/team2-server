@@ -10,9 +10,12 @@ data class QuestionDto(
     val username: String,
     val profileImagePath: String? = null,
     val photos: List<String> = emptyList(),
-    val answerCount: Int,
+    val answerNumber: Int,
     val createdAt: LocalDateTime?,
     val modifiedAt: LocalDateTime?,
+    val close: Boolean,
+    val closedAt: LocalDateTime?,
+    val userQuestionLikeNumber: Int,
 ) {
     companion object {
         fun of(entity: QuestionEntity): QuestionDto = entity.run {
@@ -23,9 +26,12 @@ data class QuestionDto(
                 username = this.user.username,
                 profileImagePath = this.user.profileImage,
                 photos = this.photos.map { it.path },
-                answerCount = this.answers.size,
+                answerNumber = this.answers.size,
                 createdAt = this.createdAt,
                 modifiedAt = this.modifiedAt,
+                close = this.close,
+                closedAt = this.closedAt,
+                userQuestionLikeNumber = this.userQuestionLikes.size
             )
         }
     }
