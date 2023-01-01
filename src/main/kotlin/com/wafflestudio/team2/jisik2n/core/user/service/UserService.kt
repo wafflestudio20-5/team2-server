@@ -10,6 +10,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
+import java.util.*
 import javax.transaction.Transactional
 
 @Service
@@ -43,17 +44,23 @@ class UserService(
         }
 
         val accessToken = authTokenService.generateAccessTokenByUid(request.uid)
+
         val lastLogin = LocalDateTime.from(authTokenService.getCurrentIssuedAt(accessToken))
         userEntity.lastLogin = lastLogin
 
         val tokenEntity = tokenRepository.findByKeyUid(request.uid)!!
         tokenEntity.accessToken = accessToken
 
+        if (authTokenService.getCurrentExpiration(tokenEntity.refreshToken) < LocalDateTime.now()) {
+            val refreshToken = authTokenService.generateRefreshTokenByUid(request.uid)
+            tokenEntity.refreshToken = refreshToken
+        }
+
         return AuthToken.of(tokenEntity.accessToken, tokenEntity.refreshToken)
     }
 
-    fun validate(userId: Long): AuthToken {
-        val uid = userRepository.findByIdOrNull(userId)?.uid ?: throw Jisik2n400("user가 존재하지 않습니다")
+    fun validate(userEntity: UserEntity): AuthToken {
+        val uid = userRepository.findByIdOrNull(userEntity.id)?.uid ?: throw Jisik2n400("user가 존재하지 않습니다")
 
         val token = tokenRepository.findByKeyUid(uid) ?: throw Jisik2n400("token을 찾지 못했습니다")
         return AuthToken.of(token.accessToken, token.refreshToken)
