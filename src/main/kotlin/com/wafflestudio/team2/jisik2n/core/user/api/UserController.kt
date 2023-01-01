@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/user")
 class UserController(
     private val userService: UserService
 ) {
-    @GetMapping("/users")
+    @GetMapping("users")
     fun getUsers(): String {
         return "Hello World"
     }
@@ -38,6 +38,7 @@ class UserController(
         @RequestHeader("RefreshToken") refreshToken: String,
         @UserContext userEntity: UserEntity
     ): AuthToken {
+
         return userService.validate(userEntity)
     }
 }

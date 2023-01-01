@@ -4,6 +4,7 @@ import com.wafflestudio.team2.jisik2n.common.Authenticated
 import com.wafflestudio.team2.jisik2n.common.Jisik2n401
 import com.wafflestudio.team2.jisik2n.common.UserContext
 import com.wafflestudio.team2.jisik2n.core.user.database.TokenRepository
+import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
 import com.wafflestudio.team2.jisik2n.core.user.database.UserRepository
 import com.wafflestudio.team2.jisik2n.core.user.service.AuthTokenService
 import org.springframework.context.annotation.Configuration
@@ -38,8 +39,9 @@ class WebConfig(
 @Configuration
 class AuthArgumentResolver : HandlerMethodArgumentResolver {
     override fun supportsParameter(parameter: MethodParameter): Boolean {
+        println(parameter.parameterType)
         return parameter.hasParameterAnnotation(UserContext::class.java) &&
-            parameter.parameterType == Long::class.java
+            parameter.parameterType == UserEntity::class.java
     }
 
     override fun resolveArgument(
@@ -49,7 +51,7 @@ class AuthArgumentResolver : HandlerMethodArgumentResolver {
         binderFactory: WebDataBinderFactory?
     ): Any? {
         parameter.hasMethodAnnotation(UserContext::class.java)
-        return (webRequest as ServletWebRequest).request.getAttribute("userId")
+        return (webRequest as ServletWebRequest).request.getAttribute("userEntity")
     }
 }
 
@@ -63,8 +65,8 @@ class AuthInterceptor(
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
         val handlerCasted = (handler as? HandlerMethod) ?: return true
         if (handlerCasted.hasMethodAnnotation(Authenticated::class.java)) {
-            val accessToken = request.getHeader("Authorization") ?: throw Jisik2n401("토큰 인증 적절하지 않아 accessToken 생성 실패")
-            val refreshToken = request.getHeader("RefreshToken") ?: throw Jisik2n401("토큰 인증 적절하지 않아 refreshToken 생성 실패")
+            val accessToken = request.getHeader("Authorization") ?: throw Jisik2n401("access Token 획득 실패")
+            val refreshToken = request.getHeader("RefreshToken") ?: throw Jisik2n401("refresh Token 획득 실패")
 
             if (authTokenService.verifyToken(refreshToken) != true) {
                 throw Jisik2n401("refresh token이 적절하지 않습니다.")
