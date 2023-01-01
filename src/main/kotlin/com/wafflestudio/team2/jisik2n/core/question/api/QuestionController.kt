@@ -7,6 +7,7 @@ import com.wafflestudio.team2.jisik2n.core.question.database.QuestionEntity
 import com.wafflestudio.team2.jisik2n.core.question.service.QuestionService
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
@@ -28,5 +29,12 @@ class QuestionController(
         @UserContext userEntity: UserEntity,
     ): QuestionEntity {
         return questionService.createQuestion(request, userEntity)
+    }
+
+    @GetMapping("/api/question/{id}")
+    fun getQuestion(
+        @PathVariable id: Long,
+    ): QuestionEntity {
+        return questionService.getQuestion(id)
     }
 }
