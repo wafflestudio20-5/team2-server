@@ -11,7 +11,7 @@ class TokenEntity(
     var accessToken: String,
 
     @Column(nullable = false)
-    val refreshToken: String,
+    var refreshToken: String,
 
     @Column(nullable = false)
     val keyUid: String
