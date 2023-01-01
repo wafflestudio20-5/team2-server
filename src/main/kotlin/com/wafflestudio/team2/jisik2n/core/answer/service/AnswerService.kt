@@ -1,5 +1,7 @@
 package com.wafflestudio.team2.jisik2n.core.answer.service
 
+import com.wafflestudio.team2.jisik2n.common.Jisik2n403
+import com.wafflestudio.team2.jisik2n.common.Jisik2n404
 import com.wafflestudio.team2.jisik2n.core.answer.database.AnswerEntity
 import com.wafflestudio.team2.jisik2n.core.answer.database.AnswerRepository
 import com.wafflestudio.team2.jisik2n.core.answer.dto.AnswerRequest
@@ -43,7 +45,7 @@ class AnswerServiceImpl(
     ) {
         // Get target question
         val question = questionRepository.findByIdOrNull(questionId)
-            ?: TODO("Throw 404 Exception")
+            ?: throw Jisik2n404("${questionId}에 해당하는 질문이 없습니다.")
 
         // Add new answer
         var newAnswer = answerRequest.let {
@@ -82,10 +84,13 @@ class AnswerServiceImpl(
         answerRequest: AnswerRequest
     ) {
         val answer = answerRepository.findByIdOrNull(answerId)
-            ?: TODO("Throw 404 Not Found Exception")
+            ?: throw Jisik2n404("${answerId}에 해당하는 답변이 없습니다")
 
-        if (answer.user.id != loginUser.id || answer.selected) {
-            TODO("Throw 403 Forbidden Exception")
+        if (answer.user.id != loginUser.id) {
+            throw Jisik2n403("자신의 게시물만 수정할 수 있습니다.")
+        }
+        if (answer.selected) {
+            throw Jisik2n403("채택된 질문은 수정될 수 없습니다.")
         }
 
         // Update content
@@ -117,8 +122,11 @@ class AnswerServiceImpl(
         val answer = answerRepository.findByIdOrNull(answerId)
 
         if (answer != null) {
-            if (answer.user.id != loginUser.id || answer.selected) {
-                TODO("Throw 403 Forbidden Exception")
+            if (answer.user.id != loginUser.id) {
+                throw Jisik2n403("자신의 게시물만 삭제할 수 있습니다.")
+            }
+            if (answer.selected) {
+                throw Jisik2n403("채택된 질문은 삭제될 수 없습니다.")
             }
             answerRepository.deleteById(answerId)
         }
