@@ -47,6 +47,10 @@ class AnswerServiceImpl(
         val question = questionRepository.findByIdOrNull(questionId)
             ?: throw Jisik2n404("${questionId}에 해당하는 질문이 없습니다.")
 
+        if (loginUser.id == question.user.id) {
+            throw Jisik2n403("자신의 질문에는 답할 수 없습니다.")
+        }
+
         // Add new answer
         var newAnswer = answerRequest.let {
             AnswerEntity(
