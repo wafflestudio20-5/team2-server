@@ -25,8 +25,8 @@ class QuestionController(
     @PostMapping("/api/question")
     fun createQuestion(
         @Valid @RequestBody request: CreateQuestionRequest,
-        @UserContext user: UserEntity,
+        @UserContext userEntity: UserEntity,
     ): QuestionEntity {
-        return questionService.createQuestion(request, user)
+        return questionService.createQuestion(request, userEntity)
     }
 }
