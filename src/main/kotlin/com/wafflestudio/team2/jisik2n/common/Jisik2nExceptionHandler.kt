@@ -6,7 +6,6 @@ import org.springframework.validation.BindingResult
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
-import java.sql.SQLIntegrityConstraintViolationException
 
 @RestControllerAdvice
 class Jisik2nExceptionHandler {
@@ -20,10 +19,5 @@ class Jisik2nExceptionHandler {
     @ExceptionHandler(value = [Jisik2nException::class])
     fun handle(e: Jisik2nException): ResponseEntity<Any> {
         return ResponseEntity(e.message, e.status)
-    }
-
-    @ExceptionHandler(value = [SQLIntegrityConstraintViolationException::class])
-    fun handle(e: SQLIntegrityConstraintViolationException): ResponseEntity<Any> {
-        return ResponseEntity("중복된 값이 있습니다.", HttpStatus.CONFLICT)
     }
 }
