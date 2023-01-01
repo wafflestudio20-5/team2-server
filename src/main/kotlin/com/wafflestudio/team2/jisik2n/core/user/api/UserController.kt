@@ -21,13 +21,13 @@ class UserController(
     }
 
     @PostMapping("signup")
-    fun signup(@RequestBody @Valid request: SignupRequest): AuthToken {
-        return userService.signup(request)
+    fun signup(@RequestBody @Valid signupRequest: SignupRequest): AuthToken {
+        return userService.signup(signupRequest)
     }
 
     @PostMapping("login")
-    fun login(@RequestBody request: LoginRequest): AuthToken {
-        return userService.login(request)
+    fun login(@RequestBody loginRequest: LoginRequest): AuthToken {
+        return userService.login(loginRequest)
     }
 
     @Authenticated

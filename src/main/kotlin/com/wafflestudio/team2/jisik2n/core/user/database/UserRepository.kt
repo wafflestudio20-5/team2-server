@@ -9,4 +9,6 @@ interface UserRepository : JpaRepository<UserEntity, Long> {
     fun save(userEntity: UserEntity): UserEntity
 
     fun findByUid(uid: String): UserEntity?
+
+    fun findByUsername(uid: String): UserEntity?
 }
