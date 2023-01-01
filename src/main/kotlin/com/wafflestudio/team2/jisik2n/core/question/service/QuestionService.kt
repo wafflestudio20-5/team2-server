@@ -8,20 +8,25 @@ import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
+interface QuestionService {
+    fun searchQuestion(): MutableList<QuestionEntity>
+    fun createQuestion(request: CreateQuestionRequest, userEntity: UserEntity): QuestionEntity
+}
+
 @Service
-class QuestionService(
+class QuestionServiceImpl(
     private val questionRepository: QuestionRepository,
-) {
-    fun searchQuestion(): MutableList<QuestionEntity> {
+) : QuestionService {
+    override fun searchQuestion(): MutableList<QuestionEntity> {
         return questionRepository.findAll()
     }
 
     @Transactional
-    fun createQuestion(request: CreateQuestionRequest, user: UserEntity): QuestionEntity {
+    override fun createQuestion(request: CreateQuestionRequest, userEntity: UserEntity): QuestionEntity {
         val newQuestion = QuestionEntity(
             title = request.title,
             content = request.content,
-            user = user,
+            user = userEntity,
         )
 
         request.photos
