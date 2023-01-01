@@ -22,7 +22,6 @@ class UserController(
 
     @PostMapping("signup")
     fun signup(@RequestBody @Valid request: SignupRequest): AuthToken {
-        println("test")
         return userService.signup(request)
     }
 
