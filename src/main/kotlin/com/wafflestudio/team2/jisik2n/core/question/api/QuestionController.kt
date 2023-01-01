@@ -2,7 +2,7 @@ package com.wafflestudio.team2.jisik2n.core.question.api
 
 import com.wafflestudio.team2.jisik2n.common.Authenticated
 import com.wafflestudio.team2.jisik2n.common.UserContext
-import com.wafflestudio.team2.jisik2n.core.question.api.request.CreateQuestionRequest
+import com.wafflestudio.team2.jisik2n.core.question.dto.CreateQuestionRequest
 import com.wafflestudio.team2.jisik2n.core.question.database.QuestionEntity
 import com.wafflestudio.team2.jisik2n.core.question.service.QuestionService
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
