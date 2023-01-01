@@ -9,35 +9,14 @@ import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
-interface AnswerController {
-    fun postAnswer(
-        // loginUser: UserEntity // TODO: Automatically gives logged in user
-        questionId: Long,
-        answerRequest: AnswerRequest,
-        bindingResult: BindingResult
-    ): ResponseEntity<String>
-
-    fun putAnswer(
-        // loginUser: UserEntity // TODO: Automatically gives logged in user
-        answerId: Long,
-        @RequestBody answerRequest: AnswerRequest,
-        bindingResult: BindingResult,
-    ): ResponseEntity<String>
-
-    fun deleteAnswer(
-        // loginUser: UserEntity // TODO: Automatically gives logged in user
-        answerId: Long,
-    ): ResponseEntity<String>
-}
-
 @RestController
 @RequestMapping("/api/answer")
-class AnswerControllerImpl(
+class AnswerController(
     private val answerService: AnswerService,
     private val userRepository: UserRepository,
-) : AnswerController {
+) {
     @PostMapping("/{questionId}")
-    override fun postAnswer(
+    fun postAnswer(
         // loginUser: UserEntity // TODO: Automatically gives logged in user
         @PathVariable(required = true) questionId: Long,
         @Valid @RequestBody answerRequest: AnswerRequest,
@@ -51,7 +30,7 @@ class AnswerControllerImpl(
     }
 
     @PutMapping("/{answerId}")
-    override fun putAnswer(
+    fun putAnswer(
         // loginUser: UserEntity // TODO: Automatically gives logged in user
         @PathVariable(required = true) answerId: Long,
         @Valid @RequestBody answerRequest: AnswerRequest,
@@ -65,7 +44,7 @@ class AnswerControllerImpl(
     }
 
     @DeleteMapping("/{answerId}")
-    override fun deleteAnswer(
+    fun deleteAnswer(
         // loginUser: UserEntity // TODO: Automatically gives logged in user
         @PathVariable(required = true) answerId: Long,
     ): ResponseEntity<String> {
