@@ -61,7 +61,6 @@ class UserService(
 
     override fun validate(userEntity: UserEntity): AuthToken {
         val uid = userRepository.findByIdOrNull(userEntity.id)?.uid ?: throw Jisik2n400("user가 존재하지 않습니다")
-
         val token = tokenRepository.findByKeyUid(uid) ?: throw Jisik2n400("token을 찾지 못했습니다")
         return AuthToken.of(token.accessToken, token.refreshToken)
     }
