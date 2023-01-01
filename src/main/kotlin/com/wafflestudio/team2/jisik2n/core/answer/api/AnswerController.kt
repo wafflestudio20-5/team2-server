@@ -36,6 +36,17 @@ class AnswerController(
         ResponseEntity<String>("Updated", HttpStatus.OK)
     }
 
+    @PutMapping("/{answerId}/select/{toSelect}")
+    fun selectAnswer(
+        // loginUser: UserEntity // TODO: Automatically gives logged in user
+        @PathVariable(required = true) answerId: Long,
+        @PathVariable(required = true) toSelect: Boolean,
+    ) = let {
+        val loginUser = userRepository.getReferenceById(1) // Temporary
+        answerService.toggleSelectAnswer(loginUser, answerId, toSelect)
+        ResponseEntity<String>(if (toSelect) { "Selected" } else { "Unselected" }, HttpStatus.OK)
+    }
+
     @DeleteMapping("/{answerId}")
     fun deleteAnswer(
         // loginUser: UserEntity // TODO: Automatically gives logged in user
