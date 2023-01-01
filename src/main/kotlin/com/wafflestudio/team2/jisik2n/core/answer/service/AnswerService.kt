@@ -6,6 +6,7 @@ import com.wafflestudio.team2.jisik2n.common.Jisik2n404
 import com.wafflestudio.team2.jisik2n.core.answer.database.AnswerEntity
 import com.wafflestudio.team2.jisik2n.core.answer.database.AnswerRepository
 import com.wafflestudio.team2.jisik2n.core.answer.dto.AnswerRequest
+import com.wafflestudio.team2.jisik2n.core.answer.dto.AnswerResponse
 import com.wafflestudio.team2.jisik2n.core.photo.database.PhotoEntity
 import com.wafflestudio.team2.jisik2n.core.photo.database.PhotoRepository
 import com.wafflestudio.team2.jisik2n.core.question.database.QuestionRepository
@@ -18,6 +19,8 @@ import java.time.ZoneId
 import javax.transaction.Transactional
 
 interface AnswerService {
+    fun getAnswersOfQuestion(questionId: Long): List<AnswerResponse>
+
     fun createAnswer(
         loginUser: UserEntity,
         questionId: Long,
@@ -42,6 +45,17 @@ class AnswerServiceImpl(
     private val photoRepository: PhotoRepository,
     private val userRepository: UserRepository,
 ) : AnswerService {
+    override fun getAnswersOfQuestion(questionId: Long): List<AnswerResponse> {
+        // Get target question
+        val question = questionRepository.findByIdOrNull(questionId)
+            ?: throw Jisik2n404("${questionId}에 해당하는 질문이 없습니다.")
+
+        // TODO: Improve query
+        val answers = question.answers.sortedWith(compareBy({ !it.selected }, { it.createdAt }))
+
+        return answers.map { it.toResponse(answerRepository) }
+    }
+
     @Transactional
     override fun createAnswer(
         loginUser: UserEntity,

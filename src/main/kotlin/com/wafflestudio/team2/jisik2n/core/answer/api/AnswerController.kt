@@ -14,6 +14,11 @@ class AnswerController(
     private val answerService: AnswerService,
     private val userRepository: UserRepository,
 ) {
+    @GetMapping("/{questionId}")
+    fun getAnswers(
+        @PathVariable(required = true) questionId: Long,
+    ) = answerService.getAnswersOfQuestion(questionId)
+
     @PostMapping("/{questionId}")
     fun postAnswer(
         // loginUser: UserEntity // TODO: Automatically gives logged in user
