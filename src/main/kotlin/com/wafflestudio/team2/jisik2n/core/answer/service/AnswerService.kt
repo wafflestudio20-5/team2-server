@@ -185,6 +185,7 @@ class AnswerServiceImpl(
                 throw Jisik2n403("마감된 질문은 삭제될 수 없습니다.")
             }
             answerRepository.deleteById(answerId)
+            // TODO: Remove Interactions
         }
     }
 }
