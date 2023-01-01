@@ -98,8 +98,8 @@ class AnswerServiceImpl(
         if (answer.user.id != loginUser.id) {
             throw Jisik2n403("자신의 게시물만 수정할 수 있습니다.")
         }
-        if (answer.selected) {
-            throw Jisik2n403("채택된 질문은 수정될 수 없습니다.")
+        if (answer.question.close) {
+            throw Jisik2n403("마감된 질문은 수정될 수 없습니다.")
         }
 
         // Update content
@@ -167,8 +167,8 @@ class AnswerServiceImpl(
             if (answer.user.id != loginUser.id) {
                 throw Jisik2n403("자신의 게시물만 삭제할 수 있습니다.")
             }
-            if (answer.selected) {
-                throw Jisik2n403("채택된 질문은 삭제될 수 없습니다.")
+            if (answer.question.close) {
+                throw Jisik2n403("마감된 질문은 삭제될 수 없습니다.")
             }
             answerRepository.deleteById(answerId)
         }
