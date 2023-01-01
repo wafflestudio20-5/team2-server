@@ -4,6 +4,7 @@ import com.wafflestudio.team2.jisik2n.common.Authenticated
 import com.wafflestudio.team2.jisik2n.common.UserContext
 import com.wafflestudio.team2.jisik2n.core.user.api.request.LoginRequest
 import com.wafflestudio.team2.jisik2n.core.user.api.request.SignupRequest
+import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
 import com.wafflestudio.team2.jisik2n.core.user.service.AuthToken
 import com.wafflestudio.team2.jisik2n.core.user.service.UserService
 import org.springframework.web.bind.annotation.*
@@ -35,14 +36,8 @@ class UserController(
     fun validate(
         @RequestHeader("Authorization") accessToken: String,
         @RequestHeader("RefreshToken") refreshToken: String,
-        @UserContext userId: Long
+        @UserContext userEntity: UserEntity
     ): AuthToken {
-        return userService.validate(userId)
+        return userService.validate(userEntity)
     }
-
-//    @Authenticated
-//    @GetMapping("reissue/{uid}")
-//    fun reissue(@PathVariable uid: String, @RequestHeader("Authorization") refreshToken: String) {
-//        userService.reissue(uid, refreshToken)
-//    }
 }

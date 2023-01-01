@@ -4,9 +4,11 @@ import com.wafflestudio.team2.jisik2n.common.Authenticated
 import com.wafflestudio.team2.jisik2n.common.Jisik2n401
 import com.wafflestudio.team2.jisik2n.common.UserContext
 import com.wafflestudio.team2.jisik2n.core.user.database.TokenRepository
+import com.wafflestudio.team2.jisik2n.core.user.database.UserRepository
 import com.wafflestudio.team2.jisik2n.core.user.service.AuthTokenService
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.MethodParameter
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.web.bind.support.WebDataBinderFactory
 import org.springframework.web.context.request.NativeWebRequest
 import org.springframework.web.context.request.ServletWebRequest
@@ -54,7 +56,8 @@ class AuthArgumentResolver : HandlerMethodArgumentResolver {
 @Configuration
 class AuthInterceptor(
     private val authTokenService: AuthTokenService,
-    private val tokenRepository: TokenRepository
+    private val tokenRepository: TokenRepository,
+    private val userRepository: UserRepository
 ) : HandlerInterceptor {
 
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
@@ -69,7 +72,8 @@ class AuthInterceptor(
             if (authTokenService.verifyToken(accessToken) == true) { // access token 정상적 작동
 
                 val userId = authTokenService.getCurrentUserId(accessToken)
-                request.setAttribute("userId", userId)
+                val userEntity = userRepository.findByIdOrNull(userId)
+                request.setAttribute("userEntity", userEntity)
             } else { // access token이 만료되었거나, 존재하지도 않거나
 
                 // Bearer 제거
@@ -85,7 +89,8 @@ class AuthInterceptor(
                         tokenEntity.accessToken = newAccessToken
                         tokenRepository.save(tokenEntity)
                         val userId = authTokenService.getCurrentUserId(newAccessToken)
-                        request.setAttribute("userId", userId)
+                        val userEntity = userRepository.findByIdOrNull(userId)
+                        request.setAttribute("userEntity", userEntity)
                     } else {
                         throw Jisik2n401("refresh token이 적절하지 않습니다.")
                     }
