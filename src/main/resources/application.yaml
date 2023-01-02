@@ -14,7 +14,7 @@ spring:
 auth.jwt:
   jwtSecret: thisisourtoyprojectappdlqslek148190
   issuer: team2.wafflestudio.com
-  jwtAccessExpiration: 20
+  jwtAccessExpiration: 300
   jwtRefreshExpiration: 1209600
 ---
 spring.config.activate.on_profile: dev
@@ -28,7 +28,7 @@ spring:
     show-sql: true
     generate-ddl: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
 
 ---
 spring.config.activate.on_profile: prod
@@ -42,7 +42,7 @@ spring:
     show-sql: false
     generate-ddl: true
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
 server:
   port:
     5000

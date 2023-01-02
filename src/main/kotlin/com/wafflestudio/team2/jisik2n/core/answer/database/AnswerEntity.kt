@@ -37,10 +37,11 @@ class AnswerEntity(
 ) : BaseTimeEntity() {
     fun toResponse(answerRepository: AnswerRepository) = AnswerResponse(
         content = this.content,
-        selected = this.selected,
-        selectedAt = this.selectedAt,
         photos = this.photos // TODO: Handle photo, optimize query
             .map { it.path },
+        createdAt = this.createdAt!!,
+        selected = this.selected,
+        selectedAt = this.selectedAt,
         username = this.user.username,
         profileImagePath = this.user.profileImage,
         userRecentAnswerDate = answerRepository // TODO: Optimize Query
