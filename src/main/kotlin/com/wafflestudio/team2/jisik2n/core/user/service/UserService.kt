@@ -48,7 +48,7 @@ class UserServiceImpl(
     @Transactional
     override fun login(request: LoginRequest): AuthToken {
         val userEntity = userRepository.findByUid(request.uid) ?: throw Jisik2n404("해당 아이디로 가입한 유저가 없습니다.")
-
+        println("test")
         if (!this.passwordEncoder.matches(request.password, userEntity.password)) {
             throw Jisik2n401("비밀번호가 일치하지 않습니다.")
         }
