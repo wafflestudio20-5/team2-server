@@ -22,7 +22,7 @@ class UserAnswerInteractionServiceImpl(
 ) : UserAnswerInteractionService {
     override fun getCountOfInteraction(answerId: Long): UserAnswerInteractionCountResponse {
         val answer = answerRepository.findByIdOrNull(answerId)
-            ?: throw Jisik2n404("${answerId} 질문이 존재하지 않습니다.")
+            ?: throw Jisik2n404("$answerId 질문이 존재하지 않습니다.")
 
         // TODO: Query Optimize
         val agreeCnt = answer.userAnswerInteractions.count { it.isAgree }
@@ -34,7 +34,7 @@ class UserAnswerInteractionServiceImpl(
     @Transactional
     override fun putInteraction(loginUser: UserEntity, answerId: Long, isAgree: Boolean) {
         val answer = answerRepository.findByIdOrNull(answerId)
-            ?: throw Jisik2n404("${answerId} 질문이 존재하지 않습니다.")
+            ?: throw Jisik2n404("$answerId 질문이 존재하지 않습니다.")
 
         userAnswerInteractionRepository.findByUserAndAnswer(loginUser, answer)
             ?.let { // when interaction already exists
@@ -45,13 +45,13 @@ class UserAnswerInteractionServiceImpl(
                     else -> it.isAgree = !it.isAgree
                 }
             } ?: let { // when interaction does not exist
-                userAnswerInteractionRepository.save(
-                    UserAnswerInteractionEntity(
-                        user = loginUser,
-                        answer,
-                        isAgree
-                    )
+            userAnswerInteractionRepository.save(
+                UserAnswerInteractionEntity(
+                    user = loginUser,
+                    answer,
+                    isAgree
                 )
-            }
+            )
+        }
     }
 }
