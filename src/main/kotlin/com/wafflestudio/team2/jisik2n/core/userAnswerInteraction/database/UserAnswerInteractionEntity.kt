@@ -12,7 +12,7 @@ class UserAnswerInteractionEntity(
     @ManyToOne @JoinColumn
     val answer: AnswerEntity,
 
-    val isAgree: Boolean
+    var isAgree: Boolean
 ) {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L
