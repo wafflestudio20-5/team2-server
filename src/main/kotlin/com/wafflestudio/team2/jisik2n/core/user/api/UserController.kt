@@ -2,8 +2,8 @@ package com.wafflestudio.team2.jisik2n.core.user.api
 
 import com.wafflestudio.team2.jisik2n.common.Authenticated
 import com.wafflestudio.team2.jisik2n.common.UserContext
-import com.wafflestudio.team2.jisik2n.core.user.api.request.LoginRequest
-import com.wafflestudio.team2.jisik2n.core.user.api.request.SignupRequest
+import com.wafflestudio.team2.jisik2n.core.user.dto.LoginRequest
+import com.wafflestudio.team2.jisik2n.core.user.dto.SignupRequest
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
 import com.wafflestudio.team2.jisik2n.core.user.service.AuthToken
 import com.wafflestudio.team2.jisik2n.core.user.service.UserService
@@ -28,6 +28,11 @@ class UserController(
     @PostMapping("login")
     fun login(@RequestBody loginRequest: LoginRequest): AuthToken {
         return userService.login(loginRequest)
+    }
+
+    @PostMapping("kakaoLogin")
+    fun kakaoLogin() {
+        return userService.kakaoLogin()
     }
 
     @Authenticated

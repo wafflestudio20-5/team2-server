@@ -4,14 +4,22 @@ import com.wafflestudio.team2.jisik2n.common.Jisik2n400
 import com.wafflestudio.team2.jisik2n.common.Jisik2n401
 import com.wafflestudio.team2.jisik2n.common.Jisik2n404
 import com.wafflestudio.team2.jisik2n.common.Jisik2n409
-import com.wafflestudio.team2.jisik2n.core.user.api.request.LoginRequest
-import com.wafflestudio.team2.jisik2n.core.user.api.request.SignupRequest
-import com.wafflestudio.team2.jisik2n.core.user.database.*
+import com.wafflestudio.team2.jisik2n.core.user.dto.LoginRequest
+import com.wafflestudio.team2.jisik2n.core.user.dto.SignupRequest
+import com.wafflestudio.team2.jisik2n.core.user.database.TokenEntity
+import com.wafflestudio.team2.jisik2n.core.user.database.TokenRepository
+import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
+import com.wafflestudio.team2.jisik2n.core.user.database.UserRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import java.io.BufferedWriter
+import java.io.IOException
+import java.io.OutputStreamWriter
+import java.lang.StringBuilder
+import java.net.HttpURLConnection
+import java.net.URL
 import java.time.LocalDateTime
-import java.util.*
 import javax.transaction.Transactional
 
 interface UserService {
@@ -19,6 +27,9 @@ interface UserService {
 
     fun login(loginRequest: LoginRequest): AuthToken
 
+    fun kakaoLogin()
+
+    fun getKaKaoToken(code: String): String
     fun validate(userEntity: UserEntity): AuthToken
 }
 @Service
@@ -48,7 +59,7 @@ class UserServiceImpl(
     @Transactional
     override fun login(request: LoginRequest): AuthToken {
         val userEntity = userRepository.findByUid(request.uid) ?: throw Jisik2n404("해당 아이디로 가입한 유저가 없습니다.")
-        println("test")
+
         if (!this.passwordEncoder.matches(request.password, userEntity.password)) {
             throw Jisik2n401("비밀번호가 일치하지 않습니다.")
         }
@@ -67,6 +78,38 @@ class UserServiceImpl(
         }
 
         return AuthToken.of(tokenEntity.accessToken, tokenEntity.refreshToken)
+    }
+
+    override fun kakaoLogin() {
+        TODO("Not yet implemented")
+    }
+
+    override fun getKaKaoToken(code: String): String {
+        val url: URL = URL("https://kauth.kakao.com/oauth/token")
+        val urlConnection = url.openConnection() as HttpURLConnection
+        val token: String = ""
+
+        try {
+            urlConnection.requestMethod = "POST"
+            urlConnection.doOutput = true
+
+            val bw = BufferedWriter(OutputStreamWriter(urlConnection.outputStream))
+            val sb: StringBuilder = StringBuilder()
+            sb.append("grant_type=authorization_code")
+            sb.append("&client_id=1f902696f45d3f80db2635c82134a150")
+            sb.append("&redirect_url=http://43.200.186.212/api/user/users")
+            sb.append("&code=$code")
+
+            bw.write(sb.toString())
+            bw.flush()
+
+            val responseCode: Int = urlConnection.responseCode
+            println(responseCode)
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+
+        return "1"
     }
 
     override fun validate(userEntity: UserEntity): AuthToken {

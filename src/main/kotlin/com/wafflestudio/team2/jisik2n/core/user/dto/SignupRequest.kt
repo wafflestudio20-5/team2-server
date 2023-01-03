@@ -1,4 +1,4 @@
-package com.wafflestudio.team2.jisik2n.core.user.api.request
+package com.wafflestudio.team2.jisik2n.core.user.dto
 
 import javax.validation.constraints.NotBlank
 
