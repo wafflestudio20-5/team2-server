@@ -23,6 +23,8 @@ import javax.transaction.Transactional
 interface UserService {
     fun signup(signupRequest: SignupRequest): AuthToken
 
+    fun signupCheckDuplicatedUid(request: Map<String, String>)
+
     fun login(loginRequest: LoginRequest): AuthToken
 
     fun getKaKaoToken(code: String): String
@@ -54,6 +56,11 @@ class UserServiceImpl(
         tokenRepository.save(tokenEntity)
 
         return AuthToken.of(tokenEntity)
+    }
+
+    override fun signupCheckDuplicatedUid(request: Map<String, String>) {
+        val uid = request["uid"]!!
+        checkDuplicatedUid(uid)
     }
 
     @Transactional

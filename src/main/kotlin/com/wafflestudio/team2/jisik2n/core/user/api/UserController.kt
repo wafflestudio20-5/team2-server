@@ -26,6 +26,11 @@ class UserController(
         return userService.signup(signupRequest)
     }
 
+    @PostMapping("signupCheckDuplicatedUid")
+    fun signupCheckDuplicatedUid(@RequestBody request: Map<String, String>) {
+        return userService.signupCheckDuplicatedUid(request)
+    }
+
     @PostMapping("login")
     fun login(@RequestBody loginRequest: LoginRequest): AuthToken {
         return userService.login(loginRequest)
