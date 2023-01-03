@@ -4,12 +4,10 @@ import com.wafflestudio.team2.jisik2n.common.Jisik2n400
 import com.wafflestudio.team2.jisik2n.common.Jisik2n401
 import com.wafflestudio.team2.jisik2n.common.Jisik2n404
 import com.wafflestudio.team2.jisik2n.common.Jisik2n409
+import com.wafflestudio.team2.jisik2n.core.user.database.*
 import com.wafflestudio.team2.jisik2n.core.user.dto.LoginRequest
 import com.wafflestudio.team2.jisik2n.core.user.dto.SignupRequest
-import com.wafflestudio.team2.jisik2n.core.user.database.TokenEntity
-import com.wafflestudio.team2.jisik2n.core.user.database.TokenRepository
-import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
-import com.wafflestudio.team2.jisik2n.core.user.database.UserRepository
+import com.wafflestudio.team2.jisik2n.core.user.dto.TokenRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -27,15 +25,16 @@ interface UserService {
 
     fun login(loginRequest: LoginRequest): AuthToken
 
-    fun kakaoLogin()
-
     fun getKaKaoToken(code: String): String
+
+    fun logout(token: TokenRequest): String
     fun validate(userEntity: UserEntity): AuthToken
 }
 @Service
 class UserServiceImpl(
     private val userRepository: UserRepository,
     private val tokenRepository: TokenRepository,
+    private val blacklistTokenRepository: BlacklistTokenRepository,
     private val authTokenService: AuthTokenService,
     private val passwordEncoder: PasswordEncoder
 ) : UserService {
@@ -49,11 +48,12 @@ class UserServiceImpl(
 
         val accessToken = authTokenService.generateAccessTokenByUid(request.uid)
         val refreshToken = authTokenService.generateRefreshTokenByUid(request.uid)
+
         val tokenEntity = TokenEntity.of(accessToken, refreshToken, request.uid)
 
         tokenRepository.save(tokenEntity)
 
-        return AuthToken.of(accessToken, refreshToken)
+        return AuthToken.of(tokenEntity)
     }
 
     @Transactional
@@ -77,11 +77,7 @@ class UserServiceImpl(
             tokenEntity.refreshToken = refreshToken
         }
 
-        return AuthToken.of(tokenEntity.accessToken, tokenEntity.refreshToken)
-    }
-
-    override fun kakaoLogin() {
-        TODO("Not yet implemented")
+        return AuthToken.of(tokenEntity)
     }
 
     override fun getKaKaoToken(code: String): String {
@@ -112,10 +108,21 @@ class UserServiceImpl(
         return "1"
     }
 
+    override fun logout(request: TokenRequest): String {
+        if (tokenRepository.findByAccessTokenAndRefreshToken(request.accessToken, request.refreshToken) != null) {
+            val blacklistTokenEntity = BlacklistTokenEntity.of(request)
+            blacklistTokenRepository.save(blacklistTokenEntity)
+
+            return "1"
+        } else {
+            throw Jisik2n400("token이 올바르지 않습니다")
+        }
+    }
+
     override fun validate(userEntity: UserEntity): AuthToken {
         val uid = userRepository.findByIdOrNull(userEntity.id)?.uid ?: throw Jisik2n400("user가 존재하지 않습니다")
         val token = tokenRepository.findByKeyUid(uid) ?: throw Jisik2n400("token을 찾지 못했습니다")
-        return AuthToken.of(token.accessToken, token.refreshToken)
+        return AuthToken.of(token)
     }
 
     private fun checkDuplicatedUid(uid: String) {

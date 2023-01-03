@@ -5,6 +5,7 @@ import com.wafflestudio.team2.jisik2n.common.UserContext
 import com.wafflestudio.team2.jisik2n.core.user.dto.LoginRequest
 import com.wafflestudio.team2.jisik2n.core.user.dto.SignupRequest
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
+import com.wafflestudio.team2.jisik2n.core.user.dto.TokenRequest
 import com.wafflestudio.team2.jisik2n.core.user.service.AuthToken
 import com.wafflestudio.team2.jisik2n.core.user.service.UserService
 import org.springframework.web.bind.annotation.*
@@ -30,9 +31,9 @@ class UserController(
         return userService.login(loginRequest)
     }
 
-    @PostMapping("kakaoLogin")
-    fun kakaoLogin() {
-        return userService.kakaoLogin()
+    @PostMapping("logout")
+    fun logout(@RequestBody token: TokenRequest): String {
+        return userService.logout(token)
     }
 
     @Authenticated
