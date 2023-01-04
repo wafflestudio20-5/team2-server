@@ -28,7 +28,7 @@ class UserEntity(
     @Column(columnDefinition = "datetime(6) default '1999-01-01'", nullable = true)
     var lastLogin: LocalDateTime?,
 
-    var isMale: Boolean,
+    var isMale: Boolean?,
 
     @Column(nullable = true)
     var profileImage: String?,

@@ -2,9 +2,9 @@ package com.wafflestudio.team2.jisik2n.core.user.api
 
 import com.wafflestudio.team2.jisik2n.common.Authenticated
 import com.wafflestudio.team2.jisik2n.common.UserContext
+import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
 import com.wafflestudio.team2.jisik2n.core.user.dto.LoginRequest
 import com.wafflestudio.team2.jisik2n.core.user.dto.SignupRequest
-import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
 import com.wafflestudio.team2.jisik2n.core.user.dto.TokenRequest
 import com.wafflestudio.team2.jisik2n.core.user.service.AuthToken
 import com.wafflestudio.team2.jisik2n.core.user.service.UserService
@@ -41,8 +41,24 @@ class UserController(
         return userService.logout(token)
     }
 
+    @GetMapping("getKakaoUserInfo")
+    fun getKakaoUserInfo(@RequestParam(value = "accessToken", required = false) accessToken: String): AuthToken {
+
+        val userInfo: HashMap<String, Object> = userService.getKakaoUserInfo(accessToken)
+        println("###access_Token#### : $accessToken")
+        println("###nickname#### : " + userInfo["nickname"])
+        val nickname: String = userInfo["nickname"].toString()
+        // println("###email#### : " + userInfo["email"])
+
+        val signupRequest = SignupRequest(nickname, "", nickname, null)
+        userService.signup(signupRequest)
+
+        val loginRequest = LoginRequest(nickname, "")
+        return userService.login(loginRequest)
+    }
+
     @Authenticated
-    @GetMapping("/validate")
+    @GetMapping("validate")
     fun validate(
         @RequestHeader("Authorization") accessToken: String,
         @RequestHeader("RefreshToken") refreshToken: String,

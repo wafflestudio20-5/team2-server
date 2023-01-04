@@ -44,7 +44,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
 
     // json 형식의 응답값
+    // https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple
     implementation("com.googlecode.json-simple:json-simple:1.1.1")
+
+    implementation("com.google.code.gson:gson:2.8.9")
 }
 
 noArg {

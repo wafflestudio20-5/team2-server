@@ -14,5 +14,5 @@ data class SignupRequest(
     val username: String,
 
     @NotBlank
-    val isMale: Boolean
+    val isMale: Boolean?
 )

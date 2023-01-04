@@ -1,5 +1,7 @@
 package com.wafflestudio.team2.jisik2n.core.user.service
 
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import com.wafflestudio.team2.jisik2n.common.Jisik2n400
 import com.wafflestudio.team2.jisik2n.common.Jisik2n401
 import com.wafflestudio.team2.jisik2n.common.Jisik2n404
@@ -11,10 +13,7 @@ import com.wafflestudio.team2.jisik2n.core.user.dto.TokenRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import java.io.BufferedWriter
-import java.io.IOException
-import java.io.OutputStreamWriter
-import java.lang.StringBuilder
+import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
 import java.time.LocalDateTime
@@ -27,7 +26,9 @@ interface UserService {
 
     fun login(loginRequest: LoginRequest): AuthToken
 
-    fun getKaKaoToken(code: String): String
+    fun getKakaoToken(code: String): String
+
+    fun getKakaoUserInfo(accessToken: String): HashMap<String, Object>
 
     fun logout(token: TokenRequest): String
     fun validate(userEntity: UserEntity): AuthToken
@@ -87,7 +88,7 @@ class UserServiceImpl(
         return AuthToken.of(tokenEntity)
     }
 
-    override fun getKaKaoToken(code: String): String {
+    override fun getKakaoToken(code: String): String {
         val url: URL = URL("https://kauth.kakao.com/oauth/token")
         val urlConnection = url.openConnection() as HttpURLConnection
         val token: String = ""
@@ -113,6 +114,50 @@ class UserServiceImpl(
         }
 
         return "1"
+    }
+
+    override fun getKakaoUserInfo(accessToken: String): HashMap<String, Object> {
+        val userInfo = HashMap<String, Object>()
+        val reqURL = "https://kapi.kakao.com/v2/user/me"
+
+        try {
+            val url = URL(reqURL)
+            val conn = url.openConnection() as HttpURLConnection
+            conn.requestMethod = "GET"
+
+            conn.setRequestProperty("Authorization", "Bearer $accessToken")
+
+            val responseCode: Int = conn.responseCode
+            println("responseCode: $responseCode")
+
+            val br = BufferedReader(InputStreamReader(conn.inputStream))
+
+            var line: String? = ""
+            var result: String? = ""
+
+            while (br.readLine().also { line = it } != null) {
+                result += line
+            }
+
+            println("response body: $result")
+
+            val properties: JsonObject = JsonParser.parseString(result).getAsJsonObject()
+            println("properties: $properties")
+            val kakao_account: JsonObject = properties.getAsJsonObject().get("kakao_account").getAsJsonObject()
+            println(kakao_account)
+            val profile: JsonObject = kakao_account.getAsJsonObject().get("profile").getAsJsonObject()
+            println(profile)
+            // val email: String = kakao_account.getAsJsonObject().get("email").getAsString()
+
+            userInfo["nickname"] = profile["nickname"] as Object
+
+            println(userInfo["nickname"])
+            //  userInfo["email"] = email as Object
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+
+        return userInfo
     }
 
     override fun logout(request: TokenRequest): String {
