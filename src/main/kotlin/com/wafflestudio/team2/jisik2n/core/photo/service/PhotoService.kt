@@ -9,7 +9,7 @@ class PhotoService(
     private val photoRepository: PhotoRepository,
 ) {
     fun createPhoto(path: String): PhotoEntity {
-        val newPhoto = PhotoEntity(path = path)
+        val newPhoto = PhotoEntity(path = path, 0 /*TODO: fix needed*/)
         photoRepository.save(newPhoto)
 
         return newPhoto

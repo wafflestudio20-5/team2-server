@@ -80,15 +80,14 @@ class AnswerServiceImpl(
         }
 
         // Add photos to newAnswer
-        answerRequest.photos.map { path: String ->
-            PhotoEntity(path, answer = newAnswer)
+        answerRequest.photos.mapIndexed { idx: Int, path: String ->
+            PhotoEntity(path, idx, answer = newAnswer)
         }.also {
             newAnswer.photos.addAll(it)
         }
         newAnswer = answerRepository.save(newAnswer)
     }
 
-    // FIXME: Sorted by id order
     @Transactional
     override fun updateAnswer(
         loginUser: UserEntity,
@@ -111,19 +110,18 @@ class AnswerServiceImpl(
         // Remove photo deleted
         answer.photos.filter { !answerRequest.photos.contains(it.path) }
             .let {
-                answer.photos.removeAll(it)
+                answer.photos.removeAll(it.toSet())
                 photoRepository.deleteAll(it)
             }
 
         // Add photo, and update positions
-        answerRequest.photos.mapIndexed { index: Int, path: String ->
+        answerRequest.photos.forEachIndexed { index: Int, path: String ->
             answer.photos.find { it.path == path }
                 ?. let { // If photo exists, update its position
-                    answer.photos.remove(it)
-                    answer.photos.add(index, it)
+                    it.photosOrder = index
                 }
-                ?: PhotoEntity(path, answer = answer) // If photo doesn't exist, create new PhotoEntity and add to answer
-                    .also { answer.photos.add(index, it) }
+                ?: PhotoEntity(path, index, answer = answer) // If photo doesn't exist, create new PhotoEntity and add to answer
+                    .also { answer.photos.add(it) }
         }
 
         answerRepository.save(answer)
