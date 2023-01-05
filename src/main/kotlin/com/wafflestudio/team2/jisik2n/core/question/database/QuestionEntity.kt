@@ -22,7 +22,7 @@ class QuestionEntity(
     var content: String,
 
     @OneToMany(mappedBy = "question", cascade = [CascadeType.ALL])
-    val photos: MutableList<PhotoEntity> = mutableListOf(),
+    val photos: MutableSet<PhotoEntity> = mutableSetOf(),
 
     @JsonIgnore
     @OneToMany(mappedBy = "question", cascade = [CascadeType.ALL])
