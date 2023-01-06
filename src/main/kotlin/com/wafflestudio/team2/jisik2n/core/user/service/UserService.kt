@@ -28,8 +28,9 @@ interface UserService {
 
     fun getKakaoToken(code: String): String
 
-    fun getKakaoUserInfo(accessToken: String): HashMap<String, Object>
+    fun getKakaoUserInfo(accessToken: String): HashMap<String, String>
 
+    fun kakaoLogin(userInfo: HashMap<String, String>): AuthToken
     fun logout(token: TokenRequest): String
     fun validate(userEntity: UserEntity): AuthToken
 
@@ -49,7 +50,7 @@ class UserServiceImpl(
         checkDuplicatedUid(request.uid)
         checkDuplicatedUsername(request.username)
         val encodedPassword = this.passwordEncoder.encode(request.password)
-        val userEntity = UserEntity.of(request, encodedPassword)
+        val userEntity = UserEntity.signup(request, encodedPassword)
         userRepository.save(userEntity)
 
         val accessToken = authTokenService.generateAccessTokenByUid(request.uid)
@@ -114,10 +115,7 @@ class UserServiceImpl(
             println(responseCode)
 
             val br = BufferedReader(InputStreamReader(urlConnection.inputStream))
-            var line = ""
-            var result = ""
             println(br.readLine())
-            println("result = $result")
         } catch (e: IOException) {
             e.printStackTrace()
         }
@@ -125,15 +123,14 @@ class UserServiceImpl(
         return "1"
     }
 
-    override fun getKakaoUserInfo(accessToken: String): HashMap<String, Object> {
-        val userInfo = HashMap<String, Object>()
+    override fun getKakaoUserInfo(accessToken: String): HashMap<String, String> {
+        val userInfo = HashMap<String, String>()
         val reqURL = "https://kapi.kakao.com/v2/user/me"
 
         try {
             val url = URL(reqURL)
             val conn = url.openConnection() as HttpURLConnection
             conn.requestMethod = "GET"
-
             conn.setRequestProperty("Authorization", "Bearer $accessToken")
 
             val responseCode: Int = conn.responseCode
@@ -141,35 +138,82 @@ class UserServiceImpl(
 
             val br = BufferedReader(InputStreamReader(conn.inputStream))
 
-            var line: String? = ""
+            var line: String?
             var result: String? = ""
 
             while (br.readLine().also { line = it } != null) {
                 result += line
             }
 
-            println("response body: $result")
+            val responseBody: JsonObject = JsonParser.parseString(result).asJsonObject
+            val kakaoAccount: JsonObject = responseBody.asJsonObject.get("kakao_account").asJsonObject
+            println("kakao account: $kakaoAccount")
 
-            val properties: JsonObject = JsonParser.parseString(result).asJsonObject
-            println("properties: $properties")
-            val kakaoAccount: JsonObject = properties.asJsonObject.get("kakao_account").asJsonObject
-            println(kakaoAccount)
-            val profile: JsonObject = kakaoAccount.asJsonObject.get("profile").asJsonObject
+            val nickname = kakaoAccount.asJsonObject.get("profile").asJsonObject["nickname"]
+            userInfo["username"] = nickname.asString
 
-            val email: String = kakaoAccount.asJsonObject.get("email").asString
-            val gender: String = kakaoAccount.asJsonObject.get("has_gender").asString
-            userInfo["nickname"] = profile["nickname"] as Object
-            userInfo["snsId"] = email as Object
-            userInfo["gender"] = gender as Object
+            val email = kakaoAccount.asJsonObject.get("email")
+            if (email != null) {
+                userInfo["snsId"] = email.asString
+            } else {
+                userInfo["snsId"] = ""
+            }
 
-            println(userInfo["nickname"])
-            println(userInfo["snsId"])
-            println(userInfo["gender"])
+            val gender = kakaoAccount.asJsonObject.get("gender")
+            if (gender != null) {
+                if (gender.asString == "male") {
+                    userInfo["gender"] = "true"
+                } else {
+                    userInfo["gender"] = "false"
+                }
+            } else {
+                userInfo["gender"] = ""
+            }
         } catch (e: IOException) {
             e.printStackTrace()
         }
 
         return userInfo
+    }
+
+    @Transactional
+    override fun kakaoLogin(userInfo: HashMap<String, String>): AuthToken {
+        val username: String = userInfo["username"]!!
+        val snsId = userInfo["snsId"]
+        val gender: Boolean? =
+            if (userInfo["gender"] == "true") true
+            else if (userInfo["gender"] == "false") false
+            else null
+
+        val kakaoUsername = "kakao-$username"
+        if (userRepository.findByUsername(kakaoUsername) == null) {
+            userRepository.save(UserEntity(kakaoUsername, snsId, kakaoUsername, null, null, gender, null))
+
+            val accessToken = authTokenService.generateAccessTokenByUid(kakaoUsername)
+            val refreshToken = authTokenService.generateRefreshTokenByUid(kakaoUsername)
+
+            val tokenEntity = TokenEntity.of(accessToken, refreshToken, kakaoUsername)
+
+            tokenRepository.save(tokenEntity)
+
+            return AuthToken.of(tokenEntity)
+        } else {
+            val userEntity = userRepository.findByUsername(kakaoUsername)!!
+            val accessToken = authTokenService.generateAccessTokenByUid(kakaoUsername)
+
+            val lastLogin = LocalDateTime.from(authTokenService.getCurrentIssuedAt(accessToken))
+            userEntity.lastLogin = lastLogin
+
+            val tokenEntity = tokenRepository.findByKeyUid(kakaoUsername)!!
+            tokenEntity.accessToken = accessToken
+
+            if (authTokenService.getCurrentExpiration(tokenEntity.refreshToken) < LocalDateTime.now()) {
+                val refreshToken = authTokenService.generateRefreshTokenByUid(kakaoUsername)
+                tokenEntity.refreshToken = refreshToken
+            }
+
+            return AuthToken.of(tokenEntity)
+        }
     }
 
     override fun logout(request: TokenRequest): String {

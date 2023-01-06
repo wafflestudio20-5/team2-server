@@ -23,7 +23,7 @@ class UserEntity(
     @Column(unique = true)
     var username: String,
 
-    var password: String,
+    var password: String?,
 
     @Column(columnDefinition = "datetime(6) default '1999-01-01'", nullable = true)
     var lastLogin: LocalDateTime?,
@@ -48,7 +48,7 @@ class UserEntity(
 ) : BaseTimeEntity() {
 
     companion object {
-        fun of(request: SignupRequest, encodedPassword: String): UserEntity {
+        fun signup(request: SignupRequest, encodedPassword: String): UserEntity {
             request.run {
                 return UserEntity(
                     uid = request.uid,

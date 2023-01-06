@@ -46,21 +46,12 @@ class UserController(
         return userService.getKakaoToken(code)
     }
 
-    @GetMapping("getKakaoUserInfo")
-    fun getKakaoUserInfo(@RequestParam(value = "accessToken", required = false) accessToken: String): AuthToken {
+    @GetMapping("kakaoLogin")
+    fun kakaoLogin(@RequestParam(value = "accessToken", required = false) accessToken: String): AuthToken {
 
-        val userInfo: HashMap<String, Object> = userService.getKakaoUserInfo(accessToken)
-        println("###access_Token#### : $accessToken")
-        println("###nickname#### : " + userInfo["nickname"])
-        println(userInfo["gender"])
-        val nickname: String = userInfo["nickname"].toString()
-        // println("###email#### : " + userInfo["email"])
+        val userInfo: HashMap<String, String> = userService.getKakaoUserInfo(accessToken)
 
-        val signupRequest = SignupRequest(nickname, "", nickname, null)
-        userService.signup(signupRequest)
-
-        val loginRequest = LoginRequest(nickname, "")
-        return userService.login(loginRequest)
+        return userService.kakaoLogin(userInfo)
     }
 
     @Authenticated
