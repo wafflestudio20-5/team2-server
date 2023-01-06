@@ -72,19 +72,19 @@ class AuthInterceptor(
 
             val prefixRemovedAccessToken = accessToken.replace("Bearer ", "").trim { it <= ' ' }
             val prefixRemovedRefreshToken = refreshToken.replace("Bearer ", "").trim { it <= ' ' }
+            if (blacklistTokenRepository.findByAccessToken(prefixRemovedAccessToken) != null) {
+                throw Jisik2n401("token이 만료되었습니다")
+            }
             if (authTokenService.verifyToken(prefixRemovedRefreshToken) != true) {
                 throw Jisik2n401("refresh token이 적절하지 않습니다.")
             }
+
             if (authTokenService.verifyToken(prefixRemovedAccessToken) == true) { // access token 정상적 작동
-                if (blacklistTokenRepository.findByAccessToken(prefixRemovedAccessToken) != null) {
-                    throw Jisik2n401("token이 만료되었습니다")
-                }
                 val userId = authTokenService.getCurrentUserId(prefixRemovedAccessToken)
                 val userEntity = userRepository.findByIdOrNull(userId)
                 request.setAttribute("userEntity", userEntity)
             } else { // access token이 만료되었거나, 존재하지도 않거나
 
-                // Bearer 제거
                 val tokenEntity = tokenRepository.findByAccessToken(prefixRemovedAccessToken)
                 if (tokenEntity == null) { // access token이 존재하지 않음
 

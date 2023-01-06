@@ -32,7 +32,10 @@ interface UserService {
 
     fun logout(token: TokenRequest): String
     fun validate(userEntity: UserEntity): AuthToken
+
+    fun deleteKakaoAccount(userEntity: UserEntity): String
 }
+
 @Service
 class UserServiceImpl(
     private val userRepository: UserRepository,
@@ -101,7 +104,7 @@ class UserServiceImpl(
             val sb: StringBuilder = StringBuilder()
             sb.append("grant_type=authorization_code")
             sb.append("&client_id=1f902696f45d3f80db2635c82134a150")
-            sb.append("&redirect_url=http://43.200.186.212/api/user/users")
+            sb.append("&redirect_url=https://naver.com")
             sb.append("&code=$code")
 
             bw.write(sb.toString())
@@ -109,6 +112,12 @@ class UserServiceImpl(
 
             val responseCode: Int = urlConnection.responseCode
             println(responseCode)
+
+            val br = BufferedReader(InputStreamReader(urlConnection.inputStream))
+            var line = ""
+            var result = ""
+            println(br.readLine())
+            println("result = $result")
         } catch (e: IOException) {
             e.printStackTrace()
         }
@@ -141,18 +150,21 @@ class UserServiceImpl(
 
             println("response body: $result")
 
-            val properties: JsonObject = JsonParser.parseString(result).getAsJsonObject()
+            val properties: JsonObject = JsonParser.parseString(result).asJsonObject
             println("properties: $properties")
-            val kakao_account: JsonObject = properties.getAsJsonObject().get("kakao_account").getAsJsonObject()
-            println(kakao_account)
-            val profile: JsonObject = kakao_account.getAsJsonObject().get("profile").getAsJsonObject()
-            println(profile)
-            // val email: String = kakao_account.getAsJsonObject().get("email").getAsString()
+            val kakaoAccount: JsonObject = properties.asJsonObject.get("kakao_account").asJsonObject
+            println(kakaoAccount)
+            val profile: JsonObject = kakaoAccount.asJsonObject.get("profile").asJsonObject
 
+            val email: String = kakaoAccount.asJsonObject.get("email").asString
+            val gender: String = kakaoAccount.asJsonObject.get("has_gender").asString
             userInfo["nickname"] = profile["nickname"] as Object
+            userInfo["snsId"] = email as Object
+            userInfo["gender"] = gender as Object
 
             println(userInfo["nickname"])
-            //  userInfo["email"] = email as Object
+            println(userInfo["snsId"])
+            println(userInfo["gender"])
         } catch (e: IOException) {
             e.printStackTrace()
         }
@@ -175,6 +187,12 @@ class UserServiceImpl(
         val uid = userRepository.findByIdOrNull(userEntity.id)?.uid ?: throw Jisik2n400("user가 존재하지 않습니다")
         val token = tokenRepository.findByKeyUid(uid) ?: throw Jisik2n400("token을 찾지 못했습니다")
         return AuthToken.of(token)
+    }
+    @Transactional
+    override fun deleteKakaoAccount(userEntity: UserEntity): String {
+        println(userEntity.uid)
+        userRepository.deleteByUid(userEntity.uid)
+        return "삭제 완료"
     }
 
     private fun checkDuplicatedUid(uid: String) {

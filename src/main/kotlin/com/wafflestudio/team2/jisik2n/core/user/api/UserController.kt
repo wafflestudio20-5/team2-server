@@ -41,12 +41,18 @@ class UserController(
         return userService.logout(token)
     }
 
+    @GetMapping("getKakaoToken")
+    fun getKakaoToken(@RequestParam(value = "code", required = false) code: String): String {
+        return userService.getKakaoToken(code)
+    }
+
     @GetMapping("getKakaoUserInfo")
     fun getKakaoUserInfo(@RequestParam(value = "accessToken", required = false) accessToken: String): AuthToken {
 
         val userInfo: HashMap<String, Object> = userService.getKakaoUserInfo(accessToken)
         println("###access_Token#### : $accessToken")
         println("###nickname#### : " + userInfo["nickname"])
+        println(userInfo["gender"])
         val nickname: String = userInfo["nickname"].toString()
         // println("###email#### : " + userInfo["email"])
 
@@ -67,4 +73,14 @@ class UserController(
 
         return userService.validate(userEntity)
     }
+
+//    @Authenticated
+//    @DeleteMapping("deleteKakaoAccount")
+//    fun deleteKakaoAccount(
+//        @RequestHeader("Authorization") accessToken: String,
+//        @RequestHeader("RefreshToken") refreshToken: String,
+//        @UserContext userEntity: UserEntity,
+//    ): String {
+//        return userService.deleteKakaoAccount(userEntity)
+//    }
 }
