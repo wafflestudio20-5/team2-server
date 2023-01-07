@@ -21,7 +21,7 @@ cloud:
     stack:
       auto: false
     s3:
-      dir: /images/
+      dir: images
 
 ---
 spring.config.activate.on_profile: dev
@@ -57,9 +57,9 @@ server:
 cloud:
   aws:
     credentials:
-      accessKey: ${aws.access.key.id}
-      secretKey: ${aws.secret.access.key}
+      access-key: ${aws.access.key.id}
+      secret-key: ${aws.secret.access.key}
     s3:
-      bucket: ${aws.bucket}
+      bucket-name: ${aws.bucket}
     region:
       static: ${aws.region}
