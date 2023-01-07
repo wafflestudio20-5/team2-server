@@ -1,21 +1,28 @@
 spring.profiles.include: secret
 
-# TODO: Set AWS S3 info
-#cloud:
-#  aws:
-#    stack:
-#      auto: false
-
 spring:
   mvc: # for swagger-ui
     pathmatch:
       matching-strategy: ant_path_matcher
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 100MB
 
 auth.jwt:
   jwtSecret: thisisourtoyprojectappdlqslek148190
   issuer: team2.wafflestudio.com
   jwtAccessExpiration: 300
   jwtRefreshExpiration: 1209600
+
+
+cloud:
+  aws:
+    stack:
+      auto: false
+    s3:
+      dir: /images/
+
 ---
 spring.config.activate.on_profile: dev
 spring:
@@ -46,3 +53,13 @@ spring:
 server:
   port:
     5000
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ${aws.access.key.id}
+      secretKey: ${aws.secret.access.key}
+    s3:
+      bucket: ${aws.bucket}
+    region:
+      static: ${aws.region}
