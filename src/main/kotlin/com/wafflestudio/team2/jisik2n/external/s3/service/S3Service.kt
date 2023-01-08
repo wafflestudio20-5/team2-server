@@ -19,9 +19,9 @@ interface S3Service {
 @Service
 class S3ServiceImpl(
     private val amazonS3Client: AmazonS3Client,
-    @Value("\${cloud.aws.s3.bucket-name")
+    @Value("\${cloud.aws.s3.bucket-name}")
     private val bucket: String,
-    @Value("\${cloud.aws.s3.dir")
+    @Value("\${cloud.aws.s3.dir}")
     private val dir: String,
 ) : S3Service {
     override fun upload(multipartFile: MultipartFile, dir: String?): String {
