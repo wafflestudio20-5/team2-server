@@ -2,18 +2,28 @@ package com.wafflestudio.team2.jisik2n.external.s3.service
 
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.CannedAccessControlList
+import com.amazonaws.services.s3.model.DeleteObjectRequest
 import com.amazonaws.services.s3.model.ObjectMetadata
 import com.amazonaws.services.s3.model.PutObjectRequest
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.io.BufferedInputStream
+import java.util.UUID
 
 interface S3Service {
     /**
      * Upload the multipart file to given dir, and return url
      */
-    fun upload(multipartFile: MultipartFile, dir: String? = null): String
+    fun upload(
+        multipartFile: MultipartFile,
+        dir: String? = null,
+        setUUIDFilename: Boolean = true
+    ): String
+
+    fun delete(url: String)
+
+    fun getFilenameFromUrl(url: String): String
 }
 
 @Service
@@ -24,19 +34,40 @@ class S3ServiceImpl(
     @Value("\${cloud.aws.s3.dir}")
     private val dir: String,
 ) : S3Service {
-    override fun upload(multipartFile: MultipartFile, dir: String?): String {
-        val filename = (dir ?: this.dir) + "/" + multipartFile.originalFilename
+    override fun upload(
+        multipartFile: MultipartFile,
+        dir: String?,
+        setUUIDFilename: Boolean,
+    ): String {
+        val filename = (dir ?: this.dir) + "/" +
+            if (setUUIDFilename) {
+                createUUIDFilename(multipartFile.originalFilename!!)
+            } else {
+                multipartFile.originalFilename
+            }
         return amazonS3Client.run { // Upload file and get url
             putObject(
                 PutObjectRequest(
                     bucket,
                     filename,
-                    BufferedInputStream(multipartFile.inputStream), // TODO: IOException
+                    BufferedInputStream(multipartFile.inputStream), // TODO: Maybe consider IOException
                     ObjectMetadata()
                 ).withCannedAcl(CannedAccessControlList.PublicRead)
             )
             getUrl(bucket, filename).toString()
         }
+    }
+
+    override fun delete(url: String) = amazonS3Client.deleteObject( // TODO: Maybe consider exception
+        DeleteObjectRequest(bucket, getFilenameFromUrl(url))
+    )
+
+    override fun getFilenameFromUrl(url: String) =
+        url.substringAfter("com/")
+
+    private fun createUUIDFilename(filename: String): String {
+        val ext = filename.substringAfterLast('.')
+        return UUID.randomUUID().toString() + "." + ext
     }
 
     // fun upload(multipartFile: MultipartFile, dir: String = this.dir): String {
