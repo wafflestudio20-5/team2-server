@@ -9,13 +9,6 @@ spring:
       max-file-size: 5MB
       max-request-size: 100MB
 
-auth.jwt:
-  jwtSecret: thisisourtoyprojectappdlqslek148190
-  issuer: team2.wafflestudio.com
-  jwtAccessExpiration: 300
-  jwtRefreshExpiration: 1209600
-
-
 cloud:
   aws:
     stack:
@@ -25,6 +18,7 @@ cloud:
 
 ---
 spring.config.activate.on_profile: dev
+
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -53,6 +47,12 @@ spring:
 server:
   port:
     5000
+
+auth.jwt:
+  jwtSecret: {jwt.secret}
+  issuer: {jwt.issuer}
+  jwtAccessExpiration: {jwt.access.expiration}
+  jwtRefreshExpiration: {jwt.refresh.expiration}
 
 cloud:
   aws:
