@@ -11,7 +11,7 @@ import com.wafflestudio.team2.jisik2n.core.photo.database.PhotoEntity
 import com.wafflestudio.team2.jisik2n.core.photo.database.PhotoRepository
 import com.wafflestudio.team2.jisik2n.core.question.database.QuestionRepository
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
-import com.wafflestudio.team2.jisik2n.core.user.database.UserRepository
+import com.wafflestudio.team2.jisik2n.core.userAnswerInteraction.database.UserAnswerInteractionRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -43,7 +43,7 @@ class AnswerServiceImpl(
     private val answerRepository: AnswerRepository,
     private val questionRepository: QuestionRepository,
     private val photoRepository: PhotoRepository,
-    private val userRepository: UserRepository,
+    private val userAnswerInteractionRepository: UserAnswerInteractionRepository,
 ) : AnswerService {
     override fun getAnswersOfQuestion(questionId: Long): List<AnswerResponse> {
         // Get target question
@@ -171,8 +171,11 @@ class AnswerServiceImpl(
             if (answer.question.close) {
                 throw Jisik2n403("마감된 질문은 삭제될 수 없습니다.")
             }
+
+            // Remove Interactions
+            userAnswerInteractionRepository.deleteByAnswer(answer)
+
             answerRepository.deleteById(answerId)
-            // TODO: Remove Interactions
         }
     }
 }
