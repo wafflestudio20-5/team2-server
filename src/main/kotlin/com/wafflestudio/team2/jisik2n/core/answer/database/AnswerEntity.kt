@@ -36,6 +36,7 @@ class AnswerEntity(
     val userAnswerInteractions: MutableSet<UserAnswerInteractionEntity> = mutableSetOf()
 ) : BaseTimeEntity() {
     fun toResponse(answerRepository: AnswerRepository) = AnswerResponse(
+        id = this.id,
         content = this.content,
         photos = this.photos // TODO: Handle photo, optimize query
             .sortedBy { it.photosOrder }
@@ -43,6 +44,7 @@ class AnswerEntity(
         createdAt = this.createdAt!!,
         selected = this.selected,
         selectedAt = this.selectedAt,
+        userId = this.user.id,
         username = this.user.username,
         profileImagePath = this.user.profileImage,
         userRecentAnswerDate = answerRepository // TODO: Optimize Query
