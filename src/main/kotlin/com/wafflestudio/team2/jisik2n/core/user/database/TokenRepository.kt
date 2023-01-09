@@ -9,4 +9,6 @@ interface TokenRepository : JpaRepository<TokenEntity, Long> {
     fun findByAccessToken(accessToken: String): TokenEntity?
 
     fun findByKeyUid(keyUid: String): TokenEntity?
+
+    fun findByAccessTokenAndRefreshToken(accessToken: String, refreshToken: String): TokenEntity?
 }
