@@ -181,9 +181,7 @@ class UserServiceImpl(
         val username: String = userInfo["username"]!!
         val snsId = userInfo["snsId"]
         val gender: Boolean? =
-            if (userInfo["gender"] == "true") true
-            else if (userInfo["gender"] == "false") false
-            else null
+            if (userInfo["gender"] == "true") { true } else if (userInfo["gender"] == "false") { false } else { null }
 
         val kakaoUsername = "kakao-$username"
         if (userRepository.findByUsername(kakaoUsername) == null) {

@@ -48,9 +48,7 @@ class UserController(
 
     @GetMapping("kakaoLogin")
     fun kakaoLogin(@RequestParam(value = "accessToken", required = false) accessToken: String): AuthToken {
-
         val userInfo: HashMap<String, String> = userService.getKakaoUserInfo(accessToken)
-
         return userService.kakaoLogin(userInfo)
     }
 
