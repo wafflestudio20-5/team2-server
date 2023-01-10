@@ -24,7 +24,7 @@ class AnswerEntity(
     var selectedAt: LocalDateTime? = null,
 
     @OneToMany(mappedBy = "answer", cascade = [CascadeType.ALL])
-    val photos: MutableList<PhotoEntity> = mutableListOf(),
+    val photos: MutableSet<PhotoEntity> = mutableSetOf(),
 
     @ManyToOne @JoinColumn
     val user: UserEntity,
@@ -33,15 +33,18 @@ class AnswerEntity(
     val question: QuestionEntity,
 
     @OneToMany(mappedBy = "answer")
-    val userAnswerInteractions: MutableSet<UserAnswerInteractionEntity> = mutableSetOf(),
+    val userAnswerInteractions: MutableSet<UserAnswerInteractionEntity> = mutableSetOf()
 ) : BaseTimeEntity() {
     fun toResponse(answerRepository: AnswerRepository) = AnswerResponse(
+        id = this.id,
         content = this.content,
         photos = this.photos // TODO: Handle photo, optimize query
+            .sortedBy { it.photosOrder }
             .map { it.path },
         createdAt = this.createdAt!!,
         selected = this.selected,
         selectedAt = this.selectedAt,
+        userId = this.user.id,
         username = this.user.username,
         profileImagePath = this.user.profileImage,
         userRecentAnswerDate = answerRepository // TODO: Optimize Query

@@ -11,7 +11,7 @@ import com.wafflestudio.team2.jisik2n.core.photo.database.PhotoEntity
 import com.wafflestudio.team2.jisik2n.core.photo.database.PhotoRepository
 import com.wafflestudio.team2.jisik2n.core.question.database.QuestionRepository
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
-import com.wafflestudio.team2.jisik2n.core.user.database.UserRepository
+import com.wafflestudio.team2.jisik2n.core.userAnswerInteraction.database.UserAnswerInteractionRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -43,7 +43,7 @@ class AnswerServiceImpl(
     private val answerRepository: AnswerRepository,
     private val questionRepository: QuestionRepository,
     private val photoRepository: PhotoRepository,
-    private val userRepository: UserRepository,
+    private val userAnswerInteractionRepository: UserAnswerInteractionRepository,
 ) : AnswerService {
     override fun getAnswersOfQuestion(questionId: Long): List<AnswerResponse> {
         // Get target question
@@ -80,8 +80,8 @@ class AnswerServiceImpl(
         }
 
         // Add photos to newAnswer
-        answerRequest.photos.map { path: String ->
-            PhotoEntity(path, answer = newAnswer)
+        answerRequest.photos.mapIndexed { idx: Int, path: String ->
+            PhotoEntity(path, idx, answer = newAnswer)
         }.also {
             newAnswer.photos.addAll(it)
         }
@@ -110,19 +110,18 @@ class AnswerServiceImpl(
         // Remove photo deleted
         answer.photos.filter { !answerRequest.photos.contains(it.path) }
             .let {
-                answer.photos.removeAll(it)
+                answer.photos.removeAll(it.toSet())
                 photoRepository.deleteAll(it)
             }
 
         // Add photo, and update positions
-        answerRequest.photos.mapIndexed { index: Int, path: String ->
+        answerRequest.photos.forEachIndexed { index: Int, path: String ->
             answer.photos.find { it.path == path }
                 ?. let { // If photo exists, update its position
-                    answer.photos.remove(it)
-                    answer.photos.add(index, it)
+                    it.photosOrder = index
                 }
-                ?: PhotoEntity(path, answer = answer) // If photo doesn't exist, create new PhotoEntity and add to answer
-                    .also { answer.photos.add(index, it) }
+                ?: PhotoEntity(path, index, answer = answer) // If photo doesn't exist, create new PhotoEntity and add to answer
+                    .also { answer.photos.add(it) }
         }
 
         answerRepository.save(answer)
@@ -172,8 +171,11 @@ class AnswerServiceImpl(
             if (answer.question.close) {
                 throw Jisik2n403("마감된 질문은 삭제될 수 없습니다.")
             }
+
+            // Remove Interactions
+            userAnswerInteractionRepository.deleteByAnswer(answer)
+
             answerRepository.deleteById(answerId)
-            // TODO: Remove Interactions
         }
     }
 }

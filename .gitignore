@@ -297,3 +297,6 @@ out/
 ### Custom #############################################################################
 # testing database storage
 db_docker/mysqldata/
+
+# Secret yaml file
+!**/src/main/resources/application-secret.yaml
