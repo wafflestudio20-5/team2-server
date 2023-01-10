@@ -49,10 +49,10 @@ server:
     5000
 
 auth.jwt:
-  jwtSecret: {jwt.secret}
-  issuer: {jwt.issuer}
-  jwtAccessExpiration: {jwt.access.expiration}
-  jwtRefreshExpiration: {jwt.refresh.expiration}
+  jwtSecret: ${jwt.secret}
+  issuer: ${jwt.issuer}
+  jwtAccessExpiration: ${jwt.access.expiration}
+  jwtRefreshExpiration: ${jwt.refresh.expiration}
 
 cloud:
   aws:
