@@ -67,7 +67,9 @@ class UserController(
         // 탈퇴할 때, 질문이랑 대답 조회해서 거기에 있는 사용자 null로 바꿔버리기
     }
 
-    fun putAccount() {}
+    fun putAccount() {
+        println("기대된다 기대돼")
+    }
 
     fun regenerateAccessToken() {}
 
