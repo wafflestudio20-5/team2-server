@@ -2,9 +2,10 @@ package com.wafflestudio.team2.jisik2n.core.user.api
 
 import com.wafflestudio.team2.jisik2n.common.Authenticated
 import com.wafflestudio.team2.jisik2n.common.UserContext
-import com.wafflestudio.team2.jisik2n.core.user.api.request.LoginRequest
-import com.wafflestudio.team2.jisik2n.core.user.api.request.SignupRequest
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
+import com.wafflestudio.team2.jisik2n.core.user.dto.LoginRequest
+import com.wafflestudio.team2.jisik2n.core.user.dto.SignupRequest
+import com.wafflestudio.team2.jisik2n.core.user.dto.TokenRequest
 import com.wafflestudio.team2.jisik2n.core.user.service.AuthToken
 import com.wafflestudio.team2.jisik2n.core.user.service.UserService
 import org.springframework.web.bind.annotation.*
@@ -25,13 +26,34 @@ class UserController(
         return userService.signup(signupRequest)
     }
 
+    @PostMapping("signupCheckDuplicatedUid")
+    fun signupCheckDuplicatedUid(@RequestBody request: Map<String, String>) {
+        return userService.signupCheckDuplicatedUid(request)
+    }
+
     @PostMapping("login")
     fun login(@RequestBody loginRequest: LoginRequest): AuthToken {
         return userService.login(loginRequest)
     }
 
+    @PostMapping("logout")
+    fun logout(@RequestBody token: TokenRequest): String {
+        return userService.logout(token)
+    }
+
+    @GetMapping("getKakaoToken")
+    fun getKakaoToken(@RequestParam(value = "code", required = false) code: String): String {
+        return userService.getKakaoToken(code)
+    }
+
+    @GetMapping("kakaoLogin")
+    fun kakaoLogin(@RequestParam(value = "accessToken", required = false) accessToken: String): AuthToken {
+        val userInfo: HashMap<String, String> = userService.getKakaoUserInfo(accessToken)
+        return userService.kakaoLogin(userInfo)
+    }
+
     @Authenticated
-    @GetMapping("/validate")
+    @GetMapping("validate")
     fun validate(
         @RequestHeader("Authorization") accessToken: String,
         @RequestHeader("RefreshToken") refreshToken: String,
@@ -40,4 +62,24 @@ class UserController(
 
         return userService.validate(userEntity)
     }
+
+    fun deleteAccount() {
+        // 탈퇴할 때, 질문이랑 대답 조회해서 거기에 있는 사용자 null로 바꿔버리기
+    }
+
+    fun putAccount() {}
+
+    fun regenerateAccessToken() {}
+
+    fun getProfile() {}
+
+//    @Authenticated
+//    @DeleteMapping("deleteKakaoAccount")
+//    fun deleteKakaoAccount(
+//        @RequestHeader("Authorization") accessToken: String,
+//        @RequestHeader("RefreshToken") refreshToken: String,
+//        @UserContext userEntity: UserEntity,
+//    ): String {
+//        return userService.deleteKakaoAccount(userEntity)
+//    }
 }
