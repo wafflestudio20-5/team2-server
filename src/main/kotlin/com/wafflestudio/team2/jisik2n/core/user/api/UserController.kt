@@ -36,11 +36,6 @@ class UserController(
         return userService.login(loginRequest)
     }
 
-    @PostMapping("logout")
-    fun logout(@RequestBody token: TokenRequest): String {
-        return userService.logout(token)
-    }
-
     @GetMapping("getKakaoToken")
     fun getKakaoToken(@RequestParam(value = "code", required = false) code: String): String {
         return userService.getKakaoToken(code)
@@ -48,8 +43,8 @@ class UserController(
 
     @GetMapping("kakaoLogin")
     fun kakaoLogin(@RequestParam(value = "accessToken", required = false) accessToken: String): AuthToken {
-        val userInfo: HashMap<String, String> = userService.getKakaoUserInfo(accessToken)
-        return userService.kakaoLogin(userInfo)
+
+        return userService.kakaoLogin(accessToken)
     }
 
     @Authenticated
@@ -63,8 +58,17 @@ class UserController(
         return userService.validate(userEntity)
     }
 
+    @PostMapping("logout")
+    fun logout(@RequestBody token: TokenRequest): String {
+        return userService.logout(token)
+    }
+
     fun deleteAccount() {
         // 탈퇴할 때, 질문이랑 대답 조회해서 거기에 있는 사용자 null로 바꿔버리기
+    }
+
+    fun getProfile() {
+        // return userService.getProfile()
     }
 
     fun putAccount() {
@@ -72,16 +76,4 @@ class UserController(
     }
 
     fun regenerateAccessToken() {}
-
-    fun getProfile() {}
-
-//    @Authenticated
-//    @DeleteMapping("deleteKakaoAccount")
-//    fun deleteKakaoAccount(
-//        @RequestHeader("Authorization") accessToken: String,
-//        @RequestHeader("RefreshToken") refreshToken: String,
-//        @UserContext userEntity: UserEntity,
-//    ): String {
-//        return userService.deleteKakaoAccount(userEntity)
-//    }
 }
