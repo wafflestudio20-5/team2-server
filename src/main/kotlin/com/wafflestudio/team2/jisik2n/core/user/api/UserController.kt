@@ -3,6 +3,7 @@ package com.wafflestudio.team2.jisik2n.core.user.api
 import com.wafflestudio.team2.jisik2n.common.Authenticated
 import com.wafflestudio.team2.jisik2n.common.UserContext
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
+import com.wafflestudio.team2.jisik2n.core.user.dto.GetUserQuestionResponse
 import com.wafflestudio.team2.jisik2n.core.user.dto.LoginRequest
 import com.wafflestudio.team2.jisik2n.core.user.dto.SignupRequest
 import com.wafflestudio.team2.jisik2n.core.user.dto.TokenRequest
@@ -69,7 +70,7 @@ class UserController(
         @RequestHeader("Authorization") accessToken: String,
         @RequestHeader("RefreshToken") refreshToken: String,
         @UserContext userEntity: UserEntity
-    ): String {
+    ): GetUserQuestionResponse? {
         return userService.getProfile(userEntity)
     }
 
