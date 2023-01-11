@@ -3,10 +3,7 @@ package com.wafflestudio.team2.jisik2n.core.user.api
 import com.wafflestudio.team2.jisik2n.common.Authenticated
 import com.wafflestudio.team2.jisik2n.common.UserContext
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
-import com.wafflestudio.team2.jisik2n.core.user.dto.GetUserQuestionResponse
-import com.wafflestudio.team2.jisik2n.core.user.dto.LoginRequest
-import com.wafflestudio.team2.jisik2n.core.user.dto.SignupRequest
-import com.wafflestudio.team2.jisik2n.core.user.dto.TokenRequest
+import com.wafflestudio.team2.jisik2n.core.user.dto.*
 import com.wafflestudio.team2.jisik2n.core.user.service.AuthToken
 import com.wafflestudio.team2.jisik2n.core.user.service.UserService
 import org.springframework.web.bind.annotation.*
@@ -33,7 +30,7 @@ class UserController(
     }
 
     @PostMapping("login")
-    fun login(@RequestBody loginRequest: LoginRequest): AuthToken {
+    fun login(@RequestBody loginRequest: LoginRequest): LoginResponse {
         return userService.login(loginRequest)
     }
 
@@ -43,7 +40,7 @@ class UserController(
     }
 
     @GetMapping("kakaoLogin")
-    fun kakaoLogin(@RequestParam(value = "accessToken", required = false) accessToken: String): AuthToken {
+    fun kakaoLogin(@RequestParam(value = "accessToken", required = false) accessToken: String): LoginResponse {
 
         return userService.kakaoLogin(accessToken)
     }

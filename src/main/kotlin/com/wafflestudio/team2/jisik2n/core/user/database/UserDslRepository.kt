@@ -26,6 +26,6 @@ class UserDslRepository(
         val question = QQuestionEntity.questionEntity
 
         return queryFactory.select(Projections.constructor(GetUserQuestionResponse::class.java, user.id, user.username, question))
-            .from(user).where(user.eq(userEntity)).fetchOne()
+            .from(user).where(user.eq(userEntity)).leftJoin(question).on(question.user.username.eq(user.username)).fetchOne()
     }
 }

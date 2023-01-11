@@ -7,10 +7,7 @@ import com.wafflestudio.team2.jisik2n.common.Jisik2n401
 import com.wafflestudio.team2.jisik2n.common.Jisik2n404
 import com.wafflestudio.team2.jisik2n.common.Jisik2n409
 import com.wafflestudio.team2.jisik2n.core.user.database.*
-import com.wafflestudio.team2.jisik2n.core.user.dto.GetUserQuestionResponse
-import com.wafflestudio.team2.jisik2n.core.user.dto.LoginRequest
-import com.wafflestudio.team2.jisik2n.core.user.dto.SignupRequest
-import com.wafflestudio.team2.jisik2n.core.user.dto.TokenRequest
+import com.wafflestudio.team2.jisik2n.core.user.dto.*
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -25,11 +22,11 @@ interface UserService {
 
     fun signupCheckDuplicatedUid(request: Map<String, String>)
 
-    fun login(loginRequest: LoginRequest): AuthToken
+    fun login(loginRequest: LoginRequest): LoginResponse
 
     fun getKakaoToken(code: String): String
 
-    fun kakaoLogin(accessToken: String): AuthToken
+    fun kakaoLogin(accessToken: String): LoginResponse
 
     fun validate(userEntity: UserEntity): AuthToken
 
@@ -71,7 +68,7 @@ class UserServiceImpl(
     }
 
     @Transactional
-    override fun login(loginRequest: LoginRequest): AuthToken {
+    override fun login(loginRequest: LoginRequest): LoginResponse {
         val userEntity = userRepository.findByUid(loginRequest.uid) ?: throw Jisik2n404("해당 아이디로 가입한 유저가 없습니다.")
 
         if (!this.passwordEncoder.matches(loginRequest.password, userEntity.password)) {
@@ -91,7 +88,7 @@ class UserServiceImpl(
             tokenEntity.refreshToken = refreshToken
         }
 
-        return AuthToken.of(tokenEntity)
+        return LoginResponse.of(tokenEntity, userEntity.username)
     }
 
     override fun getKakaoToken(code: String): String {
@@ -125,7 +122,7 @@ class UserServiceImpl(
     }
 
     @Transactional
-    override fun kakaoLogin(accessToken: String): AuthToken {
+    override fun kakaoLogin(accessToken: String): LoginResponse {
 
         val userInfo: HashMap<String, String> = getKakaoUserInfo(accessToken)
 
@@ -151,7 +148,7 @@ class UserServiceImpl(
 
             tokenRepository.save(tokenEntity)
 
-            return AuthToken.of(tokenEntity)
+            return LoginResponse.of(tokenEntity, kakaoUsername)
         } else {
             val userEntity = userRepository.findByUsername(kakaoUsername)!!
             val accessToken = authTokenService.generateAccessTokenByUid(kakaoUsername)
@@ -167,7 +164,7 @@ class UserServiceImpl(
                 tokenEntity.refreshToken = refreshToken
             }
 
-            return AuthToken.of(tokenEntity)
+            return LoginResponse.of(tokenEntity, kakaoUsername)
         }
     }
 
