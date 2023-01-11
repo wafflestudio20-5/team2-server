@@ -173,9 +173,9 @@ class UserServiceImpl(
         return AuthToken.of(token)
     }
 
-    override fun logout(logoutRequest: TokenRequest): String {
-        if (tokenRepository.findByAccessTokenAndRefreshToken(logoutRequest.accessToken, logoutRequest.refreshToken) != null) {
-            val blacklistTokenEntity = BlacklistTokenEntity.of(logoutRequest)
+    override fun logout(tokenRequest: TokenRequest): String {
+        if (tokenRepository.findByAccessTokenAndRefreshToken(tokenRequest.accessToken, tokenRequest.refreshToken) != null) {
+            val blacklistTokenEntity = BlacklistTokenEntity.of(tokenRequest)
             blacklistTokenRepository.save(blacklistTokenEntity)
 
             return "1"

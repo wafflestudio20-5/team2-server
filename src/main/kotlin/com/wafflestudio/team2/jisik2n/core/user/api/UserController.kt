@@ -59,8 +59,8 @@ class UserController(
     }
 
     @PostMapping("logout")
-    fun logout(@RequestBody token: TokenRequest): String {
-        return userService.logout(token)
+    fun logout(@RequestBody tokenRequest: TokenRequest): String {
+        return userService.logout(tokenRequest)
     }
 
     fun getProfile() {
