@@ -6,6 +6,7 @@ import com.wafflestudio.team2.jisik2n.common.Jisik2n400
 import com.wafflestudio.team2.jisik2n.common.Jisik2n401
 import com.wafflestudio.team2.jisik2n.common.Jisik2n404
 import com.wafflestudio.team2.jisik2n.common.Jisik2n409
+import com.wafflestudio.team2.jisik2n.core.question.database.QuestionDslRepository
 import com.wafflestudio.team2.jisik2n.core.user.database.*
 import com.wafflestudio.team2.jisik2n.core.user.dto.*
 import org.springframework.data.repository.findByIdOrNull
@@ -32,7 +33,7 @@ interface UserService {
 
     fun logout(token: TokenRequest): String
 
-    fun getProfile(userEntity: UserEntity): GetUserQuestionResponse?
+    fun getMyQuestions(userEntity: UserEntity): MyQuestionsResponse?
 }
 
 @Service
@@ -41,7 +42,7 @@ class UserServiceImpl(
     private val tokenRepository: TokenRepository,
     private val blacklistTokenRepository: BlacklistTokenRepository,
     private val authTokenService: AuthTokenService,
-    private val userDslRepository: UserDslRepository,
+    private val questionDslRepository: QuestionDslRepository,
     private val passwordEncoder: PasswordEncoder,
 ) : UserService {
 
@@ -185,8 +186,10 @@ class UserServiceImpl(
         }
     }
 
-    override fun getProfile(userEntity: UserEntity): GetUserQuestionResponse? {
-        return userDslRepository.getUserQuestion(userEntity)
+    override fun getMyQuestions(userEntity: UserEntity): MyQuestionsResponse? {
+
+        val questions: List<Questions> = questionDslRepository.getMyQuestions(userEntity.username)
+        return MyQuestionsResponse(userEntity.id, userEntity.username, questions)
     }
 
     private fun checkDuplicatedUid(uid: String) {
