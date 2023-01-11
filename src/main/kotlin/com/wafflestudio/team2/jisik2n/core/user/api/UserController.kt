@@ -63,8 +63,14 @@ class UserController(
         return userService.logout(tokenRequest)
     }
 
-    fun getProfile() {
-        // return userService.getProfile()
+    @Authenticated
+    @GetMapping("profile")
+    fun getProfile(
+        @RequestHeader("Authorization") accessToken: String,
+        @RequestHeader("RefreshToken") refreshToken: String,
+        @UserContext userEntity: UserEntity
+    ): String {
+        return userService.getProfile(userEntity)
     }
 
     fun deleteAccount() {

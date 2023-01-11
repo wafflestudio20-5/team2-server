@@ -33,6 +33,8 @@ interface UserService {
     fun validate(userEntity: UserEntity): AuthToken
 
     fun logout(token: TokenRequest): String
+
+    fun getProfile(userEntity: UserEntity): String
 }
 
 @Service
@@ -182,6 +184,10 @@ class UserServiceImpl(
         } else {
             throw Jisik2n400("token이 올바르지 않습니다")
         }
+    }
+
+    override fun getProfile(userEntity: UserEntity): String {
+        return userEntity.username
     }
 
     private fun checkDuplicatedUid(uid: String) {
