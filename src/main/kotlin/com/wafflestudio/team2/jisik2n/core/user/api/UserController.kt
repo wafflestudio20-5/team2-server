@@ -62,13 +62,23 @@ class UserController(
     }
 
     @Authenticated
-    @GetMapping("MyQuestions")
+    @GetMapping("myQuestions")
     fun getMyQuestions(
         @RequestHeader("Authorization") accessToken: String,
         @RequestHeader("RefreshToken") refreshToken: String,
         @UserContext userEntity: UserEntity
-    ): MyQuestionsResponse? {
+    ): MyQuestionsResponse {
         return userService.getMyQuestions(userEntity)
+    }
+
+    @Authenticated
+    @GetMapping("myAnswers")
+    fun getMyAnswers(
+        @RequestHeader("Authorization") accessToken: String,
+        @RequestHeader("RefreshToken") refreshToken: String,
+        @UserContext userEntity: UserEntity
+    ): MyAnswersResponse {
+        return userService.getMyAnswers(userEntity)
     }
 
     fun deleteAccount() {
