@@ -43,7 +43,7 @@ spring:
     show-sql: false
     generate-ddl: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
 server:
   port:
     5000
