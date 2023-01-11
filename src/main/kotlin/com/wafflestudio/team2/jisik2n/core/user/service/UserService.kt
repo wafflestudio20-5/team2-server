@@ -30,10 +30,9 @@ interface UserService {
 
     fun kakaoLogin(accessToken: String): AuthToken
 
-    fun logout(token: TokenRequest): String
     fun validate(userEntity: UserEntity): AuthToken
 
-    fun deleteKakaoAccount(userEntity: UserEntity): String
+    fun logout(token: TokenRequest): String
 }
 
 @Service
@@ -45,17 +44,17 @@ class UserServiceImpl(
     private val passwordEncoder: PasswordEncoder
 ) : UserService {
 
-    override fun signup(request: SignupRequest): AuthToken {
-        checkDuplicatedUid(request.uid)
-        checkDuplicatedUsername(request.username)
-        val encodedPassword = this.passwordEncoder.encode(request.password)
-        val userEntity = UserEntity.signup(request, encodedPassword)
+    override fun signup(signupRequest: SignupRequest): AuthToken {
+        checkDuplicatedUid(signupRequest.uid)
+        checkDuplicatedUsername(signupRequest.username)
+        val encodedPassword = this.passwordEncoder.encode(signupRequest.password)
+        val userEntity = UserEntity.signup(signupRequest, encodedPassword)
         userRepository.save(userEntity)
 
-        val accessToken = authTokenService.generateAccessTokenByUid(request.uid)
-        val refreshToken = authTokenService.generateRefreshTokenByUid(request.uid)
+        val accessToken = authTokenService.generateAccessTokenByUid(signupRequest.uid)
+        val refreshToken = authTokenService.generateRefreshTokenByUid(signupRequest.uid)
 
-        val tokenEntity = TokenEntity.of(accessToken, refreshToken, request.uid)
+        val tokenEntity = TokenEntity.of(accessToken, refreshToken, signupRequest.uid)
 
         tokenRepository.save(tokenEntity)
 
@@ -68,23 +67,23 @@ class UserServiceImpl(
     }
 
     @Transactional
-    override fun login(request: LoginRequest): AuthToken {
-        val userEntity = userRepository.findByUid(request.uid) ?: throw Jisik2n404("해당 아이디로 가입한 유저가 없습니다.")
+    override fun login(loginRequest: LoginRequest): AuthToken {
+        val userEntity = userRepository.findByUid(loginRequest.uid) ?: throw Jisik2n404("해당 아이디로 가입한 유저가 없습니다.")
 
-        if (!this.passwordEncoder.matches(request.password, userEntity.password)) {
+        if (!this.passwordEncoder.matches(loginRequest.password, userEntity.password)) {
             throw Jisik2n401("비밀번호가 일치하지 않습니다.")
         }
 
-        val accessToken = authTokenService.generateAccessTokenByUid(request.uid)
+        val accessToken = authTokenService.generateAccessTokenByUid(loginRequest.uid)
 
         val lastLogin = LocalDateTime.from(authTokenService.getCurrentIssuedAt(accessToken))
         userEntity.lastLogin = lastLogin
 
-        val tokenEntity = tokenRepository.findByKeyUid(request.uid)!!
+        val tokenEntity = tokenRepository.findByKeyUid(loginRequest.uid)!!
         tokenEntity.accessToken = accessToken
 
         if (authTokenService.getCurrentExpiration(tokenEntity.refreshToken) < LocalDateTime.now()) {
-            val refreshToken = authTokenService.generateRefreshTokenByUid(request.uid)
+            val refreshToken = authTokenService.generateRefreshTokenByUid(loginRequest.uid)
             tokenEntity.refreshToken = refreshToken
         }
 
@@ -92,9 +91,8 @@ class UserServiceImpl(
     }
 
     override fun getKakaoToken(code: String): String {
-        val url: URL = URL("https://kauth.kakao.com/oauth/token")
+        val url = URL("https://kauth.kakao.com/oauth/token")
         val urlConnection = url.openConnection() as HttpURLConnection
-        val token: String = ""
 
         try {
             urlConnection.requestMethod = "POST"
@@ -169,28 +167,21 @@ class UserServiceImpl(
         }
     }
 
-    override fun logout(request: TokenRequest): String {
-        if (tokenRepository.findByAccessTokenAndRefreshToken(request.accessToken, request.refreshToken) != null) {
-            val blacklistTokenEntity = BlacklistTokenEntity.of(request)
-            blacklistTokenRepository.save(blacklistTokenEntity)
-
-            return "1"
-        } else {
-            throw Jisik2n400("token이 올바르지 않습니다")
-        }
-    }
-
     override fun validate(userEntity: UserEntity): AuthToken {
         val uid = userRepository.findByIdOrNull(userEntity.id)?.uid ?: throw Jisik2n400("user가 존재하지 않습니다")
         val token = tokenRepository.findByKeyUid(uid) ?: throw Jisik2n400("token을 찾지 못했습니다")
         return AuthToken.of(token)
     }
 
-    @Transactional
-    override fun deleteKakaoAccount(userEntity: UserEntity): String {
-        println(userEntity.uid)
-        userRepository.deleteByUid(userEntity.uid)
-        return "삭제 완료"
+    override fun logout(logoutRequest: TokenRequest): String {
+        if (tokenRepository.findByAccessTokenAndRefreshToken(logoutRequest.accessToken, logoutRequest.refreshToken) != null) {
+            val blacklistTokenEntity = BlacklistTokenEntity.of(logoutRequest)
+            blacklistTokenRepository.save(blacklistTokenEntity)
+
+            return "1"
+        } else {
+            throw Jisik2n400("token이 올바르지 않습니다")
+        }
     }
 
     private fun checkDuplicatedUid(uid: String) {
