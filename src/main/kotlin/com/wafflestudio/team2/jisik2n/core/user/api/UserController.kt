@@ -84,7 +84,7 @@ class UserController(
     }
 
     fun putAccount() {
-        println("기대된다 기대돼")
+        println("기대된다 기대돼!")
     }
 
     fun regenerateAccessToken() {}
