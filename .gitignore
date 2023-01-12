@@ -300,3 +300,7 @@ db_docker/mysqldata/
 
 # Secret yaml file
 !**/src/main/resources/application-secret.yaml
+
+### IntelliJ IDEA ###
+try1.yaml
+try.yaml
