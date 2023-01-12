@@ -42,6 +42,7 @@ class QuestionRepositoryImpl(
                 questionEntity.id,
                 questionEntity.title,
                 questionEntity.content,
+                questionEntity.answers.size(),
                 questionEntity.createdAt,
                 questionEntity.close,
                 questionEntity.closedAt

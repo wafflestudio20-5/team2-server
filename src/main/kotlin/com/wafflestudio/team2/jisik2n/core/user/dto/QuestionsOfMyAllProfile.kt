@@ -7,7 +7,7 @@ data class QuestionsOfMyAllProfile(
     val title: String,
     val content: String,
     // val photos: List<String>,
-    // val answerNumber: Int,
+    val answerNumber: Int,
     val createdAt: LocalDateTime?,
     val close: Boolean,
     val closedAt: LocalDateTime?
