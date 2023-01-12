@@ -41,7 +41,6 @@ class UserController(
 
     @GetMapping("kakaoLogin")
     fun kakaoLogin(@RequestParam(value = "accessToken", required = false) accessToken: String): LoginResponse {
-
         return userService.kakaoLogin(accessToken)
     }
 
@@ -52,7 +51,6 @@ class UserController(
         @RequestHeader("RefreshToken") refreshToken: String,
         @UserContext userEntity: UserEntity
     ): AuthToken {
-
         return userService.validate(userEntity)
     }
 

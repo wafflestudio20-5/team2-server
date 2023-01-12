@@ -191,7 +191,6 @@ class UserServiceImpl(
     }
 
     override fun getMyQuestions(userEntity: UserEntity): MyQuestionsResponse {
-
         val questions: List<Questions> = questionDslRepository.getMyQuestions(userEntity.username)
         return MyQuestionsResponse(userEntity.id, userEntity.username, questions)
     }

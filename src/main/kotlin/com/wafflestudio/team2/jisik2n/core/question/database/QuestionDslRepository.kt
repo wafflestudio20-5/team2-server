@@ -13,9 +13,7 @@ class QuestionDslRepository(
         val questionEntity: QQuestionEntity = QQuestionEntity.questionEntity
 
         return queryFactory.select(
-            Projections.constructor(
-                Questions::class.java, questionEntity.id, questionEntity.title, questionEntity.content
-            )
+            Projections.constructor(Questions::class.java, questionEntity.id, questionEntity.title, questionEntity.content)
         )
             .from(questionEntity).where(questionEntity.user.username.eq(username)).fetch()
     }
