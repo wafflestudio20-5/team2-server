@@ -6,8 +6,8 @@ import com.wafflestudio.team2.jisik2n.common.Jisik2n400
 import com.wafflestudio.team2.jisik2n.common.Jisik2n401
 import com.wafflestudio.team2.jisik2n.common.Jisik2n404
 import com.wafflestudio.team2.jisik2n.common.Jisik2n409
-import com.wafflestudio.team2.jisik2n.core.answer.database.AnswerDslRepository
-import com.wafflestudio.team2.jisik2n.core.question.database.QuestionDslRepository
+import com.wafflestudio.team2.jisik2n.core.answer.database.AnswerRepository
+import com.wafflestudio.team2.jisik2n.core.question.database.QuestionRepository
 import com.wafflestudio.team2.jisik2n.core.user.database.*
 import com.wafflestudio.team2.jisik2n.core.user.dto.*
 import org.springframework.data.repository.findByIdOrNull
@@ -37,6 +37,8 @@ interface UserService {
     fun getMyQuestions(userEntity: UserEntity): MyQuestionsResponse
 
     fun getMyAnswers(userEntity: UserEntity): MyAnswersResponse
+
+    fun getMyAllProfile(userEntity: UserEntity): MyAllProfileResponse
 }
 
 @Service
@@ -45,8 +47,8 @@ class UserServiceImpl(
     private val tokenRepository: TokenRepository,
     private val blacklistTokenRepository: BlacklistTokenRepository,
     private val authTokenService: AuthTokenService,
-    private val questionDslRepository: QuestionDslRepository,
-    private val answerDslRepository: AnswerDslRepository,
+    private val questionRepository: QuestionRepository,
+    private val answerRepository: AnswerRepository,
     private val passwordEncoder: PasswordEncoder,
 ) : UserService {
 
@@ -191,13 +193,20 @@ class UserServiceImpl(
     }
 
     override fun getMyQuestions(userEntity: UserEntity): MyQuestionsResponse {
-        val questions: List<Questions> = questionDslRepository.getMyQuestions(userEntity.username)
+        val questions: List<QuestionsOfMyQuestions> = questionRepository.getQuestionsOfMyQuestions(userEntity.username)
         return MyQuestionsResponse(userEntity.id, userEntity.username, questions)
     }
 
     override fun getMyAnswers(userEntity: UserEntity): MyAnswersResponse {
-        val answers: List<Answers> = answerDslRepository.getMyAnswers(userEntity.username)
+        val answers: List<AnswersOfMyAnswers> = answerRepository.getAnswersOfMyAnswers(userEntity.username)
         return MyAnswersResponse(userEntity.id, userEntity.username, answers)
+    }
+
+    override fun getMyAllProfile(userEntity: UserEntity): MyAllProfileResponse {
+        val questions: List<QuestionsOfMyAllProfile> = questionRepository.getQuestionsOfMyAllProfile(userEntity.username)
+        val answers: List<AnswersOfMyAllProfile> = answerRepository.getAnswersOfMyAllProfile(userEntity.username)
+
+        return MyAllProfileResponse.of(userEntity, questions, answers)
     }
 
     private fun checkDuplicatedUid(uid: String) {

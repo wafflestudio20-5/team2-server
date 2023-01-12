@@ -79,6 +79,16 @@ class UserController(
         return userService.getMyAnswers(userEntity)
     }
 
+    @Authenticated
+    @GetMapping("myAllProfile")
+    fun getMyAllProfile(
+        @RequestHeader("Authorization") accessToken: String,
+        @RequestHeader("RefreshToken") refreshToken: String,
+        @UserContext userEntity: UserEntity
+    ): MyAllProfileResponse {
+        return userService.getMyAllProfile(userEntity)
+    }
+
     fun deleteAccount() {
         // 탈퇴할 때, 질문이랑 대답 조회해서 거기에 있는 사용자 null로 바꿔버리기
     }
