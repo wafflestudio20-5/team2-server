@@ -7,11 +7,11 @@ import com.wafflestudio.team2.jisik2n.core.answer.database.AnswerEntity
 import com.wafflestudio.team2.jisik2n.core.answer.database.AnswerRepository
 import com.wafflestudio.team2.jisik2n.core.answer.dto.AnswerRequest
 import com.wafflestudio.team2.jisik2n.core.answer.dto.AnswerResponse
-import com.wafflestudio.team2.jisik2n.core.photo.database.PhotoEntity
-import com.wafflestudio.team2.jisik2n.core.photo.database.PhotoRepository
+import com.wafflestudio.team2.jisik2n.core.photo.service.PhotoService
 import com.wafflestudio.team2.jisik2n.core.question.database.QuestionRepository
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
 import com.wafflestudio.team2.jisik2n.core.userAnswerInteraction.database.UserAnswerInteractionRepository
+import com.wafflestudio.team2.jisik2n.external.s3.service.S3Service
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -42,8 +42,9 @@ interface AnswerService {
 class AnswerServiceImpl(
     private val answerRepository: AnswerRepository,
     private val questionRepository: QuestionRepository,
-    private val photoRepository: PhotoRepository,
     private val userAnswerInteractionRepository: UserAnswerInteractionRepository,
+    private val photoService: PhotoService,
+    private val s3Service: S3Service,
 ) : AnswerService {
     override fun getAnswersOfQuestion(questionId: Long): List<AnswerResponse> {
         // Get target question
@@ -53,14 +54,14 @@ class AnswerServiceImpl(
         // TODO: Improve query
         val answers = question.answers.sortedWith(compareBy({ !it.selected }, { it.createdAt }))
 
-        return answers.map { it.toResponse(answerRepository) }
+        return answers.map { it.toResponse(answerRepository, s3Service) }
     }
 
     @Transactional
     override fun createAnswer(
         loginUser: UserEntity,
         questionId: Long,
-        answerRequest: AnswerRequest
+        answerRequest: AnswerRequest,
     ) {
         // Get target question
         val question = questionRepository.findByIdOrNull(questionId)
@@ -71,7 +72,7 @@ class AnswerServiceImpl(
         }
 
         // Add new answer
-        var newAnswer = answerRequest.let {
+        val newAnswer = answerRequest.let {
             AnswerEntity(
                 content = it.content!!,
                 user = loginUser,
@@ -80,12 +81,9 @@ class AnswerServiceImpl(
         }
 
         // Add photos to newAnswer
-        answerRequest.photos.mapIndexed { idx: Int, path: String ->
-            PhotoEntity(path, idx, answer = newAnswer)
-        }.also {
-            newAnswer.photos.addAll(it)
-        }
-        newAnswer = answerRepository.save(newAnswer)
+        photoService.initiallyAddPhotos(newAnswer, answerRequest.photos)
+
+        answerRepository.save(newAnswer)
     }
 
     @Transactional
@@ -107,22 +105,8 @@ class AnswerServiceImpl(
         // Update content
         answer.content = answerRequest.content!!
 
-        // Remove photo deleted
-        answer.photos.filter { !answerRequest.photos.contains(it.path) }
-            .let {
-                answer.photos.removeAll(it.toSet())
-                photoRepository.deleteAll(it)
-            }
-
-        // Add photo, and update positions
-        answerRequest.photos.forEachIndexed { index: Int, path: String ->
-            answer.photos.find { it.path == path }
-                ?. let { // If photo exists, update its position
-                    it.photosOrder = index
-                }
-                ?: PhotoEntity(path, index, answer = answer) // If photo doesn't exist, create new PhotoEntity and add to answer
-                    .also { answer.photos.add(it) }
-        }
+        // Update photos
+        photoService.modifyPhotos(answer, answerRequest.photos)
 
         answerRepository.save(answer)
     }
@@ -174,6 +158,9 @@ class AnswerServiceImpl(
 
             // Remove Interactions
             userAnswerInteractionRepository.deleteByAnswer(answer)
+
+            // Remove photos from bucket and db
+            photoService.deletePhotos(answer.photos)
 
             answerRepository.deleteById(answerId)
         }
