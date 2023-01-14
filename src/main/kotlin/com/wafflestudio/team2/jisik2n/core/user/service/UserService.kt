@@ -39,6 +39,7 @@ interface UserService {
     fun getMyAnswers(userEntity: UserEntity): MyAnswersResponse
 
     fun getMyAllProfile(userEntity: UserEntity): MyAllProfileResponse
+    fun regenerateToken(tokenRequest: TokenRequest): AuthToken
 }
 
 @Service
@@ -207,6 +208,10 @@ class UserServiceImpl(
         val answers: List<AnswersOfMyAllProfile> = answerRepository.getAnswersOfMyAllProfile(userEntity.username)
 
         return MyAllProfileResponse.of(userEntity, questions, answers)
+    }
+
+    override fun regenerateToken(tokenRequest: TokenRequest): AuthToken {
+        return authTokenService.regenerateToken(tokenRequest)
     }
 
     private fun checkDuplicatedUid(uid: String) {

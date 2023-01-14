@@ -47,8 +47,6 @@ class UserController(
     @Authenticated
     @GetMapping("validate")
     fun validate(
-        @RequestHeader("Authorization") accessToken: String,
-        @RequestHeader("RefreshToken") refreshToken: String,
         @UserContext userEntity: UserEntity
     ): AuthToken {
         return userService.validate(userEntity)
@@ -62,8 +60,6 @@ class UserController(
     @Authenticated
     @GetMapping("myQuestions")
     fun getMyQuestions(
-        @RequestHeader("Authorization") accessToken: String,
-        @RequestHeader("RefreshToken") refreshToken: String,
         @UserContext userEntity: UserEntity
     ): MyQuestionsResponse {
         return userService.getMyQuestions(userEntity)
@@ -72,8 +68,6 @@ class UserController(
     @Authenticated
     @GetMapping("myAnswers")
     fun getMyAnswers(
-        @RequestHeader("Authorization") accessToken: String,
-        @RequestHeader("RefreshToken") refreshToken: String,
         @UserContext userEntity: UserEntity
     ): MyAnswersResponse {
         return userService.getMyAnswers(userEntity)
@@ -82,8 +76,6 @@ class UserController(
     @Authenticated
     @GetMapping("myAllProfile")
     fun getMyAllProfile(
-        @RequestHeader("Authorization") accessToken: String,
-        @RequestHeader("RefreshToken") refreshToken: String,
         @UserContext userEntity: UserEntity
     ): MyAllProfileResponse {
         return userService.getMyAllProfile(userEntity)
@@ -97,5 +89,14 @@ class UserController(
         println("기대된다 기대돼...")
     }
 
-    fun regenerateAccessToken() {}
+    @PostMapping("regenerateToken")
+    fun regenerateAccessToken(@RequestBody tokenRequest: TokenRequest): AuthToken {
+        return userService.regenerateToken(tokenRequest)
+    }
+
+    // 활동 보고
+
+    // 메서드 구현해야할거 확인
+
+    // 머지 이슈
 }
