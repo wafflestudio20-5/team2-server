@@ -48,7 +48,7 @@ class QuestionServiceImpl(
         )
 
         request.photos
-            .map { path: String -> PhotoEntity(path, question = newQuestion) }
+            .mapIndexed { idx: Int, path: String -> PhotoEntity(path, idx, question = newQuestion) }
             .also { newQuestion.photos.addAll(it) }
 
         questionRepository.save(newQuestion)

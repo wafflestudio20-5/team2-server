@@ -25,7 +25,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-// 	implementation("org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE") TODO: Add with s3 config
+    implementation("org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE")
     implementation("io.springfox:springfox-boot-starter:3.0.0")
     implementation("io.springfox:springfox-swagger-ui:3.0.0")
     runtimeOnly("com.mysql:mysql-connector-j")
@@ -42,6 +42,14 @@ dependencies {
 
     // security
     implementation("org.springframework.boot:spring-boot-starter-security")
+
+    // google json
+    implementation("com.google.code.gson:gson:2.8.9")
+
+    // querydsl
+    implementation("com.querydsl:querydsl-jpa:5.0.0")
+    kapt("com.querydsl:querydsl-apt:5.0.0:jpa")
+    kapt("org.springframework.boot:spring-boot-configuration-processor")
 }
 
 noArg {

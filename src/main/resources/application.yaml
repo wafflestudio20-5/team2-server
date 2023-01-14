@@ -1,23 +1,24 @@
 spring.profiles.include: secret
 
-# TODO: Set AWS S3 info
-#cloud:
-#  aws:
-#    stack:
-#      auto: false
-
 spring:
   mvc: # for swagger-ui
     pathmatch:
       matching-strategy: ant_path_matcher
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 100MB
 
-auth.jwt:
-  jwtSecret: thisisourtoyprojectappdlqslek148190
-  issuer: team2.wafflestudio.com
-  jwtAccessExpiration: 20
-  jwtRefreshExpiration: 1209600
+cloud:
+  aws:
+    stack:
+      auto: false
+    s3:
+      dir: images
+
 ---
 spring.config.activate.on_profile: dev
+
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -42,7 +43,23 @@ spring:
     show-sql: false
     generate-ddl: true
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
 server:
   port:
     5000
+
+auth.jwt:
+  jwtSecret: ${jwt.secret}
+  issuer: ${jwt.issuer}
+  jwtAccessExpiration: ${jwt.access.expiration}
+  jwtRefreshExpiration: ${jwt.refresh.expiration}
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${aws.access.key.id}
+      secret-key: ${aws.secret.access.key}
+    s3:
+      bucket-name: ${aws.bucket}
+    region:
+      static: ${aws.region}

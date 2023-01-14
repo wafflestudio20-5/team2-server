@@ -9,6 +9,8 @@ class PhotoEntity(
     @Column(unique = true)
     val path: String,
 
+    var photosOrder: Int,
+
     @ManyToOne @JoinColumn
     var question: QuestionEntity? = null,
 
