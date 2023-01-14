@@ -10,14 +10,22 @@ import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
-@RequestMapping("/api/answer")
+@RequestMapping("/api/question")
 @RestController
 class QuestionController(
     private val questionService: QuestionService,
 ) {
     @GetMapping("/search")
-    fun searchQuestion(): MutableList<QuestionDto> {
-        return questionService.searchQuestion()
+    fun searchQuestion(
+        @RequestParam(required = false, defaultValue = "date") order: String,
+        @RequestParam(required = false, defaultValue = "null") isClosed: String,
+        @RequestParam(required = false, defaultValue = "") query: String,
+    ): MutableList<QuestionDto> {
+        println("searchQuestion")
+        println("order: $order")
+        println("isClosed: $isClosed")
+        println("query: $query")
+        return questionService.searchQuestion(order, isClosed, query)
     }
 
     @Authenticated
