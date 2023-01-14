@@ -1,6 +1,7 @@
 package com.wafflestudio.team2.jisik2n.core.question.dto
 
 import com.wafflestudio.team2.jisik2n.core.question.database.QuestionEntity
+import com.wafflestudio.team2.jisik2n.external.s3.service.S3Service
 import java.time.LocalDateTime
 
 data class QuestionDto(
@@ -18,14 +19,16 @@ data class QuestionDto(
     val userQuestionLikeNumber: Int,
 ) {
     companion object {
-        fun of(entity: QuestionEntity): QuestionDto = entity.run {
+        fun of(entity: QuestionEntity, s3Service: S3Service): QuestionDto = entity.run {
             QuestionDto(
                 id = this.id,
                 title = this.title,
                 content = this.content,
                 username = this.user.username,
                 profileImagePath = this.user.profileImage,
-                photos = this.photos.map { it.path },
+                photos = this.photos
+                    .sortedBy { it.photosOrder }
+                    .map { s3Service.getUrlFromFilename(it.path) },
                 answerNumber = this.answers.size,
                 createdAt = this.createdAt,
                 modifiedAt = this.modifiedAt,
