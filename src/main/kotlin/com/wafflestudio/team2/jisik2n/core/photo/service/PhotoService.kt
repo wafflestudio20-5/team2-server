@@ -1,6 +1,7 @@
 package com.wafflestudio.team2.jisik2n.core.photo.service
 
 import com.wafflestudio.team2.jisik2n.common.ContentEntityType
+import com.wafflestudio.team2.jisik2n.common.DELETE_POSITION
 import com.wafflestudio.team2.jisik2n.core.answer.database.AnswerEntity
 import com.wafflestudio.team2.jisik2n.core.photo.database.PhotoEntity
 import com.wafflestudio.team2.jisik2n.core.photo.database.PhotoRepository
@@ -46,11 +47,11 @@ class PhotoServiceImpl(
 
         requests.forEach { req ->
             val path = s3Service.getFilenameFromUrl(req.url)
-            if (req.position == -1) { // Delete Photo when given position is -1
+            if (req.position == DELETE_POSITION) { // Delete Photo when given position is DELETE_POSITION
+                s3Service.deleteWithUrl(req.url)
                 photos.find { it.path == path }
                     ?.also {
                         photos.remove(it)
-                        s3Service.deleteWithUrl(req.url)
                     }
                     .let { photoRepository.delete(it!!) }
                 return@forEach
