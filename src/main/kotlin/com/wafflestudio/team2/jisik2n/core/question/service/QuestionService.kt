@@ -35,8 +35,11 @@ class QuestionServiceImpl(
             throw Jisik2n400("isClosed 의 값이 잘못되었습니다.")
 
         val orderComparator: Comparator<QuestionDto> = compareBy {
-            if (order == "like") it.userQuestionLikeNumber
-            it.createdAt
+            when (order) {
+                "date" -> it.createdAt
+                "like" -> it.userQuestionLikeNumber
+                else -> throw Jisik2n400("order 의 값이 잘못되었습니다.")
+            }
         }
 
         val closedPredicate: (QuestionDto) -> Boolean = {
@@ -54,7 +57,7 @@ class QuestionServiceImpl(
         return questionRepository.findAll()
             .asSequence()
             .map { QuestionDto.of(it) }
-            .sortedWith(orderComparator)
+            .sortedWith(orderComparator.reversed())
             .filter(closedPredicate)
             .filter(queryPredicate)
             .toMutableList()

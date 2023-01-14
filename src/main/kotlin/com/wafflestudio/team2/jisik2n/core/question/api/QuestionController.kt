@@ -21,10 +21,6 @@ class QuestionController(
         @RequestParam(required = false, defaultValue = "null") isClosed: String,
         @RequestParam(required = false, defaultValue = "") query: String,
     ): MutableList<QuestionDto> {
-        println("searchQuestion")
-        println("order: $order")
-        println("isClosed: $isClosed")
-        println("query: $query")
         return questionService.searchQuestion(order, isClosed, query)
     }
 
