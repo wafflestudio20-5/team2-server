@@ -113,4 +113,34 @@ internal class QuestionServiceTest @Autowired constructor(
 
         assertThat(throwable).isInstanceOf(Jisik2n401::class.java)
     }
+
+    @Test
+    fun `Delete Question`() {
+        val user = userTestHelper.createTestUser(1)
+        val question: QuestionEntity = questionTestHelper.createTestQuestion(1, user)
+
+        questionService.deleteQuestion(question.id, user)
+
+        assertThat(questionRepository.findAll()).hasSize(0)
+    }
+
+    @Test
+    fun `Delete Question - Wrong question number`() {
+        val user = userTestHelper.createTestUser(1)
+
+        val throwable = catchThrowable { questionService.deleteQuestion(1, user) }
+
+        assertThat(throwable).isInstanceOf(Jisik2n400::class.java)
+    }
+
+    @Test
+    fun `Delete Question - Wrong user`() {
+        val user = userTestHelper.createTestUser(1)
+        val question: QuestionEntity = questionTestHelper.createTestQuestion(1, user)
+        val user2 = userTestHelper.createTestUser(2)
+
+        val throwable = catchThrowable { questionService.deleteQuestion(question.id, user2) }
+
+        assertThat(throwable).isInstanceOf(Jisik2n401::class.java)
+    }
 }
