@@ -19,6 +19,7 @@ interface QuestionService {
     fun getQuestion(questionId: Long): QuestionDto
     fun createQuestion(request: CreateQuestionRequest, userEntity: UserEntity): QuestionDto
     fun updateQuestion(questionId: Long, request: UpdateQuestionRequest, userEntity: UserEntity): QuestionDto
+    fun deleteQuestion(questionId: Long, userEntity: UserEntity)
 }
 
 @Service
@@ -114,5 +115,16 @@ class QuestionServiceImpl(
         questionRepository.save(questionEntity)
 
         return QuestionDto.of(questionEntity)
+    }
+
+    @Transactional
+    override fun deleteQuestion(questionId: Long, userEntity: UserEntity) {
+        val question: Optional<QuestionEntity> = questionRepository.findById(questionId)
+        if (question.isEmpty) throw Jisik2n400("존재하지 않는 질문 번호 입니다.(questionId: $questionId)")
+
+        val questionEntity = question.get()
+        if (questionEntity.user.id != userEntity.id) throw Jisik2n401("질문 삭제는 작성자만 가능합니다.")
+
+        questionRepository.delete(questionEntity)
     }
 }
