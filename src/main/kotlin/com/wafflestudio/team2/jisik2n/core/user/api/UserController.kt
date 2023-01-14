@@ -3,9 +3,7 @@ package com.wafflestudio.team2.jisik2n.core.user.api
 import com.wafflestudio.team2.jisik2n.common.Authenticated
 import com.wafflestudio.team2.jisik2n.common.UserContext
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
-import com.wafflestudio.team2.jisik2n.core.user.dto.LoginRequest
-import com.wafflestudio.team2.jisik2n.core.user.dto.SignupRequest
-import com.wafflestudio.team2.jisik2n.core.user.dto.TokenRequest
+import com.wafflestudio.team2.jisik2n.core.user.dto.*
 import com.wafflestudio.team2.jisik2n.core.user.service.AuthToken
 import com.wafflestudio.team2.jisik2n.core.user.service.UserService
 import org.springframework.web.bind.annotation.*
@@ -32,13 +30,8 @@ class UserController(
     }
 
     @PostMapping("login")
-    fun login(@RequestBody loginRequest: LoginRequest): AuthToken {
+    fun login(@RequestBody loginRequest: LoginRequest): LoginResponse {
         return userService.login(loginRequest)
-    }
-
-    @PostMapping("logout")
-    fun logout(@RequestBody token: TokenRequest): String {
-        return userService.logout(token)
     }
 
     @GetMapping("getKakaoToken")
@@ -47,39 +40,63 @@ class UserController(
     }
 
     @GetMapping("kakaoLogin")
-    fun kakaoLogin(@RequestParam(value = "accessToken", required = false) accessToken: String): AuthToken {
-        val userInfo: HashMap<String, String> = userService.getKakaoUserInfo(accessToken)
-        return userService.kakaoLogin(userInfo)
+    fun kakaoLogin(@RequestParam(value = "accessToken", required = false) accessToken: String): LoginResponse {
+        return userService.kakaoLogin(accessToken)
     }
 
     @Authenticated
     @GetMapping("validate")
     fun validate(
-        @RequestHeader("Authorization") accessToken: String,
-        @RequestHeader("RefreshToken") refreshToken: String,
         @UserContext userEntity: UserEntity
     ): AuthToken {
-
         return userService.validate(userEntity)
+    }
+
+    @PostMapping("logout")
+    fun logout(@RequestBody tokenRequest: TokenRequest): String {
+        return userService.logout(tokenRequest)
+    }
+
+    @Authenticated
+    @GetMapping("myQuestions")
+    fun getMyQuestions(
+        @UserContext userEntity: UserEntity
+    ): MyQuestionsResponse {
+        return userService.getMyQuestions(userEntity)
+    }
+
+    @Authenticated
+    @GetMapping("myAnswers")
+    fun getMyAnswers(
+        @UserContext userEntity: UserEntity
+    ): MyAnswersResponse {
+        return userService.getMyAnswers(userEntity)
+    }
+
+    @Authenticated
+    @GetMapping("myAllProfile")
+    fun getMyAllProfile(
+        @UserContext userEntity: UserEntity
+    ): MyAllProfileResponse {
+        return userService.getMyAllProfile(userEntity)
     }
 
     fun deleteAccount() {
         // 탈퇴할 때, 질문이랑 대답 조회해서 거기에 있는 사용자 null로 바꿔버리기
     }
 
-    fun putAccount() {}
+    fun putAccount() {
+        println("기대된다 기대돼...")
+    }
 
-    fun regenerateAccessToken() {}
+    @PostMapping("regenerateToken")
+    fun regenerateAccessToken(@RequestBody tokenRequest: TokenRequest): AuthToken {
+        return userService.regenerateToken(tokenRequest)
+    }
 
-    fun getProfile() {}
+    // 활동 보고
 
-//    @Authenticated
-//    @DeleteMapping("deleteKakaoAccount")
-//    fun deleteKakaoAccount(
-//        @RequestHeader("Authorization") accessToken: String,
-//        @RequestHeader("RefreshToken") refreshToken: String,
-//        @UserContext userEntity: UserEntity,
-//    ): String {
-//        return userService.deleteKakaoAccount(userEntity)
-//    }
+    // 메서드 구현해야할거 확인
+
+    // 머지 이슈
 }
