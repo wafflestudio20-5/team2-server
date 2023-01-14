@@ -1,9 +1,11 @@
 package com.wafflestudio.team2.jisik2n.core.question
 
 import com.wafflestudio.team2.jisik2n.common.Jisik2n400
+import com.wafflestudio.team2.jisik2n.common.Jisik2n401
 import com.wafflestudio.team2.jisik2n.core.question.database.QuestionEntity
 import com.wafflestudio.team2.jisik2n.core.question.dto.CreateQuestionRequest
 import com.wafflestudio.team2.jisik2n.core.question.database.QuestionRepository
+import com.wafflestudio.team2.jisik2n.core.question.dto.UpdateQuestionRequest
 import com.wafflestudio.team2.jisik2n.core.question.service.QuestionService
 import com.wafflestudio.team2.jisik2n.core.user.UserTestHelper
 import org.junit.jupiter.api.Test
@@ -64,5 +66,51 @@ internal class QuestionServiceTest @Autowired constructor(
 
     @Test
     fun `Update Question`() {
+        val user = userTestHelper.createTestUser(1)
+        val photos = listOf("photo#1")
+        val question: QuestionEntity = questionTestHelper.createTestQuestion(1, user, photos)
+        val updateQuestionRequest = UpdateQuestionRequest(
+            title = "updateTitle",
+            content = "updateTitle",
+            photos = listOf("photo#2", "photo#1"),
+        )
+
+        val questionDto = questionService.updateQuestion(question.id, updateQuestionRequest, user)
+
+        assertThat(questionDto.title).isEqualTo(updateQuestionRequest.title)
+        assertThat(questionDto.content).isEqualTo(updateQuestionRequest.content)
+        assertThat(questionDto.photos.size).isEqualTo(updateQuestionRequest.photos.size)
+        assertThat(questionDto.photos).containsAll(updateQuestionRequest.photos)
+    }
+
+    @Test
+    fun `Update Question - Wrong question number`() {
+        val user = userTestHelper.createTestUser(1)
+        val updateQuestionRequest = UpdateQuestionRequest(
+            title = "updateTitle",
+            content = "updateTitle",
+            photos = listOf("photo#2", "photo#1"),
+        )
+
+        val throwable = catchThrowable { questionService.updateQuestion(1, updateQuestionRequest, user) }
+
+        assertThat(throwable).isInstanceOf(Jisik2n400::class.java)
+    }
+
+    @Test
+    fun `Update Question - Wrong user`() {
+        val user = userTestHelper.createTestUser(1)
+        val photos = listOf("photo#1")
+        val question: QuestionEntity = questionTestHelper.createTestQuestion(1, user, photos)
+        val updateQuestionRequest = UpdateQuestionRequest(
+            title = "updateTitle",
+            content = "updateTitle",
+            photos = listOf("photo#2", "photo#1"),
+        )
+        val user2 = userTestHelper.createTestUser(2)
+
+        val throwable = catchThrowable { questionService.updateQuestion(question.id, updateQuestionRequest, user2) }
+
+        assertThat(throwable).isInstanceOf(Jisik2n401::class.java)
     }
 }
