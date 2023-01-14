@@ -61,4 +61,8 @@ internal class QuestionServiceTest @Autowired constructor(
         assertThat(question.title).isEqualTo(createQuestionRequest.title)
         assertThat(question.content).isEqualTo(createQuestionRequest.content)
     }
+
+    @Test
+    fun `Update Question`() {
+    }
 }

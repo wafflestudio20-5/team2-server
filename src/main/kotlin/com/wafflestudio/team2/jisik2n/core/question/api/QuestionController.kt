@@ -4,26 +4,24 @@ import com.wafflestudio.team2.jisik2n.common.Authenticated
 import com.wafflestudio.team2.jisik2n.common.UserContext
 import com.wafflestudio.team2.jisik2n.core.question.dto.CreateQuestionRequest
 import com.wafflestudio.team2.jisik2n.core.question.dto.QuestionDto
+import com.wafflestudio.team2.jisik2n.core.question.dto.UpdateQuestionRequest
 import com.wafflestudio.team2.jisik2n.core.question.service.QuestionService
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
+@RequestMapping("/api/answer")
 @RestController
 class QuestionController(
     private val questionService: QuestionService,
 ) {
-    @GetMapping("/api/question/search")
+    @GetMapping("/search")
     fun searchQuestion(): MutableList<QuestionDto> {
         return questionService.searchQuestion()
     }
 
     @Authenticated
-    @PostMapping("/api/question")
+    @PostMapping("/")
     fun createQuestion(
         @Valid @RequestBody request: CreateQuestionRequest,
         @UserContext userEntity: UserEntity,
@@ -31,7 +29,16 @@ class QuestionController(
         return questionService.createQuestion(request, userEntity)
     }
 
-    @GetMapping("/api/question/{id}")
+    @PutMapping("/{questionId}")
+    fun updateQuestion(
+        @PathVariable questionId: Long,
+        @Valid @RequestBody request: UpdateQuestionRequest,
+        @UserContext userEntity: UserEntity,
+    ): QuestionDto {
+        return questionService.updateQuestion(questionId, request, userEntity)
+    }
+
+    @GetMapping("/{id}")
     fun getQuestion(
         @PathVariable id: Long,
     ): QuestionDto {

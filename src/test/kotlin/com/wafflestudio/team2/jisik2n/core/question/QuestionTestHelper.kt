@@ -17,7 +17,7 @@ internal class QuestionTestHelper @Autowired constructor(
         photoRepository.deleteAll()
     }
 
-    fun createTestQuestion(id: Long, user: UserEntity): QuestionEntity {
+    fun createTestQuestion(id: Long, user: UserEntity, photos: List<String> = listOf()): QuestionEntity {
         val question = QuestionEntity(
             title = "titleTest$id",
             content = "contentTest$id",
