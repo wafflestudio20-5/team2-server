@@ -43,11 +43,13 @@ dependencies {
     // security
     implementation("org.springframework.boot:spring-boot-starter-security")
 
-    // json 형식의 응답값
-    // https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple
-    implementation("com.googlecode.json-simple:json-simple:1.1.1")
-
+    // google json
     implementation("com.google.code.gson:gson:2.8.9")
+
+    // querydsl
+    implementation("com.querydsl:querydsl-jpa:5.0.0")
+    kapt("com.querydsl:querydsl-apt:5.0.0:jpa")
+    kapt("org.springframework.boot:spring-boot-configuration-processor")
 }
 
 noArg {
