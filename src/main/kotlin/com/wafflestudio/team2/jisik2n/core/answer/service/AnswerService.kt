@@ -7,11 +7,12 @@ import com.wafflestudio.team2.jisik2n.core.answer.database.AnswerEntity
 import com.wafflestudio.team2.jisik2n.core.answer.database.AnswerRepository
 import com.wafflestudio.team2.jisik2n.core.answer.dto.AnswerRequest
 import com.wafflestudio.team2.jisik2n.core.answer.dto.AnswerResponse
-import com.wafflestudio.team2.jisik2n.core.photo.database.PhotoEntity
-import com.wafflestudio.team2.jisik2n.core.photo.database.PhotoRepository
+import com.wafflestudio.team2.jisik2n.core.photo.service.PhotoService
 import com.wafflestudio.team2.jisik2n.core.question.database.QuestionRepository
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
 import com.wafflestudio.team2.jisik2n.core.userAnswerInteraction.database.UserAnswerInteractionRepository
+import com.wafflestudio.team2.jisik2n.core.userAnswerInteraction.service.UserAnswerInteractionService
+import com.wafflestudio.team2.jisik2n.external.s3.service.S3Service
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -19,7 +20,7 @@ import java.time.ZoneId
 import javax.transaction.Transactional
 
 interface AnswerService {
-    fun getAnswersOfQuestion(questionId: Long): List<AnswerResponse>
+    fun getAnswersOfQuestion(questionId: Long, loginUser: UserEntity? = null): List<AnswerResponse>
 
     fun createAnswer(
         loginUser: UserEntity,
@@ -42,10 +43,12 @@ interface AnswerService {
 class AnswerServiceImpl(
     private val answerRepository: AnswerRepository,
     private val questionRepository: QuestionRepository,
-    private val photoRepository: PhotoRepository,
     private val userAnswerInteractionRepository: UserAnswerInteractionRepository,
+    private val photoService: PhotoService,
+    private val s3Service: S3Service,
+    private val userAnswerInteractionService: UserAnswerInteractionService,
 ) : AnswerService {
-    override fun getAnswersOfQuestion(questionId: Long): List<AnswerResponse> {
+    override fun getAnswersOfQuestion(questionId: Long, loginUser: UserEntity?): List<AnswerResponse> {
         // Get target question
         val question = questionRepository.findByIdOrNull(questionId)
             ?: throw Jisik2n404("${questionId}에 해당하는 질문이 없습니다.")
@@ -53,14 +56,14 @@ class AnswerServiceImpl(
         // TODO: Improve query
         val answers = question.answers.sortedWith(compareBy({ !it.selected }, { it.createdAt }))
 
-        return answers.map { it.toResponse(answerRepository) }
+        return answers.map { it.toResponse(loginUser, answerRepository, s3Service, userAnswerInteractionService) }
     }
 
     @Transactional
     override fun createAnswer(
         loginUser: UserEntity,
         questionId: Long,
-        answerRequest: AnswerRequest
+        answerRequest: AnswerRequest,
     ) {
         // Get target question
         val question = questionRepository.findByIdOrNull(questionId)
@@ -70,8 +73,11 @@ class AnswerServiceImpl(
             throw Jisik2n403("자신의 질문에는 답할 수 없습니다.")
         }
 
+        if (question.answers.find { it.user.id == loginUser.id } != null) {
+            throw Jisik2n400("동일한 질문에는 한 번만 답변 가능합니다.")
+        }
         // Add new answer
-        var newAnswer = answerRequest.let {
+        val newAnswer = answerRequest.let {
             AnswerEntity(
                 content = it.content!!,
                 user = loginUser,
@@ -80,12 +86,9 @@ class AnswerServiceImpl(
         }
 
         // Add photos to newAnswer
-        answerRequest.photos.mapIndexed { idx: Int, path: String ->
-            PhotoEntity(path, idx, answer = newAnswer)
-        }.also {
-            newAnswer.photos.addAll(it)
-        }
-        newAnswer = answerRepository.save(newAnswer)
+        photoService.initiallyAddPhotos(newAnswer, answerRequest.photos)
+
+        answerRepository.save(newAnswer)
     }
 
     @Transactional
@@ -107,22 +110,8 @@ class AnswerServiceImpl(
         // Update content
         answer.content = answerRequest.content!!
 
-        // Remove photo deleted
-        answer.photos.filter { !answerRequest.photos.contains(it.path) }
-            .let {
-                answer.photos.removeAll(it.toSet())
-                photoRepository.deleteAll(it)
-            }
-
-        // Add photo, and update positions
-        answerRequest.photos.forEachIndexed { index: Int, path: String ->
-            answer.photos.find { it.path == path }
-                ?. let { // If photo exists, update its position
-                    it.photosOrder = index
-                }
-                ?: PhotoEntity(path, index, answer = answer) // If photo doesn't exist, create new PhotoEntity and add to answer
-                    .also { answer.photos.add(it) }
-        }
+        // Update photos
+        photoService.modifyPhotos(answer, answerRequest.photos)
 
         answerRepository.save(answer)
     }
@@ -174,6 +163,9 @@ class AnswerServiceImpl(
 
             // Remove Interactions
             userAnswerInteractionRepository.deleteByAnswer(answer)
+
+            // Remove photos from bucket and db
+            photoService.deletePhotos(answer.photos)
 
             answerRepository.deleteById(answerId)
         }

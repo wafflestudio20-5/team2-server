@@ -8,6 +8,8 @@ interface TokenRepository : JpaRepository<TokenEntity, Long> {
 
     fun findByAccessToken(accessToken: String): TokenEntity?
 
+    fun findByRefreshToken(refreshToken: String): TokenEntity?
+
     fun findByKeyUid(keyUid: String): TokenEntity?
 
     fun findByAccessTokenAndRefreshToken(accessToken: String, refreshToken: String): TokenEntity?

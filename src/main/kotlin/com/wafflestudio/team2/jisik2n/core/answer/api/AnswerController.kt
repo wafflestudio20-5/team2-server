@@ -5,7 +5,6 @@ import com.wafflestudio.team2.jisik2n.common.UserContext
 import com.wafflestudio.team2.jisik2n.core.answer.dto.AnswerRequest
 import com.wafflestudio.team2.jisik2n.core.answer.service.AnswerService
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
-import com.wafflestudio.team2.jisik2n.core.user.database.UserRepository
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -15,12 +14,12 @@ import javax.validation.Valid
 @RequestMapping("/api/answer")
 class AnswerController(
     private val answerService: AnswerService,
-    private val userRepository: UserRepository,
 ) {
     @GetMapping("/{questionId}")
     fun getAnswers(
+        @UserContext loginUser: UserEntity?, // FIXME: usercontext can't bring user (always null)
         @PathVariable(required = true) questionId: Long,
-    ) = answerService.getAnswersOfQuestion(questionId)
+    ) = answerService.getAnswersOfQuestion(questionId, loginUser)
 
     @Authenticated
     @PostMapping("/{questionId}")

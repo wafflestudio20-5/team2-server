@@ -1,5 +1,6 @@
 package com.wafflestudio.team2.jisik2n.core.question.database
 
+import com.wafflestudio.team2.jisik2n.common.ContentEntityType
 import com.wafflestudio.team2.jisik2n.common.BaseTimeEntity
 import com.wafflestudio.team2.jisik2n.core.answer.database.AnswerEntity
 import com.wafflestudio.team2.jisik2n.core.photo.database.PhotoEntity
@@ -20,10 +21,10 @@ class QuestionEntity(
 
     var content: String,
 
-    @OneToMany(mappedBy = "question", cascade = [CascadeType.ALL])
+    @OneToMany(mappedBy = "question", cascade = [CascadeType.ALL], orphanRemoval = true)
     val photos: MutableSet<PhotoEntity> = mutableSetOf(),
 
-    @OneToMany(mappedBy = "question", cascade = [CascadeType.ALL])
+    @OneToMany(mappedBy = "question", cascade = [CascadeType.ALL], orphanRemoval = true)
     val answers: MutableSet<AnswerEntity> = mutableSetOf(),
 
     var close: Boolean = false,
@@ -34,7 +35,9 @@ class QuestionEntity(
     @ManyToOne @JoinColumn
     val user: UserEntity,
 
-    @OneToMany(mappedBy = "question")
+    @OneToMany(mappedBy = "question", cascade = [CascadeType.ALL], orphanRemoval = true)
     val userQuestionLikes: MutableSet<UserQuestionLikeEntity> = mutableSetOf(),
 
-) : BaseTimeEntity()
+) : BaseTimeEntity(), ContentEntityType {
+    override fun bringPhotos() = photos
+}
