@@ -11,6 +11,7 @@ import com.wafflestudio.team2.jisik2n.core.photo.service.PhotoService
 import com.wafflestudio.team2.jisik2n.core.question.database.QuestionRepository
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
 import com.wafflestudio.team2.jisik2n.core.userAnswerInteraction.database.UserAnswerInteractionRepository
+import com.wafflestudio.team2.jisik2n.core.userAnswerInteraction.service.UserAnswerInteractionService
 import com.wafflestudio.team2.jisik2n.external.s3.service.S3Service
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -19,7 +20,7 @@ import java.time.ZoneId
 import javax.transaction.Transactional
 
 interface AnswerService {
-    fun getAnswersOfQuestion(questionId: Long): List<AnswerResponse>
+    fun getAnswersOfQuestion(questionId: Long, loginUser: UserEntity? = null): List<AnswerResponse>
 
     fun createAnswer(
         loginUser: UserEntity,
@@ -45,8 +46,9 @@ class AnswerServiceImpl(
     private val userAnswerInteractionRepository: UserAnswerInteractionRepository,
     private val photoService: PhotoService,
     private val s3Service: S3Service,
+    private val userAnswerInteractionService: UserAnswerInteractionService,
 ) : AnswerService {
-    override fun getAnswersOfQuestion(questionId: Long): List<AnswerResponse> {
+    override fun getAnswersOfQuestion(questionId: Long, loginUser: UserEntity?): List<AnswerResponse> {
         // Get target question
         val question = questionRepository.findByIdOrNull(questionId)
             ?: throw Jisik2n404("${questionId}에 해당하는 질문이 없습니다.")
@@ -54,7 +56,7 @@ class AnswerServiceImpl(
         // TODO: Improve query
         val answers = question.answers.sortedWith(compareBy({ !it.selected }, { it.createdAt }))
 
-        return answers.map { it.toResponse(answerRepository, s3Service) }
+        return answers.map { it.toResponse(loginUser, answerRepository, s3Service, userAnswerInteractionService) }
     }
 
     @Transactional
