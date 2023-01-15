@@ -86,7 +86,8 @@ class AnswerServiceImpl(
         // Add photos to newAnswer
         photoService.initiallyAddPhotos(newAnswer, answerRequest.photos)
 
-        answerRepository.save(newAnswer)    }
+        answerRepository.save(newAnswer)
+    }
 
     @Transactional
     override fun updateAnswer(
