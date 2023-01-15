@@ -148,39 +148,6 @@ class AnswerServiceImpl(
     }
 
     @Transactional
-    override fun toggleSelectAnswer(loginUser: UserEntity, answerId: Long, toSelect: Boolean) {
-        val answer = answerRepository.findByIdOrNull(answerId) // TODO: Optimize query (by fetch question-user)
-            ?: throw Jisik2n404("$answerId 답변이 존재하지 않습니다.")
-
-        if (loginUser.id != answer.question.user.id) {
-            throw Jisik2n403("질문한 사용자만 답변을 채택할 수 있습니다.")
-        }
-
-        if (answer.selected == toSelect) {
-            throw Jisik2n400("변경할 점이 없습니다.")
-        }
-
-        if (toSelect) { selectAnswer(answer) } else { unselectAnswer(answer) }
-    }
-
-    @Transactional
-    fun selectAnswer(answer: AnswerEntity) {
-        if (answer.question.close) {
-            throw Jisik2n403("마감된 질문에 답변을 채택할 수 없습니다.")
-        }
-
-        answer.selected = true
-        answer.selectedAt = LocalDateTime.now(ZoneId.of("Asia/Seoul"))
-        answer.question.close = true
-    }
-
-    @Transactional
-    fun unselectAnswer(answer: AnswerEntity) {
-        answer.selected = false
-        answer.question.close = false
-    }
-
-    @Transactional
     override fun removeAnswer(loginUser: UserEntity, answerId: Long) {
         val answer = answerRepository.findByIdOrNull(answerId)
 
