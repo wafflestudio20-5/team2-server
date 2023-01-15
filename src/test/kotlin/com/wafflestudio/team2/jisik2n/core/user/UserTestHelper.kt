@@ -10,6 +10,9 @@ import java.time.LocalDateTime
 internal class UserTestHelper @Autowired constructor(
     private val userRepository: UserRepository,
 ) {
+    companion object {
+        var userTestNum: Long = 100000L
+    }
     fun deleteAll() {
         userRepository.deleteAll()
     }
