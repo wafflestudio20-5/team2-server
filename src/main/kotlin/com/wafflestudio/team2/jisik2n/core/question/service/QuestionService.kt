@@ -31,10 +31,8 @@ class QuestionServiceImpl(
 ) : QuestionService {
     @Transactional
     override fun searchQuestion(order: String, isClosed: String, query: String): MutableList<QuestionDto> {
-        if (order != "date" && order != "like")
-            throw Jisik2n400("order 의 값이 잘못되었습니다.")
-        if (isClosed != "closed" && isClosed != "notClosed" && isClosed != "null")
-            throw Jisik2n400("isClosed 의 값이 잘못되었습니다.")
+        if (order != "date" && order != "like") throw Jisik2n400("order 의 값이 잘못되었습니다.")
+        if (isClosed != "closed" && isClosed != "notClosed" && isClosed != "null") throw Jisik2n400("isClosed 의 값이 잘못되었습니다.")
 
         val orderComparator: Comparator<QuestionDto> = compareBy {
             when (order) {
