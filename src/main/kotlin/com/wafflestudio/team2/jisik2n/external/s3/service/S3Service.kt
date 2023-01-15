@@ -21,11 +21,15 @@ interface S3Service {
         setUUIDFilename: Boolean = true
     ): String
 
-    fun delete(url: String)
+    fun deleteWithUrl(url: String)
+
+    fun deleteWithPath(path: String)
 
     fun getFilenameFromUrl(url: String): String
+    fun getUrlFromFilename(filename: String): String
 }
 
+// Implemented with not saving the temporary files
 @Service
 class S3ServiceImpl(
     private val amazonS3Client: AmazonS3Client,
@@ -58,18 +62,30 @@ class S3ServiceImpl(
         }
     }
 
-    override fun delete(url: String) = amazonS3Client.deleteObject( // TODO: Maybe consider exception
+    override fun deleteWithUrl(url: String) = amazonS3Client.deleteObject( // TODO: Maybe consider exception
         DeleteObjectRequest(bucket, getFilenameFromUrl(url))
     )
 
-    override fun getFilenameFromUrl(url: String) =
-        url.substringAfter("com/")
+    override fun deleteWithPath(path: String) = deleteWithUrl(getUrlFromFilename(path))
+
+    override fun getFilenameFromUrl(url: String): String {
+        val filename = url.substringAfter("com/")
+        assert(amazonS3Client.getUrl(bucket, filename).toString() == url) // check if given url is valid
+        // TODO: catch AssertionError
+        return filename
+    }
+
+    override fun getUrlFromFilename(filename: String) = amazonS3Client.getUrl(bucket, filename).toString()
 
     private fun createUUIDFilename(filename: String): String {
         val ext = filename.substringAfterLast('.')
         return UUID.randomUUID().toString() + "." + ext
     }
 
+    /**
+     * S3 services with saving temp files in server
+     * Leave this just in case
+     */
     // fun upload(multipartFile: MultipartFile, dir: String = this.dir): String {
     //     val uploadFile = convert(multipartFile)
     //         ?: TODO("Throw IllegalArgumentException")
