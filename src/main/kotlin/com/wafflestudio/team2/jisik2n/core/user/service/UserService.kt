@@ -217,7 +217,6 @@ class UserServiceImpl(
 
     override fun regenerateToken(tokenRequest: TokenRequest): AuthToken {
         return authTokenService.regenerateToken(tokenRequest)
-
     }
 
     override fun getMyAgreeAnswers(userEntity: UserEntity): MyAnswersResponse {
