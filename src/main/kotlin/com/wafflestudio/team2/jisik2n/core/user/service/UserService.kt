@@ -39,7 +39,12 @@ interface UserService {
     fun getMyAnswers(userEntity: UserEntity): MyAnswersResponse
 
     fun getMyAllProfile(userEntity: UserEntity): MyAllProfileResponse
+
     fun regenerateToken(tokenRequest: TokenRequest): AuthToken
+
+    fun getMyAgreeAnswers(userEntity: UserEntity): MyAnswersResponse
+
+    fun putAccount(userRequest: UserRequest): UserResponse
 }
 
 @Service
@@ -212,6 +217,20 @@ class UserServiceImpl(
 
     override fun regenerateToken(tokenRequest: TokenRequest): AuthToken {
         return authTokenService.regenerateToken(tokenRequest)
+    }
+
+    override fun getMyAgreeAnswers(userEntity: UserEntity): MyAnswersResponse {
+        val agreeAnswers: List<AnswersOfMyAnswers> = answerRepository.getAnswersOfMyAgreeAnswers(userEntity)
+        return MyAnswersResponse(userEntity.id, userEntity.username, agreeAnswers)
+    }
+
+    @Transactional
+    override fun putAccount(userRequest: UserRequest): UserResponse {
+        val userEntity = userRepository.findByUsername(userRequest.username) ?: throw Jisik2n400("해당하는 유저 정보가 없습니다")
+        userEntity.profileImage = userRequest.profileImage
+        userEntity.isMale = userRequest.isMale
+
+        return UserResponse(userEntity.username, userEntity.profileImage, userEntity.isMale)
     }
 
     private fun checkDuplicatedUid(uid: String) {
