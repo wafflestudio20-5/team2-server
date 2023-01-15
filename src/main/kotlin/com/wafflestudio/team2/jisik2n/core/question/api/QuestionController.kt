@@ -7,6 +7,8 @@ import com.wafflestudio.team2.jisik2n.core.question.dto.QuestionDto
 import com.wafflestudio.team2.jisik2n.core.question.dto.UpdateQuestionRequest
 import com.wafflestudio.team2.jisik2n.core.question.service.QuestionService
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
@@ -33,6 +35,7 @@ class QuestionController(
         return questionService.createQuestion(request, userEntity)
     }
 
+    @Authenticated
     @PutMapping("/{questionId}")
     fun updateQuestion(
         @PathVariable questionId: Long,
@@ -40,6 +43,16 @@ class QuestionController(
         @UserContext userEntity: UserEntity,
     ): QuestionDto {
         return questionService.updateQuestion(questionId, request, userEntity)
+    }
+
+    @Authenticated
+    @DeleteMapping("/{questionId}")
+    fun deleteQuestion(
+        @PathVariable questionId: Long,
+        @UserContext userEntity: UserEntity,
+    ): ResponseEntity<String> {
+        questionService.deleteQuestion(questionId, userEntity)
+        return ResponseEntity<String>("$questionId", HttpStatus.OK)
     }
 
     @GetMapping("/{id}")

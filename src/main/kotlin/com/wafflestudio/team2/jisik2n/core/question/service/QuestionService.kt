@@ -2,8 +2,7 @@ package com.wafflestudio.team2.jisik2n.core.question.service
 
 import com.wafflestudio.team2.jisik2n.common.Jisik2n400
 import com.wafflestudio.team2.jisik2n.common.Jisik2n401
-import com.wafflestudio.team2.jisik2n.core.photo.database.PhotoEntity
-import com.wafflestudio.team2.jisik2n.core.photo.database.PhotoRepository
+import com.wafflestudio.team2.jisik2n.common.Jisik2n403
 import com.wafflestudio.team2.jisik2n.core.photo.service.PhotoService
 import com.wafflestudio.team2.jisik2n.core.question.dto.CreateQuestionRequest
 import com.wafflestudio.team2.jisik2n.core.question.database.QuestionEntity
@@ -27,7 +26,6 @@ interface QuestionService {
 @Service
 class QuestionServiceImpl(
     private val questionRepository: QuestionRepository,
-    private val photoRepository: PhotoRepository,
     private val photoService: PhotoService,
     private val s3Service: S3Service,
 ) : QuestionService {
@@ -104,25 +102,27 @@ class QuestionServiceImpl(
         questionEntity.title = request.title ?: questionEntity.title
         questionEntity.content = request.content ?: questionEntity.content
 
-        questionEntity.photos
-            .filter { !request.photos.contains(it.path) }
-            .let {
-                questionEntity.photos.removeAll(it.toSet())
-                photoRepository.deleteAll(it)
-            }
-
-        // Add photo, and update positions
-        request.photos.forEachIndexed { index: Int, path: String ->
-            questionEntity.photos
-                .find { it.path == path }
-                ?. let { it.photosOrder = index }
-                ?: PhotoEntity(path, index, question = questionEntity)
-                    .also { questionEntity.photos.add(it) }
-        }
+        // Update Photos
+        photoService.modifyPhotos(questionEntity, request.photos)
+//        questionEntity.photos
+//            .filter { !request.photos.contains(it.path) }
+//            .let {
+//                questionEntity.photos.removeAll(it.toSet())
+//                photoRepository.deleteAll(it)
+//            }
+//
+//        // Add photo, and update positions
+//        request.photos.forEachIndexed { index: Int, path: String ->
+//            questionEntity.photos
+//                .find { it.path == path }
+//                ?. let { it.photosOrder = index }
+//                ?: PhotoEntity(path, index, question = questionEntity)
+//                    .also { questionEntity.photos.add(it) }
+//        }
 
         questionRepository.save(questionEntity)
 
-        return QuestionDto.of(questionEntity)
+        return QuestionDto.of(questionEntity, s3Service)
     }
 
     @Transactional
@@ -132,6 +132,11 @@ class QuestionServiceImpl(
 
         val questionEntity = question.get()
         if (questionEntity.user.id != userEntity.id) throw Jisik2n401("질문 삭제는 작성자만 가능합니다.")
+
+        if (questionEntity.close) throw Jisik2n403("마감된 질문은 삭제가 불가능합니다.")
+
+        // Delete Photos
+        photoService.deletePhotos(questionEntity.photos)
 
         questionRepository.delete(questionEntity)
     }
