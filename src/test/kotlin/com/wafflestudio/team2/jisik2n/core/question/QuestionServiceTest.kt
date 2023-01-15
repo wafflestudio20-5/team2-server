@@ -53,7 +53,7 @@ internal class QuestionServiceTest @Autowired constructor(
         val createQuestionRequest = CreateQuestionRequest(
             title = "test",
             content = "test",
-            photos = listOf("test"),
+            photos = listOf(),
         )
         val user = userTestHelper.createTestUser(1)
 
