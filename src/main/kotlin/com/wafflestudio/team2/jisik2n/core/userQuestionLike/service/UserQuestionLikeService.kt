@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 interface UserQuestionLikeService {
+    fun getLikeQuestion(userEntity: UserEntity): List<Long>
     fun putLike(user: UserEntity, questionId: Long)
 }
 
@@ -18,6 +19,11 @@ class UserQuestionLikeServiceImpl(
     private val userQuestionLikeRepository: UserQuestionLikeRepository,
     private val questionRepository: QuestionRepository,
 ) : UserQuestionLikeService {
+    @Transactional
+    override fun getLikeQuestion(userEntity: UserEntity): List<Long> {
+        return userEntity.userQuestionLikes.map { it.question.id }
+    }
+
     @Transactional
     override fun putLike(user: UserEntity, questionId: Long) {
         val question = questionRepository.findByIdOrNull(questionId)
