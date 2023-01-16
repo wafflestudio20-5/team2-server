@@ -7,12 +7,7 @@ import com.wafflestudio.team2.jisik2n.core.photo.database.PhotoEntity
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
 import com.wafflestudio.team2.jisik2n.core.userQuestionLike.database.UserQuestionLikeEntity
 import java.time.LocalDateTime
-import javax.persistence.CascadeType
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.JoinColumn
-import javax.persistence.ManyToOne
-import javax.persistence.OneToMany
+import javax.persistence.*
 
 @Entity(name = "questions")
 class QuestionEntity(

@@ -26,13 +26,16 @@ class UserQuestionLikeServiceImpl(
         val userQuestionLikeEntity = userQuestionLikeRepository.findByQuestionAndUser(question, user)
         if (userQuestionLikeEntity != null) {
             userQuestionLikeRepository.delete(userQuestionLikeEntity)
+            user.userQuestionLikes.remove(userQuestionLikeEntity)
+            question.userQuestionLikes.remove(userQuestionLikeEntity)
         } else {
-            userQuestionLikeRepository.save(
-                UserQuestionLikeEntity(
-                    user = user,
-                    question = question,
-                )
+            val newUserQuestionLikeEntity = UserQuestionLikeEntity(
+                question = question,
+                user = user,
             )
+            userQuestionLikeRepository.save(newUserQuestionLikeEntity)
+            question.userQuestionLikes.add(newUserQuestionLikeEntity)
+            user.userQuestionLikes.add(newUserQuestionLikeEntity)
         }
     }
 }
