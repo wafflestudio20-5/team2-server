@@ -74,16 +74,19 @@ class UserController(
     }
 
     @Authenticated
+    @GetMapping("myAgreeAnswers")
+    fun getMyAgreeAnswers(
+        @UserContext userEntity: UserEntity
+    ): MyAnswersResponse {
+        return userService.getMyAgreeAnswers(userEntity)
+    }
+
+    @Authenticated
     @GetMapping("myAllProfile")
     fun getMyAllProfile(
         @UserContext userEntity: UserEntity
     ): MyAllProfileResponse {
         return userService.getMyAllProfile(userEntity)
-    }
-
-    fun deleteAccount() {
-        // 탈퇴할 때, 질문이랑 대답 조회해서 거기에 있는 사용자 null로 바꿔버리기
-        println("test")
     }
 
     @Authenticated
@@ -95,16 +98,12 @@ class UserController(
         return userService.putAccount(userRequest)
     }
 
+    fun deleteAccount() {
+        // 탈퇴할 때, 질문이랑 대답 조회해서 거기에 있는 사용자 null로 바꿔버리기
+    }
+
     @PostMapping("regenerateToken")
     fun regenerateToken(@RequestBody tokenRequest: TokenRequest): AuthToken {
         return userService.regenerateToken(tokenRequest)
-    }
-
-    @Authenticated
-    @GetMapping("myAgreeAnswers")
-    fun getMyAgreeAnswers(
-        @UserContext userEntity: UserEntity
-    ): MyAnswersResponse {
-        return userService.getMyAgreeAnswers(userEntity)
     }
 }
