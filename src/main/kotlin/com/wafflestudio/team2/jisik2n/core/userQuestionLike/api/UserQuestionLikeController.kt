@@ -3,6 +3,7 @@ package com.wafflestudio.team2.jisik2n.core.userQuestionLike.api
 import com.wafflestudio.team2.jisik2n.common.Authenticated
 import com.wafflestudio.team2.jisik2n.common.UserContext
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
+import com.wafflestudio.team2.jisik2n.core.userQuestionLike.dto.UserQuestionLikeDto
 import com.wafflestudio.team2.jisik2n.core.userQuestionLike.service.UserQuestionLikeService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -19,8 +20,8 @@ class UserQuestionLikeController(
     @GetMapping("/")
     fun likeQuestion(
         @UserContext userEntity: UserEntity,
-    ) {
-        userQuestionLikeService.getLikeQuestion(userEntity)
+    ): List<UserQuestionLikeDto> {
+        return userQuestionLikeService.getLikeQuestion(userEntity)
     }
 
     @Authenticated
@@ -28,7 +29,7 @@ class UserQuestionLikeController(
     fun putLike(
         @UserContext userEntity: UserEntity,
         @PathVariable questionId: Long,
-    ) {
+    ): UserQuestionLikeDto {
         return userQuestionLikeService.putLike(userEntity, questionId)
     }
 }
