@@ -26,17 +26,41 @@ internal class UserQuestionLikeServiceTest @Autowired constructor(
         questionTestHelper.deleteAll()
     }
 
+    @Test
+    fun `Get Like Question - should return empty list when user has no like`() {
+        val user = userTestHelper.createTestUser(1)
+        val result = userQuestionLikeService.getLikeQuestion(user)
+        assertThat(result).isEmpty()
+    }
+
+    @Test
+    fun `Get Like Question - should return list of liked questions`() {
+        val user = userTestHelper.createTestUser(1)
+        val question1 = questionTestHelper.createTestQuestion(1, user)
+        val question2 = questionTestHelper.createTestQuestion(2, user)
+
+        userQuestionLikeService.putLike(user, question1.id)
+        userQuestionLikeService.putLike(user, question2.id)
+
+        val result = userQuestionLikeService.getLikeQuestion(user)
+        assertThat(result).hasSize(2)
+    }
+
     @Transactional
     @Test
     fun `Like Question`() {
         val user = userTestHelper.createTestUser(1)
         val question: QuestionEntity = questionTestHelper.createTestQuestion(1, user)
 
-        userQuestionLikeService.putLike(user, question.id)
+        val resultEntity = userQuestionLikeService.putLike(user, question.id)
 
         val userQuestionLikeEntity = userQuestionLikeRepository.findByQuestionAndUser(question, user)
         assertThat(userQuestionLikeEntity).isNotNull
         assertThat(user.userQuestionLikes).contains(userQuestionLikeEntity)
         assertThat(question.userQuestionLikes).contains(userQuestionLikeEntity)
+
+        assertThat(resultEntity.id).isEqualTo(userQuestionLikeEntity?.id)
+        assertThat(resultEntity.questionId).isEqualTo(userQuestionLikeEntity?.question?.id)
+        assertThat(resultEntity.userId).isEqualTo(userQuestionLikeEntity?.user?.id)
     }
 }
