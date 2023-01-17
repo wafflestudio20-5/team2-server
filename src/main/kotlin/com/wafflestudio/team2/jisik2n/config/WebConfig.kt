@@ -24,11 +24,13 @@ import javax.servlet.http.HttpServletResponse
 
 @Configuration
 class WebConfig(
-    private val authInterceptor: AuthInterceptor,
+    private val authInterceptor1: AuthInterceptor1,
+    private val authInterceptor2: AuthInterceptor2,
     private val authArgumentResolver: AuthArgumentResolver,
 ) : WebMvcConfigurer {
     override fun addInterceptors(registry: InterceptorRegistry) {
-        registry.addInterceptor(authInterceptor)
+        registry.addInterceptor(authInterceptor1).order(1)
+        registry.addInterceptor(authInterceptor2).order(2)
     }
 
     override fun addArgumentResolvers(resolvers: MutableList<HandlerMethodArgumentResolver>) {
@@ -56,23 +58,43 @@ class AuthArgumentResolver : HandlerMethodArgumentResolver {
 }
 
 @Configuration
-class AuthInterceptor(
+class AuthInterceptor1(
     private val authTokenService: AuthTokenService,
     private val userRepository: UserRepository,
 ) : HandlerInterceptor {
 
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
-        val handlerCasted = (handler as? HandlerMethod) ?: return true
-        if (handlerCasted.hasMethodAnnotation(Authenticated::class.java)) {
-            val accessToken = request.getHeader("Authorization") ?: throw Jisik2n400("access Token 획득 실패")
+        // Authentication: 유저인지 확인한다 => accessToken 없으면 안주고, 틀렸으면 401, 맞으면 주고
+        val accessToken = request.getHeader("Authorization")
+        if (accessToken == null) {
+            throw Jisik2n400("token을 제공하지 않았습니다")
+        } else if (accessToken == "") {
+            request.setAttribute("userEntity", null)
+        } else {
             val prefixRemovedAccessToken = accessToken.replace("Bearer ", "").trim { it <= ' ' }
-
             if (authTokenService.verifyToken(prefixRemovedAccessToken) == true) {
                 val userId = authTokenService.getCurrentUserId(prefixRemovedAccessToken)
                 val userEntity = userRepository.findByIdOrNull(userId)
                 request.setAttribute("userEntity", userEntity)
             } else {
                 throw Jisik2n401("access token이 적절하지 않습니다.")
+            }
+        }
+
+        return super.preHandle(request, response, handler)
+    }
+}
+
+@Configuration
+class AuthInterceptor2 : HandlerInterceptor {
+
+    override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
+        // Authorization: 권한을 확인한다 => 유저정보 없으면 401, 있으면 컨트롤러 실행 가능
+        val handlerCasted = (handler as? HandlerMethod) ?: return true
+
+        if (handlerCasted.hasMethodAnnotation(Authenticated::class.java)) {
+            if (request.getAttribute("userEntity") == null) {
+                throw Jisik2n401("로그인을 해야 합니다")
             }
         }
 
