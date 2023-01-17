@@ -77,13 +77,14 @@ class AnswerServiceImpl(
             throw Jisik2n400("동일한 질문에는 한 번만 답변 가능합니다.")
         }
         // Add new answer
-        val newAnswer = answerRequest.let {
-            AnswerEntity(
-                content = it.content!!,
-                user = loginUser,
-                question = question,
-            )
-        }
+        val newAnswer = AnswerEntity(
+            content = answerRequest.content!!,
+            user = loginUser,
+            question = question,
+        )
+
+        // Add 1 to answer count
+        question.answerCount++
 
         // Add photos to newAnswer
         photoService.initiallyAddPhotos(newAnswer, answerRequest.photos)
@@ -166,6 +167,9 @@ class AnswerServiceImpl(
 
             // Remove photos from bucket and db
             photoService.deletePhotos(answer.photos)
+
+            // -1 to answer count
+            answer.question.answerCount--
 
             answerRepository.deleteById(answerId)
         }
