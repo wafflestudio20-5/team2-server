@@ -76,6 +76,7 @@ class QuestionServiceImpl(
         val newQuestion = QuestionEntity(
             title = request.title,
             content = request.content,
+            tag = request.tag.joinToString("/"),
             user = userEntity,
         )
 
@@ -99,6 +100,7 @@ class QuestionServiceImpl(
 
         questionEntity.title = request.title ?: questionEntity.title
         questionEntity.content = request.content ?: questionEntity.content
+        questionEntity.tag = request.tag?.joinToString("/") ?: questionEntity.tag
 
         // Update Photos
         photoService.modifyPhotos(questionEntity, request.photos)
