@@ -30,6 +30,7 @@ internal class QuestionTestHelper @Autowired constructor(
         val question = QuestionEntity(
             title = "titleTest$id",
             content = "contentTest$id",
+            tag = "tag$id-1/tag$id-2",
             user = user,
         )
 

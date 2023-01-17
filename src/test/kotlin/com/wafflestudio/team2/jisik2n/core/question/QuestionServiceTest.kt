@@ -52,6 +52,7 @@ internal class QuestionServiceTest @Autowired constructor(
         val createQuestionRequest = CreateQuestionRequest(
             title = "test",
             content = "test",
+            tag = listOf("tag1", "tag2"),
             photos = listOf(),
         )
         val user = userTestHelper.createTestUser(1)
@@ -61,6 +62,7 @@ internal class QuestionServiceTest @Autowired constructor(
         assertThat(questionRepository.findAll()).hasSize(1)
         assertThat(question.title).isEqualTo(createQuestionRequest.title)
         assertThat(question.content).isEqualTo(createQuestionRequest.content)
+        assertThat(question.tag).isEqualTo(createQuestionRequest.tag)
     }
 
     // @Test
