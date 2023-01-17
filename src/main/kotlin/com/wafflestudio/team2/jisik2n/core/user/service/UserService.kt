@@ -42,7 +42,7 @@ interface UserService {
 
     fun getMyAllProfile(userEntity: UserEntity): MyAllProfileResponse
 
-    fun putAccount(userRequest: UserRequest): UserResponse
+    fun putAccount(userEntity: UserEntity, userRequest: UserRequest): UserResponse
 
     fun regenerateToken(tokenRequest: TokenRequest): AuthToken
 }
@@ -218,8 +218,17 @@ class UserServiceImpl(
     }
 
     @Transactional
-    override fun putAccount(userRequest: UserRequest): UserResponse {
-        val userEntity = userRepository.findByUsername(userRequest.username) ?: throw Jisik2n400("해당하는 유저 정보가 없습니다")
+    override fun putAccount(userEntity: UserEntity, userRequest: UserRequest): UserResponse {
+        if (userRepository.findByUsername(userRequest.username) == null) {
+            userEntity.username = userRequest.username
+        } else {
+            if (userEntity.username == userRequest.username) {
+                userEntity.username = userRequest.username
+            } else {
+                throw Jisik2n400("해당 닉네임을 가진 유저가 있습니다.")
+            }
+        }
+
         userEntity.profileImage = userRequest.profileImage
         userEntity.isMale = userRequest.isMale
         return UserResponse(userEntity.username, userEntity.profileImage, userEntity.isMale)

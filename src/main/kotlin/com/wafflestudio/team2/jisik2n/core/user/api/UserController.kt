@@ -95,7 +95,7 @@ class UserController(
         @UserContext userEntity: UserEntity,
         @RequestBody userRequest: UserRequest
     ): UserResponse {
-        return userService.putAccount(userRequest)
+        return userService.putAccount(userEntity, userRequest)
     }
 
     fun deleteAccount() {
