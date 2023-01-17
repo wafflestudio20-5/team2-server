@@ -108,6 +108,7 @@ class UserServiceImpl(
         val url = URL("https://kauth.kakao.com/oauth/token")
         val urlConnection = url.openConnection() as HttpURLConnection
 
+        var readline = "1"
         try {
             urlConnection.requestMethod = "POST"
             urlConnection.doOutput = true
@@ -126,12 +127,12 @@ class UserServiceImpl(
             println(responseCode)
 
             val br = BufferedReader(InputStreamReader(urlConnection.inputStream))
-            println(br.readLine())
+            readline = br.readLine().toString()
         } catch (e: IOException) {
             e.printStackTrace()
         }
 
-        return "1"
+        return readline
     }
 
     @Transactional
