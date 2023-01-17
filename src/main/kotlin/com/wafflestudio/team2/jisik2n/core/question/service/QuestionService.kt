@@ -24,7 +24,7 @@ interface QuestionService {
         keyword: String,
         amount: Long = 20,
         pageNum: Long = 0
-    ): MutableList<SearchResponse>
+    ): List<SearchResponse>
 
     fun getQuestion(questionId: Long): QuestionDto
     fun createQuestion(request: CreateQuestionRequest, userEntity: UserEntity): QuestionDto
@@ -45,35 +45,8 @@ class QuestionServiceImpl(
         keyword: String,
         amount: Long,
         pageNum: Long
-    ): MutableList<SearchResponse> {
+    ): List<SearchResponse> {
         return questionRepository.searchAndOrderPagination(order, isClosed, keyword, amount, pageNum)
-        //     val orderComparator: Comparator<QuestionDto> = compareBy {
-        //         when (order) {
-        //             "date" -> it.createdAt
-        //             "like" -> it.userQuestionLikeNumber
-        //             else -> throw Jisik2n400("order 의 값이 잘못되었습니다.")
-        //         }
-        //     }
-        //
-        //     val closedPredicate: (QuestionDto) -> Boolean = {
-        //         when (isClosed) {
-        //             "closed" -> it.close
-        //             "notClosed" -> !it.close
-        //             else -> true
-        //         }
-        //     }
-        //
-        //     val queryPredicate: (QuestionDto) -> Boolean = {
-        //         (it.content + it.title).contains(query)
-        //     }
-        //
-        //     return questionRepository.findAll()
-        //         .asSequence()
-        //         .map { QuestionDto.of(it, s3Service) }
-        //         .sortedWith(orderComparator.reversed())
-        //         .filter(closedPredicate)
-        //         .filter(queryPredicate)
-        //         .toMutableList()
     }
 
     @Transactional
