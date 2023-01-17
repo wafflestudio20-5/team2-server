@@ -1,6 +1,8 @@
 package com.wafflestudio.team2.jisik2n.core.question.api
 
 import com.wafflestudio.team2.jisik2n.common.Authenticated
+import com.wafflestudio.team2.jisik2n.common.Jisik2n400
+import com.wafflestudio.team2.jisik2n.common.SEARCH_ORDER
 import com.wafflestudio.team2.jisik2n.common.UserContext
 import com.wafflestudio.team2.jisik2n.core.question.dto.CreateQuestionRequest
 import com.wafflestudio.team2.jisik2n.core.question.dto.QuestionDto
@@ -21,9 +23,20 @@ class QuestionController(
     fun searchQuestion(
         @RequestParam(required = false, defaultValue = "date") order: String,
         @RequestParam(required = false, defaultValue = "null") isClosed: String,
-        @RequestParam(required = false, defaultValue = "") query: String,
-    ): MutableList<QuestionDto> {
-        return questionService.searchQuestion(order, isClosed, query)
+        @RequestParam(required = false) amount: Long = 20,
+        @RequestParam(required = false) pageNum: Long = 0,
+        @RequestParam(required = false, defaultValue = "") keyword: String,
+    ) = try {
+        val orderEnum = SEARCH_ORDER.valueOf(order)
+        val isClosedBoolean = when (isClosed) {
+            "true" -> true
+            "false" -> false
+            "null" -> null
+            else -> throw Jisik2n400("isClosed 의 값이 잘못되었습니다.")
+        }
+        questionService.searchQuestion(orderEnum, isClosedBoolean, keyword, amount, pageNum)
+    } catch (e: IllegalArgumentException) {
+        throw Jisik2n400("order 의 값이 잘못되었습니다.")
     }
 
     @Authenticated
