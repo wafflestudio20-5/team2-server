@@ -3,7 +3,7 @@ package com.wafflestudio.team2.jisik2n.core.question.service
 import com.wafflestudio.team2.jisik2n.common.Jisik2n400
 import com.wafflestudio.team2.jisik2n.common.Jisik2n401
 import com.wafflestudio.team2.jisik2n.common.Jisik2n403
-import com.wafflestudio.team2.jisik2n.common.SEARCH_ORDER
+import com.wafflestudio.team2.jisik2n.common.SearchOrderType
 import com.wafflestudio.team2.jisik2n.core.photo.service.PhotoService
 import com.wafflestudio.team2.jisik2n.core.question.dto.CreateQuestionRequest
 import com.wafflestudio.team2.jisik2n.core.question.database.QuestionEntity
@@ -19,7 +19,7 @@ import java.util.*
 
 interface QuestionService {
     fun searchQuestion(
-        order: SEARCH_ORDER,
+        order: SearchOrderType,
         isClosed: Boolean? = null,
         keyword: String,
         amount: Long = 20,
@@ -40,7 +40,7 @@ class QuestionServiceImpl(
 ) : QuestionService {
     @Transactional
     override fun searchQuestion(
-        order: SEARCH_ORDER,
+        order: SearchOrderType,
         isClosed: Boolean?,
         keyword: String,
         amount: Long,
