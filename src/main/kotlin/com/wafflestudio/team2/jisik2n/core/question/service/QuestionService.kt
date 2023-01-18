@@ -105,6 +105,9 @@ class QuestionServiceImpl(
 
         // Delete Photos
         photoService.deletePhotos(questionEntity.photos)
+        questionEntity.answers.map {
+            photoService.deletePhotos(it.photos)
+        }
 
         questionRepository.delete(questionEntity)
     }
