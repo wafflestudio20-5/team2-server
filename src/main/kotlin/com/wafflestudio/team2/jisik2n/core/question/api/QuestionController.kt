@@ -2,7 +2,7 @@ package com.wafflestudio.team2.jisik2n.core.question.api
 
 import com.wafflestudio.team2.jisik2n.common.Authenticated
 import com.wafflestudio.team2.jisik2n.common.Jisik2n400
-import com.wafflestudio.team2.jisik2n.common.SEARCH_ORDER
+import com.wafflestudio.team2.jisik2n.common.SearchOrderType
 import com.wafflestudio.team2.jisik2n.common.UserContext
 import com.wafflestudio.team2.jisik2n.core.question.dto.CreateQuestionRequest
 import com.wafflestudio.team2.jisik2n.core.question.dto.QuestionDto
@@ -28,7 +28,7 @@ class QuestionController(
         @RequestParam(required = false, defaultValue = "0") pageNum: Long,
         @RequestParam(required = false, defaultValue = "") keyword: String,
     ): List<SearchResponse> {
-        val orderEnum = SEARCH_ORDER.values().find { it.value == order }
+        val orderEnum = SearchOrderType.values().find { it.value == order }
             ?: throw Jisik2n400("order 의 값이 잘못되었습니다.")
         val isClosedBoolean = when (isClosed) {
             "true" -> true
