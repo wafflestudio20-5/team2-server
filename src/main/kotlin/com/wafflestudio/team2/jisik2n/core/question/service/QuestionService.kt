@@ -3,11 +3,13 @@ package com.wafflestudio.team2.jisik2n.core.question.service
 import com.wafflestudio.team2.jisik2n.common.Jisik2n400
 import com.wafflestudio.team2.jisik2n.common.Jisik2n401
 import com.wafflestudio.team2.jisik2n.common.Jisik2n403
+import com.wafflestudio.team2.jisik2n.common.SearchOrderType
 import com.wafflestudio.team2.jisik2n.core.photo.service.PhotoService
 import com.wafflestudio.team2.jisik2n.core.question.dto.CreateQuestionRequest
 import com.wafflestudio.team2.jisik2n.core.question.database.QuestionEntity
 import com.wafflestudio.team2.jisik2n.core.question.database.QuestionRepository
 import com.wafflestudio.team2.jisik2n.core.question.dto.QuestionDto
+import com.wafflestudio.team2.jisik2n.core.question.dto.SearchResponse
 import com.wafflestudio.team2.jisik2n.core.question.dto.UpdateQuestionRequest
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
 import com.wafflestudio.team2.jisik2n.external.s3.service.S3Service
@@ -16,7 +18,14 @@ import org.springframework.transaction.annotation.Transactional
 import java.util.*
 
 interface QuestionService {
-    fun searchQuestion(order: String, isClosed: String, query: String): MutableList<QuestionDto>
+    fun searchQuestion(
+        order: SearchOrderType,
+        isClosed: Boolean? = null,
+        keyword: String,
+        amount: Long = 20,
+        pageNum: Long = 0
+    ): List<SearchResponse>
+
     fun getQuestion(questionId: Long): QuestionDto
     fun createQuestion(request: CreateQuestionRequest, userEntity: UserEntity): QuestionDto
     fun updateQuestion(questionId: Long, request: UpdateQuestionRequest, userEntity: UserEntity): QuestionDto
@@ -30,37 +39,14 @@ class QuestionServiceImpl(
     private val s3Service: S3Service,
 ) : QuestionService {
     @Transactional
-    override fun searchQuestion(order: String, isClosed: String, query: String): MutableList<QuestionDto> {
-        if (order != "date" && order != "like") throw Jisik2n400("order 의 값이 잘못되었습니다.")
-        if (isClosed != "closed" && isClosed != "notClosed" && isClosed != "null") throw Jisik2n400("isClosed 의 값이 잘못되었습니다.")
-
-        val orderComparator: Comparator<QuestionDto> = compareBy {
-            when (order) {
-                "date" -> it.createdAt
-                "like" -> it.userQuestionLikeNumber
-                else -> throw Jisik2n400("order 의 값이 잘못되었습니다.")
-            }
-        }
-
-        val closedPredicate: (QuestionDto) -> Boolean = {
-            when (isClosed) {
-                "closed" -> it.close
-                "notClosed" -> !it.close
-                else -> true
-            }
-        }
-
-        val queryPredicate: (QuestionDto) -> Boolean = {
-            (it.content + it.title).contains(query)
-        }
-
-        return questionRepository.findAll()
-            .asSequence()
-            .map { QuestionDto.of(it, s3Service) }
-            .sortedWith(orderComparator.reversed())
-            .filter(closedPredicate)
-            .filter(queryPredicate)
-            .toMutableList()
+    override fun searchQuestion(
+        order: SearchOrderType,
+        isClosed: Boolean?,
+        keyword: String,
+        amount: Long,
+        pageNum: Long
+    ): List<SearchResponse> {
+        return questionRepository.searchAndOrderPagination(order, isClosed, keyword, amount, pageNum)
     }
 
     @Transactional
