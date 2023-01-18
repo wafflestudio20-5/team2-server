@@ -6,6 +6,7 @@ import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
 import com.wafflestudio.team2.jisik2n.core.userQuestionLike.database.UserQuestionLikeEntity
 import com.wafflestudio.team2.jisik2n.core.userQuestionLike.database.UserQuestionLikeRepository
 import com.wafflestudio.team2.jisik2n.core.userQuestionLike.dto.UserQuestionLikeDto
+import com.wafflestudio.team2.jisik2n.external.s3.service.S3Service
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -19,10 +20,11 @@ interface UserQuestionLikeService {
 class UserQuestionLikeServiceImpl(
     private val userQuestionLikeRepository: UserQuestionLikeRepository,
     private val questionRepository: QuestionRepository,
+    private val s3Service: S3Service,
 ) : UserQuestionLikeService {
     @Transactional
     override fun getLikeQuestion(userEntity: UserEntity): List<UserQuestionLikeDto> {
-        return userEntity.userQuestionLikes.map { UserQuestionLikeDto.of(it) }
+        return userEntity.userQuestionLikes.map { UserQuestionLikeDto.of(it, s3Service) }
     }
 
     @Transactional
@@ -38,7 +40,7 @@ class UserQuestionLikeServiceImpl(
             question.userQuestionLikes.remove(userQuestionLikeEntity)
             question.likeCount--
 
-            return UserQuestionLikeDto.of(userQuestionLikeEntity)
+            return UserQuestionLikeDto.of(userQuestionLikeEntity, s3Service)
         }
 
         val newUserQuestionLikeEntity = UserQuestionLikeEntity(
@@ -50,6 +52,6 @@ class UserQuestionLikeServiceImpl(
         user.userQuestionLikes.add(newUserQuestionLikeEntity)
         question.likeCount++
 
-        return UserQuestionLikeDto.of(newUserQuestionLikeEntity)
+        return UserQuestionLikeDto.of(newUserQuestionLikeEntity, s3Service)
     }
 }
