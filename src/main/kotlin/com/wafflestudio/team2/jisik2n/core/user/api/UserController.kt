@@ -2,6 +2,8 @@ package com.wafflestudio.team2.jisik2n.core.user.api
 
 import com.wafflestudio.team2.jisik2n.common.Authenticated
 import com.wafflestudio.team2.jisik2n.common.UserContext
+import com.wafflestudio.team2.jisik2n.core.answer.dto.AnswerResponse
+import com.wafflestudio.team2.jisik2n.core.question.dto.QuestionDto
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
 import com.wafflestudio.team2.jisik2n.core.user.dto.*
 import com.wafflestudio.team2.jisik2n.core.user.service.AuthToken
@@ -61,7 +63,7 @@ class UserController(
     @GetMapping("myQuestions")
     fun getMyQuestions(
         @UserContext userEntity: UserEntity
-    ): MyQuestionsResponse {
+    ): List<QuestionDto> {
         return userService.getMyQuestions(userEntity)
     }
 
@@ -69,8 +71,16 @@ class UserController(
     @GetMapping("myAnswers")
     fun getMyAnswers(
         @UserContext userEntity: UserEntity
-    ): MyAnswersResponse {
+    ): List<AnswerResponse> {
         return userService.getMyAnswers(userEntity)
+    }
+
+    @Authenticated
+    @GetMapping("myAgreeAnswers")
+    fun getMyAgreeAnswers(
+        @UserContext userEntity: UserEntity
+    ): MyAnswersResponse {
+        return userService.getMyAgreeAnswers(userEntity)
     }
 
     @Authenticated
@@ -81,29 +91,21 @@ class UserController(
         return userService.getMyAllProfile(userEntity)
     }
 
-    fun deleteAccount() {
-        // 탈퇴할 때, 질문이랑 대답 조회해서 거기에 있는 사용자 null로 바꿔버리기
-    }
-
     @Authenticated
     @PutMapping("putAccount")
     fun putAccount(
         @UserContext userEntity: UserEntity,
         @RequestBody userRequest: UserRequest
     ): UserResponse {
-        return userService.putAccount(userRequest)
+        return userService.putAccount(userEntity, userRequest)
+    }
+
+    fun deleteAccount() {
+        // 탈퇴할 때, 질문이랑 대답 조회해서 거기에 있는 사용자 null로 바꿔버리기
     }
 
     @PostMapping("regenerateToken")
     fun regenerateToken(@RequestBody tokenRequest: TokenRequest): AuthToken {
         return userService.regenerateToken(tokenRequest)
-    }
-
-    @Authenticated
-    @GetMapping("myAgreeAnswers")
-    fun getMyAgreeAnswers(
-        @UserContext userEntity: UserEntity
-    ): MyAnswersResponse {
-        return userService.getMyAgreeAnswers(userEntity)
     }
 }

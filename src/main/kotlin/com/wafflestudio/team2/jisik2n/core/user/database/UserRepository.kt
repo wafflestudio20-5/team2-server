@@ -11,6 +11,4 @@ interface UserRepository : JpaRepository<UserEntity, Long> {
     fun findByUid(uid: String): UserEntity?
 
     fun findByUsername(username: String): UserEntity?
-
-    fun deleteByUid(uid: String?): UserEntity
 }

@@ -7,9 +7,13 @@ import com.wafflestudio.team2.jisik2n.common.Jisik2n401
 import com.wafflestudio.team2.jisik2n.common.Jisik2n404
 import com.wafflestudio.team2.jisik2n.common.Jisik2n409
 import com.wafflestudio.team2.jisik2n.core.answer.database.AnswerRepository
+import com.wafflestudio.team2.jisik2n.core.answer.dto.AnswerResponse
 import com.wafflestudio.team2.jisik2n.core.question.database.QuestionRepository
+import com.wafflestudio.team2.jisik2n.core.question.dto.QuestionDto
 import com.wafflestudio.team2.jisik2n.core.user.database.*
 import com.wafflestudio.team2.jisik2n.core.user.dto.*
+import com.wafflestudio.team2.jisik2n.core.userAnswerInteraction.service.UserAnswerInteractionService
+import com.wafflestudio.team2.jisik2n.external.s3.service.S3Service
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -34,17 +38,17 @@ interface UserService {
 
     fun logout(token: TokenRequest): String
 
-    fun getMyQuestions(userEntity: UserEntity): MyQuestionsResponse
+    fun getMyQuestions(userEntity: UserEntity): List<QuestionDto>
 
-    fun getMyAnswers(userEntity: UserEntity): MyAnswersResponse
-
-    fun getMyAllProfile(userEntity: UserEntity): MyAllProfileResponse
-
-    fun regenerateToken(tokenRequest: TokenRequest): AuthToken
+    fun getMyAnswers(userEntity: UserEntity): List<AnswerResponse>
 
     fun getMyAgreeAnswers(userEntity: UserEntity): MyAnswersResponse
 
-    fun putAccount(userRequest: UserRequest): UserResponse
+    fun getMyAllProfile(userEntity: UserEntity): MyAllProfileResponse
+
+    fun putAccount(userEntity: UserEntity, userRequest: UserRequest): UserResponse
+
+    fun regenerateToken(tokenRequest: TokenRequest): AuthToken
 }
 
 @Service
@@ -55,7 +59,9 @@ class UserServiceImpl(
     private val authTokenService: AuthTokenService,
     private val questionRepository: QuestionRepository,
     private val answerRepository: AnswerRepository,
+    private val userAnswerInteractionService: UserAnswerInteractionService,
     private val passwordEncoder: PasswordEncoder,
+    private val s3Service: S3Service
 ) : UserService {
 
     override fun signup(signupRequest: SignupRequest): AuthToken {
@@ -108,6 +114,7 @@ class UserServiceImpl(
         val url = URL("https://kauth.kakao.com/oauth/token")
         val urlConnection = url.openConnection() as HttpURLConnection
 
+        var readline = "1"
         try {
             urlConnection.requestMethod = "POST"
             urlConnection.doOutput = true
@@ -126,12 +133,12 @@ class UserServiceImpl(
             println(responseCode)
 
             val br = BufferedReader(InputStreamReader(urlConnection.inputStream))
-            println(br.readLine())
+            readline = br.readLine().toString()
         } catch (e: IOException) {
             e.printStackTrace()
         }
 
-        return "1"
+        return readline
     }
 
     @Transactional
@@ -191,46 +198,51 @@ class UserServiceImpl(
         if (tokenRepository.findByAccessTokenAndRefreshToken(tokenRequest.accessToken, tokenRequest.refreshToken) != null) {
             val blacklistTokenEntity = BlacklistTokenEntity.of(tokenRequest)
             blacklistTokenRepository.save(blacklistTokenEntity)
-
             return "1"
         } else {
             throw Jisik2n400("token이 올바르지 않습니다")
         }
     }
 
-    override fun getMyQuestions(userEntity: UserEntity): MyQuestionsResponse {
-        val questions: List<QuestionsOfMyQuestions> = questionRepository.getQuestionsOfMyQuestions(userEntity.username)
-        return MyQuestionsResponse(userEntity.id, userEntity.username, questions)
+    override fun getMyQuestions(userEntity: UserEntity): List<QuestionDto> {
+        val questionEntity = questionRepository.findAllByUser(userEntity)
+        return questionEntity.map { QuestionDto.of(it, s3Service) }
     }
 
-    override fun getMyAnswers(userEntity: UserEntity): MyAnswersResponse {
-        val answers: List<AnswersOfMyAnswers> = answerRepository.getAnswersOfMyAnswers(userEntity.username)
-        return MyAnswersResponse(userEntity.id, userEntity.username, answers)
-    }
-
-    override fun getMyAllProfile(userEntity: UserEntity): MyAllProfileResponse {
-        val questions: List<QuestionsOfMyAllProfile> = questionRepository.getQuestionsOfMyAllProfile(userEntity.username)
-        val answers: List<AnswersOfMyAllProfile> = answerRepository.getAnswersOfMyAllProfile(userEntity.username)
-
-        return MyAllProfileResponse.of(userEntity, questions, answers)
-    }
-
-    override fun regenerateToken(tokenRequest: TokenRequest): AuthToken {
-        return authTokenService.regenerateToken(tokenRequest)
+    override fun getMyAnswers(userEntity: UserEntity): List<AnswerResponse> {
+        val answerEntity = answerRepository.findAllByUser(userEntity)
+        return answerEntity.map { it.toResponse(userEntity, answerRepository, s3Service, userAnswerInteractionService) }
     }
 
     override fun getMyAgreeAnswers(userEntity: UserEntity): MyAnswersResponse {
         val agreeAnswers: List<AnswersOfMyAnswers> = answerRepository.getAnswersOfMyAgreeAnswers(userEntity)
         return MyAnswersResponse(userEntity.id, userEntity.username, agreeAnswers)
     }
+    override fun getMyAllProfile(userEntity: UserEntity): MyAllProfileResponse {
+        val questions: List<QuestionsOfMyAllProfile> = questionRepository.getQuestionsOfMyAllProfile(userEntity.username)
+        val answers: List<AnswersOfMyAllProfile> = answerRepository.getAnswersOfMyAllProfile(userEntity.username)
+        return MyAllProfileResponse.of(userEntity, questions, answers)
+    }
 
     @Transactional
-    override fun putAccount(userRequest: UserRequest): UserResponse {
-        val userEntity = userRepository.findByUsername(userRequest.username) ?: throw Jisik2n400("해당하는 유저 정보가 없습니다")
+    override fun putAccount(userEntity: UserEntity, userRequest: UserRequest): UserResponse {
+        if (userRepository.findByUsername(userRequest.username) == null) {
+            userEntity.username = userRequest.username
+        } else {
+            if (userEntity.username == userRequest.username) {
+                userEntity.username = userRequest.username
+            } else {
+                throw Jisik2n400("해당 닉네임을 가진 유저가 있습니다.")
+            }
+        }
+
         userEntity.profileImage = userRequest.profileImage
         userEntity.isMale = userRequest.isMale
-
         return UserResponse(userEntity.username, userEntity.profileImage, userEntity.isMale)
+    }
+
+    override fun regenerateToken(tokenRequest: TokenRequest): AuthToken {
+        return authTokenService.regenerateToken(tokenRequest)
     }
 
     private fun checkDuplicatedUid(uid: String) {
