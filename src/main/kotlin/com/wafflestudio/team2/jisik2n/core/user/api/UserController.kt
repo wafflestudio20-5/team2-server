@@ -2,6 +2,8 @@ package com.wafflestudio.team2.jisik2n.core.user.api
 
 import com.wafflestudio.team2.jisik2n.common.Authenticated
 import com.wafflestudio.team2.jisik2n.common.UserContext
+import com.wafflestudio.team2.jisik2n.core.answer.dto.AnswerResponse
+import com.wafflestudio.team2.jisik2n.core.question.dto.QuestionDto
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
 import com.wafflestudio.team2.jisik2n.core.user.dto.*
 import com.wafflestudio.team2.jisik2n.core.user.service.AuthToken
@@ -61,7 +63,7 @@ class UserController(
     @GetMapping("myQuestions")
     fun getMyQuestions(
         @UserContext userEntity: UserEntity
-    ): MyQuestionsResponse {
+    ): List<QuestionDto> {
         return userService.getMyQuestions(userEntity)
     }
 
@@ -69,7 +71,7 @@ class UserController(
     @GetMapping("myAnswers")
     fun getMyAnswers(
         @UserContext userEntity: UserEntity
-    ): MyAnswersResponse {
+    ): List<AnswerResponse> {
         return userService.getMyAnswers(userEntity)
     }
 
