@@ -36,6 +36,7 @@ class UserQuestionLikeServiceImpl(
             userQuestionLikeRepository.delete(userQuestionLikeEntity)
             user.userQuestionLikes.remove(userQuestionLikeEntity)
             question.userQuestionLikes.remove(userQuestionLikeEntity)
+            question.likeCount--
 
             return UserQuestionLikeDto.of(userQuestionLikeEntity)
         }
@@ -47,6 +48,7 @@ class UserQuestionLikeServiceImpl(
         userQuestionLikeRepository.save(newUserQuestionLikeEntity)
         question.userQuestionLikes.add(newUserQuestionLikeEntity)
         user.userQuestionLikes.add(newUserQuestionLikeEntity)
+        question.likeCount++
 
         return UserQuestionLikeDto.of(newUserQuestionLikeEntity)
     }

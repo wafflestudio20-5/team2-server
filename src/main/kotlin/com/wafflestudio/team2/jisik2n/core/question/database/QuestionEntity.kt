@@ -22,6 +22,9 @@ class QuestionEntity(
     @OneToMany(mappedBy = "question", cascade = [CascadeType.ALL], orphanRemoval = true)
     val answers: MutableSet<AnswerEntity> = mutableSetOf(),
 
+    @Column
+    var answerCount: Long = 0,
+
     var close: Boolean = false,
 
     @Column(columnDefinition = "datetime(6)", nullable = true)
@@ -32,6 +35,8 @@ class QuestionEntity(
 
     @OneToMany(mappedBy = "question", cascade = [CascadeType.ALL], orphanRemoval = true)
     val userQuestionLikes: MutableSet<UserQuestionLikeEntity> = mutableSetOf(),
+
+    var likeCount: Long = 0
 
 ) : BaseTimeEntity(), ContentEntityType {
     override fun bringPhotos() = photos
