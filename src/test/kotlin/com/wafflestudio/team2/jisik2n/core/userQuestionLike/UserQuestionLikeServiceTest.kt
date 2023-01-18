@@ -60,7 +60,7 @@ internal class UserQuestionLikeServiceTest @Autowired constructor(
         assertThat(question.userQuestionLikes).contains(userQuestionLikeEntity)
 
         assertThat(resultEntity.id).isEqualTo(userQuestionLikeEntity?.id)
-        assertThat(resultEntity.questionId).isEqualTo(userQuestionLikeEntity?.question?.id)
+        assertThat(resultEntity.question.id).isEqualTo(userQuestionLikeEntity?.question?.id)
         assertThat(resultEntity.userId).isEqualTo(userQuestionLikeEntity?.user?.id)
     }
 }
