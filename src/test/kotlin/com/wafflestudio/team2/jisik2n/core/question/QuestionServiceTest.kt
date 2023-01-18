@@ -52,6 +52,7 @@ internal class QuestionServiceTest @Autowired constructor(
         val createQuestionRequest = CreateQuestionRequest(
             title = "test",
             content = "test",
+            tag = listOf("tag1", "tag2"),
             photos = listOf(),
         )
         val user = userTestHelper.createTestUser(1)
@@ -61,26 +62,28 @@ internal class QuestionServiceTest @Autowired constructor(
         assertThat(questionRepository.findAll()).hasSize(1)
         assertThat(question.title).isEqualTo(createQuestionRequest.title)
         assertThat(question.content).isEqualTo(createQuestionRequest.content)
+        assertThat(question.tag).isEqualTo(createQuestionRequest.tag)
     }
 
-    // @Test
-    // fun `Update Question`() {
-    //     val user = userTestHelper.createTestUser(1)
-    //     val photos = listOf("photo#1")
-    //     val question: QuestionEntity = questionTestHelper.createTestQuestion(1, user, photos)
-    //     val updateQuestionRequest = UpdateQuestionRequest(
-    //         title = "updateTitle",
-    //         content = "updateTitle",
-    //         photos = listOf("photo#2", "photo#1"), // FIXME: Update Photo REquest
-    //     )
-    //
-    //     val questionDto = questionService.updateQuestion(question.id, updateQuestionRequest, user)
-    //
-    //     assertThat(questionDto.title).isEqualTo(updateQuestionRequest.title)
-    //     assertThat(questionDto.content).isEqualTo(updateQuestionRequest.content)
-    //     assertThat(questionDto.photos.size).isEqualTo(updateQuestionRequest.photos.size)
-    //     assertThat(questionDto.photos).containsAll(updateQuestionRequest.photos)
-    // }
+//     @Test
+//     fun `Update Question`() {
+//         val user = userTestHelper.createTestUser(1)
+//         val photos = listOf(PhotoRequest("https://photo#1", 1))
+//         val question: QuestionEntity = questionTestHelper.createTestQuestion(1, user, photos)
+//         val updateQuestionRequest = UpdateQuestionRequest(
+//             title = "updateTitle",
+//             content = "updateTitle",
+//             tag = listOf("updateTag1", "updateTag2"),
+//             photos = listOf(PhotoRequest("https://photo#1", 1), PhotoRequest("https://photo#2", 2)), //TODO: s3 url valid
+//         )
+//
+//         val questionDto = questionService.updateQuestion(question.id, updateQuestionRequest, user)
+//
+//         assertThat(questionDto.title).isEqualTo(updateQuestionRequest.title)
+//         assertThat(questionDto.content).isEqualTo(updateQuestionRequest.content)
+//         assertThat(questionDto.photos.size).isEqualTo(updateQuestionRequest.photos.size)
+//         assertThat(questionDto.photos).containsAll(updateQuestionRequest.photos.map { it.url })
+//     }
 
     // @Test
     // fun `Update Question - Wrong question number`() {

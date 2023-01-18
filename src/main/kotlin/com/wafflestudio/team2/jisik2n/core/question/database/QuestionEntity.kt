@@ -16,6 +16,9 @@ class QuestionEntity(
 
     var content: String,
 
+    // "/" 으로 나누어서 구분
+    var tag: String,
+
     @OneToMany(mappedBy = "question", cascade = [CascadeType.ALL], orphanRemoval = true)
     val photos: MutableSet<PhotoEntity> = mutableSetOf(),
 

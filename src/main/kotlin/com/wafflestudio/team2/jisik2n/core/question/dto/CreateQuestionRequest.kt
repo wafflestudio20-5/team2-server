@@ -8,5 +8,6 @@ data class CreateQuestionRequest(
     val title: String,
     @field:NotBlank(message = "Content 은 비어있을 수 없습니다.")
     val content: String,
+    val tag: List<String> = emptyList(),
     val photos: List<PhotoRequest> = emptyList(),
 )

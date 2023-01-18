@@ -62,13 +62,11 @@ class QuestionServiceImpl(
         val newQuestion = QuestionEntity(
             title = request.title,
             content = request.content,
+            tag = request.tag.joinToString("/"),
             user = userEntity,
         )
 
         photoService.initiallyAddPhotos(newQuestion, request.photos)
-        // request.photos
-        //     .mapIndexed { idx: Int, path: String -> PhotoEntity(path, idx, question = newQuestion) }
-        //     .also { newQuestion.photos.addAll(it) }
 
         questionRepository.save(newQuestion)
 
@@ -85,24 +83,10 @@ class QuestionServiceImpl(
 
         questionEntity.title = request.title ?: questionEntity.title
         questionEntity.content = request.content ?: questionEntity.content
+        questionEntity.tag = request.tag?.joinToString("/") ?: questionEntity.tag
 
         // Update Photos
         photoService.modifyPhotos(questionEntity, request.photos)
-//        questionEntity.photos
-//            .filter { !request.photos.contains(it.path) }
-//            .let {
-//                questionEntity.photos.removeAll(it.toSet())
-//                photoRepository.deleteAll(it)
-//            }
-//
-//        // Add photo, and update positions
-//        request.photos.forEachIndexed { index: Int, path: String ->
-//            questionEntity.photos
-//                .find { it.path == path }
-//                ?. let { it.photosOrder = index }
-//                ?: PhotoEntity(path, index, question = questionEntity)
-//                    .also { questionEntity.photos.add(it) }
-//        }
 
         questionRepository.save(questionEntity)
 
