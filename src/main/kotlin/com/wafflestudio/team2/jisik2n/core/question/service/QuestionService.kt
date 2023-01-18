@@ -25,7 +25,6 @@ interface QuestionService {
         amount: Long = 20,
         pageNum: Long = 0
     ): List<SearchResponse>
-
     fun getQuestion(questionId: Long): QuestionDto
     fun createQuestion(request: CreateQuestionRequest, userEntity: UserEntity): QuestionDto
     fun updateQuestion(questionId: Long, request: UpdateQuestionRequest, userEntity: UserEntity): QuestionDto
@@ -38,6 +37,7 @@ class QuestionServiceImpl(
     private val photoService: PhotoService,
     private val s3Service: S3Service,
 ) : QuestionService {
+
     @Transactional
     override fun searchQuestion(
         order: SearchOrderType,
@@ -67,7 +67,6 @@ class QuestionServiceImpl(
         )
 
         photoService.initiallyAddPhotos(newQuestion, request.photos)
-
         questionRepository.save(newQuestion)
 
         return QuestionDto.of(newQuestion, s3Service)
@@ -108,6 +107,7 @@ class QuestionServiceImpl(
         questionEntity.answers.map {
             photoService.deletePhotos(it.photos)
         }
+
 
         questionRepository.delete(questionEntity)
     }
