@@ -108,7 +108,6 @@ class AuthInterceptor1(
 //    }
 
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
-
         // Authentication: 유저인지 확인한다 => accessToken 없으면 안주고, 틀렸으면 401, 맞으면 주고
         val accessToken = request.getHeader("Authorization")
         if (accessToken == null) {
@@ -124,10 +123,8 @@ class AuthInterceptor1(
                 request.setAttribute("userEntity", userEntity)
             } else {
                 throw Jisik2n401("access token이 적절하지 않습니다.")
-
             }
         }
-
         return super.preHandle(request, response, handler)
     }
 }
@@ -142,10 +139,8 @@ class AuthInterceptor2 : HandlerInterceptor {
         if (handlerCasted.hasMethodAnnotation(Authenticated::class.java)) {
             if (request.getAttribute("userEntity") == null) {
                 throw Jisik2n401("로그인을 해야 합니다")
-
             }
         }
-
         return super.preHandle(request, response, handler)
     }
 }

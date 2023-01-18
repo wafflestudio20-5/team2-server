@@ -76,7 +76,6 @@ class AnswerServiceImpl(
         if (question.answers.find { it.user.id == loginUser.id } != null) {
             throw Jisik2n400("동일한 질문에는 한 번만 답변 가능합니다.")
         }
-        
         // Add new answer
         val newAnswer = AnswerEntity(
             content = answerRequest.content!!,
@@ -168,7 +167,6 @@ class AnswerServiceImpl(
 
             // Remove photos from bucket and db
             photoService.deletePhotos(answer.photos)
-
 
             // -1 to answer count
             answer.question.answerCount--
