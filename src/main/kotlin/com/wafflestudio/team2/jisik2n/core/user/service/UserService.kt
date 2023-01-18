@@ -205,7 +205,6 @@ class UserServiceImpl(
     }
 
     override fun getMyQuestions(userEntity: UserEntity): List<QuestionDto> {
-
         val questionEntity = questionRepository.findAllByUser(userEntity)
         return questionEntity.map { QuestionDto.of(it, s3Service) }
     }
