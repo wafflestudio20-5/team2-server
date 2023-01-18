@@ -13,6 +13,8 @@ import org.springframework.stereotype.Repository
 @Repository
 interface AnswerRepository : JpaRepository<AnswerEntity, Long>, CustomAnswerRepository {
     fun findFirstByUserOrderByCreatedAt(user: UserEntity): AnswerEntity?
+
+    fun findAllByUser(user: UserEntity): List<AnswerEntity>
 }
 
 interface CustomAnswerRepository {

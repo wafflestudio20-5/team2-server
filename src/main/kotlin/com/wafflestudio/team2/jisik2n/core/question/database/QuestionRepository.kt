@@ -2,12 +2,15 @@ package com.wafflestudio.team2.jisik2n.core.question.database
 
 import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
+import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
 import com.wafflestudio.team2.jisik2n.core.user.dto.QuestionsOfMyAllProfile
 import com.wafflestudio.team2.jisik2n.core.user.dto.QuestionsOfMyQuestions
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Component
 
-interface QuestionRepository : JpaRepository<QuestionEntity, Long>, CustomQuestionRepository
+interface QuestionRepository : JpaRepository<QuestionEntity, Long>, CustomQuestionRepository {
+    fun findAllByUser(user: UserEntity): List<QuestionEntity>
+}
 
 interface CustomQuestionRepository {
     fun getQuestionsOfMyQuestions(username: String): List<QuestionsOfMyQuestions>
