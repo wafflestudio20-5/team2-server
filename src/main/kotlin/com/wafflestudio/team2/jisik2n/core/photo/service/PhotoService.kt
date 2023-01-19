@@ -13,7 +13,7 @@ import java.lang.invoke.WrongMethodTypeException
 import javax.transaction.Transactional
 
 interface PhotoService {
-    fun initiallyAddPhotos(contentEntity: ContentEntityType, requests: List<PhotoRequest>)
+    fun initiallyAddPhotos(contentEntity: ContentEntityType, requests: List<String>)
     fun modifyPhotos(contentEntity: ContentEntityType, requests: List<PhotoRequest>)
     fun deletePhotos(photos: Collection<PhotoEntity>)
 }
@@ -24,12 +24,12 @@ class PhotoServiceImpl(
     private val s3Service: S3Service,
 ) : PhotoService {
     @Transactional
-    override fun initiallyAddPhotos(contentEntity: ContentEntityType, requests: List<PhotoRequest>) {
-        requests.map {
-            val path = s3Service.getFilenameFromUrl(it.url)
+    override fun initiallyAddPhotos(contentEntity: ContentEntityType, requests: List<String>) {
+        requests.mapIndexed { idx, url ->
+            val path = s3Service.getFilenameFromUrl(url)
             val photo = PhotoEntity(
                 path,
-                photosOrder = it.position!!,
+                photosOrder = idx
             )
             connectPhotoToContent(contentEntity, photo)
             photo
