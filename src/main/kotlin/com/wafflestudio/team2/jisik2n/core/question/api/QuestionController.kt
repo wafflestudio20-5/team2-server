@@ -41,6 +41,14 @@ class QuestionController(
     }
 
     @Authenticated
+    @GetMapping("/my")
+    fun getMyQuestion(
+        @UserContext userEntity: UserEntity,
+    ): List<QuestionDto> {
+        return questionService.getMyQuestion(userEntity)
+    }
+
+    @Authenticated
     @PostMapping("/")
     fun createQuestion(
         @Valid @RequestBody request: CreateQuestionRequest,
