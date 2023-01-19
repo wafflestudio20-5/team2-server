@@ -26,6 +26,7 @@ interface QuestionService {
         pageNum: Long = 0
     ): List<SearchResponse>
     fun getQuestion(questionId: Long): QuestionDto
+    fun getMyQuestion(userEntity: UserEntity): List<QuestionDto>
     fun createQuestion(request: CreateQuestionRequest, userEntity: UserEntity): QuestionDto
     fun updateQuestion(questionId: Long, request: UpdateQuestionRequest, userEntity: UserEntity): QuestionDto
     fun deleteQuestion(questionId: Long, userEntity: UserEntity)
@@ -55,6 +56,15 @@ class QuestionServiceImpl(
         if (question.isEmpty) throw Jisik2n400("존재하지 않는 질문 번호 입니다.(questionId: $questionId)")
 
         return QuestionDto.of(question.get(), s3Service)
+    }
+
+    @Transactional
+    override fun getMyQuestion(userEntity: UserEntity): List<QuestionDto> {
+        val questions: List<QuestionEntity> = questionRepository.findAllByUser(userEntity)
+        return questions
+            .sortedBy { it.createdAt }
+            .reversed()
+            .map { QuestionDto.of(it, s3Service) }
     }
 
     @Transactional
@@ -107,7 +117,6 @@ class QuestionServiceImpl(
         questionEntity.answers.map {
             photoService.deletePhotos(it.photos)
         }
-
 
         questionRepository.delete(questionEntity)
     }
