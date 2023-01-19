@@ -59,31 +59,6 @@ class PhotoServiceImpl(
         }
 
         photoRepository.saveAll(photos)
-
-        // requests.forEach { req ->
-        //     val path = s3Service.getFilenameFromUrl(req.url)
-        //     if (req.position == DELETE_POSITION) { // Delete Photo when given position is DELETE_POSITION
-        //         s3Service.deleteWithUrl(req.url)
-        //         photos.find { it.path == path }
-        //             ?.also {
-        //                 photos.remove(it)
-        //             }
-        //             .let { photoRepository.delete(it!!) }
-        //         return@forEach
-        //     }
-        //     photos.find { it.path == path }
-        //         ?.let { it.photosOrder = req.position!! } // when photo already exists, only change photoOrder
-        //         ?: PhotoEntity( // when photo does not exists, create new photo entity
-        //             path,
-        //             photosOrder = req.position!!,
-        //         ).also { // connect to according content
-        //             connectPhotoToContent(contentEntity, it)
-        //         }.let { // add to content's photos
-        //             photos.add(it)
-        //         }
-        // }
-
-        // photoRepository.saveAll(photos)
     }
 
     @Transactional
