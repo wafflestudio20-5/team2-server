@@ -29,8 +29,12 @@ class WebConfig(
     private val authArgumentResolver: AuthArgumentResolver,
 ) : WebMvcConfigurer {
     override fun addInterceptors(registry: InterceptorRegistry) {
-        registry.addInterceptor(authInterceptor1).order(1)
-        registry.addInterceptor(authInterceptor2).order(2)
+        registry.addInterceptor(authInterceptor1).excludePathPatterns(
+            "/swagger-resources/**", "/swagger-ui/**", "/v2/api-docs"
+        ).order(1)
+        registry.addInterceptor(authInterceptor2).excludePathPatterns(
+            "/swagger-resources/**", "/swagger-ui/**", "/v2/api-docs"
+        ).order(2)
     }
 
     override fun addArgumentResolvers(resolvers: MutableList<HandlerMethodArgumentResolver>) {
