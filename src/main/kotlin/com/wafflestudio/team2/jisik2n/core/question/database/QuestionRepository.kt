@@ -79,7 +79,8 @@ class QuestionRepositoryImpl(
             questionEntity.answerCount,
             questionEntity.likeCount,
             questionEntity.createdAt,
-        ).from(questionEntity, answerEntity)
+        ).from(questionEntity)
+            .leftJoin(questionEntity.answers, answerEntity)
             .where(
                 questionEntity.title.contains(keyword) // Search for keywords
                     .or((questionEntity.content.contains(keyword)))
@@ -140,7 +141,8 @@ class QuestionRepositoryImpl(
                     }
                 },
                 tq[questionEntity.answerCount]!!,
-                tq[questionEntity.likeCount]!!
+                tq[questionEntity.likeCount]!!,
+                tq[questionEntity.createdAt]!!
             )
         }
 
