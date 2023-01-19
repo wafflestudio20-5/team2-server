@@ -41,6 +41,25 @@ internal class QuestionServiceTest @Autowired constructor(
     }
 
     @Test
+    fun `Get My Question`() {
+        val user = userTestHelper.createTestUser(1)
+        val user2 = userTestHelper.createTestUser(2)
+
+        val question: QuestionEntity = questionTestHelper.createTestQuestion(1, user)
+        val question2: QuestionEntity = questionTestHelper.createTestQuestion(2, user2)
+        val question3: QuestionEntity = questionTestHelper.createTestQuestion(3, user)
+
+        val questionDtoList = questionService.getMyQuestion(user)
+        val questionDtoList2 = questionService.getMyQuestion(user2)
+
+        assertThat(questionDtoList.size).isEqualTo(2)
+        assertThat(questionDtoList[0].id).isEqualTo(question3.id)
+        assertThat(questionDtoList[1].id).isEqualTo(question.id)
+
+        assertThat(questionDtoList2.size).isEqualTo(1)
+        assertThat(questionDtoList2[0].id).isEqualTo(question2.id)
+    }
+    @Test
     fun `Get Question - Wrong question number`() {
         val throwable = catchThrowable { questionService.getQuestion(1) }
 
