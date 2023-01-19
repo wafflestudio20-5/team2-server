@@ -1,6 +1,5 @@
 package com.wafflestudio.team2.jisik2n.core.question.dto
 
-import com.wafflestudio.team2.jisik2n.core.photo.dto.PhotoRequest
 import javax.validation.constraints.NotBlank
 
 data class CreateQuestionRequest(
@@ -9,5 +8,5 @@ data class CreateQuestionRequest(
     @field:NotBlank(message = "Content 은 비어있을 수 없습니다.")
     val content: String,
     val tag: List<String> = emptyList(),
-    val photos: List<PhotoRequest> = emptyList(),
+    val photos: List<String> = emptyList(),
 )

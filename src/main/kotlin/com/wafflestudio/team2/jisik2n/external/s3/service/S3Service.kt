@@ -5,6 +5,7 @@ import com.amazonaws.services.s3.model.CannedAccessControlList
 import com.amazonaws.services.s3.model.DeleteObjectRequest
 import com.amazonaws.services.s3.model.ObjectMetadata
 import com.amazonaws.services.s3.model.PutObjectRequest
+import com.wafflestudio.team2.jisik2n.common.Jisik2n400
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
@@ -70,7 +71,11 @@ class S3ServiceImpl(
 
     override fun getFilenameFromUrl(url: String): String {
         val filename = url.substringAfter("com/")
-        assert(amazonS3Client.getUrl(bucket, filename).toString() == url) // check if given url is valid
+        try { // check if given url is valid
+            assert(amazonS3Client.getUrl(bucket, filename).toString() == url)
+        } catch (e: AssertionError) {
+            throw Jisik2n400("사진 url이 잘못되었습니다.")
+        }
         // TODO: catch AssertionError
         return filename
     }
