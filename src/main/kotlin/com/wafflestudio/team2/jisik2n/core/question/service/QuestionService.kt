@@ -108,7 +108,6 @@ class QuestionServiceImpl(
             photoService.deletePhotos(it.photos)
         }
 
-
         questionRepository.delete(questionEntity)
     }
 }
