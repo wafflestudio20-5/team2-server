@@ -2,8 +2,6 @@ package com.wafflestudio.team2.jisik2n.core.user.api
 
 import com.wafflestudio.team2.jisik2n.common.Authenticated
 import com.wafflestudio.team2.jisik2n.common.UserContext
-import com.wafflestudio.team2.jisik2n.core.answer.dto.AnswerResponse
-import com.wafflestudio.team2.jisik2n.core.question.dto.QuestionDto
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
 import com.wafflestudio.team2.jisik2n.core.user.dto.*
 import com.wafflestudio.team2.jisik2n.core.user.service.AuthToken
@@ -63,7 +61,7 @@ class UserController(
     @GetMapping("myQuestions")
     fun getMyQuestions(
         @UserContext userEntity: UserEntity
-    ): List<QuestionDto> {
+    ): List<QuestionsOfMyQuestions> {
         return userService.getMyQuestions(userEntity)
     }
 
@@ -71,16 +69,16 @@ class UserController(
     @GetMapping("myAnswers")
     fun getMyAnswers(
         @UserContext userEntity: UserEntity
-    ): List<AnswerResponse> {
+    ): List<AnswersOfMyAnswers> {
         return userService.getMyAnswers(userEntity)
     }
 
     @Authenticated
-    @GetMapping("myAgreeAnswers")
-    fun getMyAgreeAnswers(
+    @GetMapping("myLikeQuestions")
+    fun getMyLikeQuestions(
         @UserContext userEntity: UserEntity
-    ): MyAnswersResponse {
-        return userService.getMyAgreeAnswers(userEntity)
+    ): List<QuestionsOfMyQuestions> {
+        return userService.getMyLikeQuestions(userEntity)
     }
 
     @Authenticated
