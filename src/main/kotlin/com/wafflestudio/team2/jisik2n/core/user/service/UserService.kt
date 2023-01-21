@@ -7,9 +7,7 @@ import com.wafflestudio.team2.jisik2n.common.Jisik2n401
 import com.wafflestudio.team2.jisik2n.common.Jisik2n404
 import com.wafflestudio.team2.jisik2n.common.Jisik2n409
 import com.wafflestudio.team2.jisik2n.core.answer.database.AnswerRepository
-import com.wafflestudio.team2.jisik2n.core.answer.dto.AnswerResponse
 import com.wafflestudio.team2.jisik2n.core.question.database.QuestionRepository
-import com.wafflestudio.team2.jisik2n.core.question.dto.QuestionDto
 import com.wafflestudio.team2.jisik2n.core.user.database.*
 import com.wafflestudio.team2.jisik2n.core.user.dto.*
 import com.wafflestudio.team2.jisik2n.core.userAnswerInteraction.service.UserAnswerInteractionService
@@ -38,11 +36,11 @@ interface UserService {
 
     fun logout(token: TokenRequest): String
 
-    fun getMyQuestions(userEntity: UserEntity): List<QuestionDto>
+    fun getMyQuestions(userEntity: UserEntity): List<QuestionsOfMyQuestions>
 
-    fun getMyAnswers(userEntity: UserEntity): List<AnswerResponse>
+    fun getMyAnswers(userEntity: UserEntity): List<AnswersOfMyAnswers>
 
-    fun getMyAgreeAnswers(userEntity: UserEntity): MyAnswersResponse
+    fun getMyLikeQuestions(userEntity: UserEntity): List<QuestionsOfMyQuestions>
 
     fun getMyAllProfile(userEntity: UserEntity): MyAllProfileResponse
 
@@ -204,19 +202,16 @@ class UserServiceImpl(
         }
     }
 
-    override fun getMyQuestions(userEntity: UserEntity): List<QuestionDto> {
-        val questionEntity = questionRepository.findAllByUser(userEntity)
-        return questionEntity.map { QuestionDto.of(it, s3Service) }
+    override fun getMyQuestions(userEntity: UserEntity): List<QuestionsOfMyQuestions> {
+        return questionRepository.getQuestionsOfMyQuestions(userEntity.username)
     }
 
-    override fun getMyAnswers(userEntity: UserEntity): List<AnswerResponse> {
-        val answerEntity = answerRepository.findAllByUser(userEntity)
-        return answerEntity.map { it.toResponse(userEntity, answerRepository, s3Service, userAnswerInteractionService) }
+    override fun getMyAnswers(userEntity: UserEntity): List<AnswersOfMyAnswers> {
+        return answerRepository.getAnswersOfMyAnswers(userEntity.username)
     }
 
-    override fun getMyAgreeAnswers(userEntity: UserEntity): MyAnswersResponse {
-        val agreeAnswers: List<AnswersOfMyAnswers> = answerRepository.getAnswersOfMyAgreeAnswers(userEntity)
-        return MyAnswersResponse(userEntity.id, userEntity.username, agreeAnswers)
+    override fun getMyLikeQuestions(userEntity: UserEntity): List<QuestionsOfMyQuestions> {
+        return questionRepository.getQuestionsOfMyLikeQuestions(userEntity.username)
     }
     override fun getMyAllProfile(userEntity: UserEntity): MyAllProfileResponse {
         val questions: List<QuestionsOfMyAllProfile> = questionRepository.getQuestionsOfMyAllProfile(userEntity.username)

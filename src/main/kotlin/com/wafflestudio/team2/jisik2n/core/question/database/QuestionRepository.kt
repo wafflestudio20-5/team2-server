@@ -11,6 +11,7 @@ import com.wafflestudio.team2.jisik2n.core.user.dto.QuestionsOfMyQuestions
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Component
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
+import com.wafflestudio.team2.jisik2n.core.userQuestionLike.database.QUserQuestionLikeEntity
 
 interface QuestionRepository : JpaRepository<QuestionEntity, Long>, CustomQuestionRepository {
     fun findAllByUser(user: UserEntity): List<QuestionEntity>
@@ -19,6 +20,7 @@ interface QuestionRepository : JpaRepository<QuestionEntity, Long>, CustomQuesti
 interface CustomQuestionRepository {
     fun getQuestionsOfMyQuestions(username: String): List<QuestionsOfMyQuestions>
     fun getQuestionsOfMyAllProfile(username: String): List<QuestionsOfMyAllProfile>
+    fun getQuestionsOfMyLikeQuestions(username: String): List<QuestionsOfMyQuestions>
     fun searchAndOrderPagination(
         order: SearchOrderType,
         isClosed: Boolean? = null,
@@ -40,10 +42,12 @@ class QuestionRepositoryImpl(
                 QuestionsOfMyQuestions::class.java,
                 questionEntity.id,
                 questionEntity.title,
-                questionEntity.content
+                questionEntity.createdAt,
+                questionEntity.answerCount
             )
         )
-            .from(questionEntity).where(questionEntity.user.username.eq(username)).fetch()
+            .from(questionEntity).where(questionEntity.user.username.eq(username))
+            .orderBy(questionEntity.createdAt.asc()).fetch()
     }
 
     override fun getQuestionsOfMyAllProfile(username: String): List<QuestionsOfMyAllProfile> {
@@ -62,6 +66,22 @@ class QuestionRepositoryImpl(
             )
         )
             .from(questionEntity).where(questionEntity.user.username.eq(username)).fetch()
+    }
+
+    override fun getQuestionsOfMyLikeQuestions(username: String): List<QuestionsOfMyQuestions> {
+        val questionEntity: QQuestionEntity = QQuestionEntity.questionEntity
+        val userQuestionLikeEntity: QUserQuestionLikeEntity = QUserQuestionLikeEntity.userQuestionLikeEntity
+        return queryFactory.select(
+            Projections.constructor(
+                QuestionsOfMyQuestions::class.java,
+                questionEntity.id,
+                questionEntity.title,
+                questionEntity.createdAt,
+                questionEntity.answerCount
+            )
+        )
+            .from(questionEntity).join(questionEntity.userQuestionLikes, userQuestionLikeEntity).where(userQuestionLikeEntity.user.username.eq(username))
+            .orderBy(questionEntity.createdAt.asc()).fetch()
     }
 
     /**
