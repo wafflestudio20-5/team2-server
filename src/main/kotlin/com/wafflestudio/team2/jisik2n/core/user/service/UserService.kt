@@ -88,7 +88,11 @@ class UserServiceImpl(
 
     @Transactional
     override fun login(loginRequest: LoginRequest): LoginResponse {
-        val userEntity = userRepository.findByUid(loginRequest.uid) ?: throw Jisik2n404("해당 아이디로 가입한 유저가 없습니다.")
+        val userEntity = userRepository.findByUid(loginRequest.uid)
+
+        if (userEntity == null || !userEntity.uid.equals(loginRequest.uid)) {
+            throw Jisik2n404("해당 아이디로 가입한 유저가 없습니다.")
+        }
 
         if (userEntity.isActive == false) {
             throw Jisik2n400("탈퇴한 회원의 아이디입니다.")
