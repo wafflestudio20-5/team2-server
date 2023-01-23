@@ -49,14 +49,18 @@ class AnswerServiceImpl(
     private val userAnswerInteractionService: UserAnswerInteractionService,
 ) : AnswerService {
     override fun getAnswersOfQuestion(questionId: Long, loginUser: UserEntity?): List<AnswerResponse> {
-        // Get target question
-        val question = questionRepository.findByIdOrNull(questionId)
-            ?: throw Jisik2n404("${questionId}에 해당하는 질문이 없습니다.")
-
-        // TODO: Improve query
-        val answers = question.answers.sortedWith(compareBy({ !it.selected }, { it.createdAt }))
-
-        return answers.map { it.toResponse(loginUser, answerRepository, s3Service, userAnswerInteractionService) }
+        if (!questionRepository.existsById(questionId)) {
+            throw Jisik2n404("${questionId}에 해당하는 질문이 없습니다.")
+        }
+        return answerRepository.getAnswerOfQuestionId(questionId, loginUser)
+//        // Get target question
+//        val question = questionRepository.findByIdOrNull(questionId)
+//            ?: throw Jisik2n404("${questionId}에 해당하는 질문이 없습니다.")
+//
+//        // TODO: Improve query
+//        val answers = question.answers.sortedWith(compareBy({ !it.selected }, { it.createdAt }))
+//
+//        return answers.map { it.toResponse(loginUser, answerRepository, s3Service, userAnswerInteractionService) }
     }
 
     @Transactional
