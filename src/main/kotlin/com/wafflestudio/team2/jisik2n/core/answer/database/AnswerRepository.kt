@@ -45,7 +45,6 @@ class CustomAnswerRepositoryImpl(
         questionId: Long,
         loginUser: UserEntity?
     ): List<AnswerResponse> {
-//        println("===0")
         // Find answers
         val answers = queryFactory.select(answerEntity)
             .from(answerEntity)
@@ -64,7 +63,6 @@ class CustomAnswerRepositoryImpl(
             )
             .distinct()
             .fetch()
-//        println("===1")
 
         // Join userAnswerInteraction to answer
         queryFactory.selectFrom(userAnswerInteractionEntity)
@@ -72,7 +70,6 @@ class CustomAnswerRepositoryImpl(
             .join(userAnswerInteractionEntity.answer, answerEntity).fetchJoin()
             .where(answerEntity.`in`(answers))
             .fetch()
-//        println("===2")
 
         // Find user`s most recent answer date
         val userRecentAnswerDateTuple = queryFactory
@@ -93,7 +90,6 @@ class CustomAnswerRepositoryImpl(
                 answerEntity.createdAt.asc(),
             )
             .fetch()
-//        println("===3")
 
         return answers.map {
             AnswerResponse(
