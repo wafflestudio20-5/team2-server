@@ -98,8 +98,12 @@ class UserController(
         return userService.putAccount(userEntity, userRequest)
     }
 
-    fun deleteAccount() {
-        // 탈퇴할 때, 질문이랑 대답 조회해서 거기에 있는 사용자 null로 바꿔버리기
+    @Authenticated
+    @DeleteMapping("deleteAccount")
+    fun deleteAccount(
+        @UserContext userEntity: UserEntity
+    ): String {
+        return userService.deleteAccount(userEntity)
     }
 
     @PostMapping("regenerateToken")
