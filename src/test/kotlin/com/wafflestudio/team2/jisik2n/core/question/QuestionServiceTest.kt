@@ -38,6 +38,7 @@ internal class QuestionServiceTest @Autowired constructor(
         assertThat(questionDto.title).isEqualTo(question.title)
         assertThat(questionDto.content).isEqualTo(question.content)
         assertThat(questionDto.username).isEqualTo(question.user.username)
+        assertThat(questionDto.tag.size).isEqualTo(2)
     }
 
     @Test
@@ -63,6 +64,24 @@ internal class QuestionServiceTest @Autowired constructor(
         assertThat(question.title).isEqualTo(createQuestionRequest.title)
         assertThat(question.content).isEqualTo(createQuestionRequest.content)
         assertThat(question.tag).isEqualTo(createQuestionRequest.tag)
+    }
+
+    @Test
+    fun `Create Question - Empty tag`() {
+        val createQuestionRequest = CreateQuestionRequest(
+            title = "test",
+            content = "test",
+            tag = listOf(),
+            photos = listOf(),
+        )
+        val user = userTestHelper.createTestUser(1)
+
+        val question = questionService.createQuestion(createQuestionRequest, user)
+
+        assertThat(questionRepository.findAll()).hasSize(1)
+        assertThat(question.title).isEqualTo(createQuestionRequest.title)
+        assertThat(question.content).isEqualTo(createQuestionRequest.content)
+        assertThat(question.tag.size).isEqualTo(0)
     }
 
 //     @Test

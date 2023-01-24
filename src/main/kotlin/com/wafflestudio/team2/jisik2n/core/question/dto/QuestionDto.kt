@@ -25,7 +25,7 @@ data class QuestionDto(
                 id = this.id,
                 title = this.title,
                 content = this.content,
-                tag = this.tag.split("/"),
+                tag = if (this.tag == "") listOf() else this.tag.split("/"),
                 username = this.user.username,
                 profileImagePath = this.user.profileImage,
                 photos = this.photos
