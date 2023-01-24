@@ -2,21 +2,33 @@ package com.wafflestudio.team2.jisik2n.core.question
 
 import com.wafflestudio.team2.jisik2n.common.Jisik2n400
 import com.wafflestudio.team2.jisik2n.common.Jisik2n401
+import com.wafflestudio.team2.jisik2n.core.photo.database.PhotoRepository
+import com.wafflestudio.team2.jisik2n.core.photo.dto.PhotoRequest
+import com.wafflestudio.team2.jisik2n.core.photo.service.PhotoService
+import com.wafflestudio.team2.jisik2n.core.photo.service.PhotoServiceImpl
 import com.wafflestudio.team2.jisik2n.core.question.database.QuestionEntity
 import com.wafflestudio.team2.jisik2n.core.question.dto.CreateQuestionRequest
 import com.wafflestudio.team2.jisik2n.core.question.database.QuestionRepository
+import com.wafflestudio.team2.jisik2n.core.question.dto.UpdateQuestionRequest
 import com.wafflestudio.team2.jisik2n.core.question.service.QuestionService
+import com.wafflestudio.team2.jisik2n.core.question.service.QuestionServiceImpl
 import com.wafflestudio.team2.jisik2n.core.user.UserTestHelper
+import com.wafflestudio.team2.jisik2n.external.s3.service.S3Service
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.spyk
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.BeforeEach
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.transaction.annotation.Transactional
 
 @SpringBootTest
 internal class QuestionServiceTest @Autowired constructor(
     private val questionService: QuestionService,
+    private val photoRepository: PhotoRepository,
     private val questionRepository: QuestionRepository,
     private val questionTestHelper: QuestionTestHelper,
     private val userTestHelper: UserTestHelper,
@@ -84,25 +96,42 @@ internal class QuestionServiceTest @Autowired constructor(
         assertThat(question.tag.size).isEqualTo(0)
     }
 
-//     @Test
-//     fun `Update Question`() {
-//         val user = userTestHelper.createTestUser(1)
-//         val photos = listOf(PhotoRequest("https://photo#1", 1))
-//         val question: QuestionEntity = questionTestHelper.createTestQuestion(1, user, photos)
-//         val updateQuestionRequest = UpdateQuestionRequest(
-//             title = "updateTitle",
-//             content = "updateTitle",
-//             tag = listOf("updateTag1", "updateTag2"),
-//             photos = listOf(PhotoRequest("https://photo#1", 1), PhotoRequest("https://photo#2", 2)), //TODO: s3 url valid
-//         )
-//
-//         val questionDto = questionService.updateQuestion(question.id, updateQuestionRequest, user)
-//
-//         assertThat(questionDto.title).isEqualTo(updateQuestionRequest.title)
-//         assertThat(questionDto.content).isEqualTo(updateQuestionRequest.content)
-//         assertThat(questionDto.photos.size).isEqualTo(updateQuestionRequest.photos.size)
-//         assertThat(questionDto.photos).containsAll(updateQuestionRequest.photos.map { it.url })
-//     }
+    @Transactional
+    @Test
+    fun `Update Question`() {
+        val user = userTestHelper.createTestUser(1)
+        val photos = listOf(PhotoRequest("photo#1", 1))
+        val question: QuestionEntity = questionTestHelper.createTestQuestion(1, user, photos)
+        val mockS3Service: S3Service = mockk {
+            every { getFilenameFromUrl(any()) } returnsArgument 0
+            every { getUrlFromFilename(any()) } returnsArgument 0
+        }
+
+        val mockPhotoService: PhotoService = spyk(PhotoServiceImpl(photoRepository, mockS3Service))
+
+        val mockQuestionService: QuestionService = spyk(
+            objToCopy = QuestionServiceImpl(
+                questionRepository = questionRepository,
+                photoService = mockPhotoService,
+                s3Service = mockS3Service,
+            ),
+            recordPrivateCalls = true,
+        )
+
+        val updateQuestionRequest = UpdateQuestionRequest(
+            title = "updateTitle",
+            content = "updateTitle",
+            tag = listOf("updateTag1", "updateTag2"),
+            photos = listOf("photo#1", "photo#2"), // TODO: s3 url valid
+        )
+
+        val questionDto = mockQuestionService.updateQuestion(question.id, updateQuestionRequest, user)
+
+        assertThat(questionDto.title).isEqualTo(updateQuestionRequest.title)
+        assertThat(questionDto.content).isEqualTo(updateQuestionRequest.content)
+        assertThat(questionDto.photos.size).isEqualTo(updateQuestionRequest.photos.size)
+        assertThat(questionDto.photos).containsAll(updateQuestionRequest.photos)
+    }
 
     // @Test
     // fun `Update Question - Wrong question number`() {

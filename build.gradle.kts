@@ -30,6 +30,7 @@ dependencies {
     implementation("io.springfox:springfox-swagger-ui:3.0.0")
     runtimeOnly("com.mysql:mysql-connector-j")
     testImplementation("com.h2database:h2")
+    testImplementation("io.mockk:mockk:1.13.3")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     // jwt 토큰
