@@ -22,6 +22,7 @@ internal class UserTestHelper @Autowired constructor(
             username = "usernameTest$id",
             password = "passwordTest$id",
             isMale = true,
+            isActive = true,
             profileImage = null,
             lastLogin = LocalDateTime.now()
         )
