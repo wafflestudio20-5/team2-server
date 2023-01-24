@@ -2,6 +2,7 @@ package com.wafflestudio.team2.jisik2n.core.question
 
 import com.wafflestudio.team2.jisik2n.common.Jisik2n400
 import com.wafflestudio.team2.jisik2n.common.Jisik2n401
+import com.wafflestudio.team2.jisik2n.common.SearchOrderType
 import com.wafflestudio.team2.jisik2n.core.photo.database.PhotoRepository
 import com.wafflestudio.team2.jisik2n.core.photo.dto.PhotoRequest
 import com.wafflestudio.team2.jisik2n.core.photo.service.PhotoService
@@ -196,38 +197,37 @@ internal class QuestionServiceTest @Autowired constructor(
         assertThat(throwable).isInstanceOf(Jisik2n401::class.java)
     }
 
-    // TODO: Regenerate test for updated logic
-//     @Test
-//     fun `Search Question`() {
-//         val user = userTestHelper.createTestUser(1)
-//         val question: QuestionEntity = questionTestHelper.createTestQuestion(1, user)
-//         val question2: QuestionEntity = questionTestHelper.createTestQuestion(2, user)
-//         val question3: QuestionEntity = questionTestHelper.createTestQuestion(3, user)
-//
-//         val questionDtoList = questionService.searchQuestion(order = "date", isClosed = "null", keyword = "")
-//
-//         assertThat(questionDtoList).hasSize(3)
-//         assertThat(questionDtoList[0].id).isEqualTo(question3.id)
-//         assertThat(questionDtoList[1].id).isEqualTo(question2.id)
-//         assertThat(questionDtoList[2].id).isEqualTo(question.id)
-//     }
-//
-//     @Test
-//     fun `Search Question - Order by like`() {
-//         val user = userTestHelper.createTestUser(1)
-//         val question: QuestionEntity = questionTestHelper.createTestQuestion(1, user)
-//         val question2: QuestionEntity = questionTestHelper.createTestQuestion(2, user)
-//         val question3: QuestionEntity = questionTestHelper.createTestQuestion(3, user)
-//
-//         questionTestHelper.createQuestionLikeUser(question, 20)
-//         questionTestHelper.createQuestionLikeUser(question2, 30)
-//         questionTestHelper.createQuestionLikeUser(question3, 10)
-//
-//         val questionDtoList = questionService.searchQuestion(order = "like", isClosed = "null", keyword = "")
-//
-//         assertThat(questionDtoList).hasSize(3)
-//         assertThat(questionDtoList[0].id).isEqualTo(question2.id)
-//         assertThat(questionDtoList[1].id).isEqualTo(question.id)
-//         assertThat(questionDtoList[2].id).isEqualTo(question3.id)
-//     }
+//     TODO: Regenerate test for updated logic
+    @Test
+    fun `Search Question`() {
+        val user = userTestHelper.createTestUser(1)
+        val question: QuestionEntity = questionTestHelper.createTestQuestion(1, user)
+        val question2: QuestionEntity = questionTestHelper.createTestQuestion(2, user)
+        val question3: QuestionEntity = questionTestHelper.createTestQuestion(3, user)
+
+        val questionDtoList = questionService.searchQuestion(order = SearchOrderType.DATE, keyword = "")
+
+        assertThat(questionDtoList).hasSize(3)
+        assertThat(questionDtoList[0].questionId).isEqualTo(question3.id)
+        assertThat(questionDtoList[1].questionId).isEqualTo(question2.id)
+        assertThat(questionDtoList[2].questionId).isEqualTo(question.id)
+    }
+
+    @Test
+    fun `Search Question - Order by like`() {
+        val user = userTestHelper.createTestUser(1)
+        val question: QuestionEntity = questionTestHelper.createTestQuestion(1, user)
+        val question2: QuestionEntity = questionTestHelper.createTestQuestion(2, user)
+        val question3: QuestionEntity = questionTestHelper.createTestQuestion(3, user)
+
+        questionTestHelper.createQuestionLikeUser(question, 20)
+        questionTestHelper.createQuestionLikeUser(question2, 30)
+        questionTestHelper.createQuestionLikeUser(question3, 10)
+
+        val questionDtoList = questionService.searchQuestion(order = SearchOrderType.LIKE, keyword = "")
+
+        assertThat(questionDtoList[0].questionId).isEqualTo(question2.id)
+        assertThat(questionDtoList[1].questionId).isEqualTo(question.id)
+        assertThat(questionDtoList[2].questionId).isEqualTo(question3.id)
+    }
 }
