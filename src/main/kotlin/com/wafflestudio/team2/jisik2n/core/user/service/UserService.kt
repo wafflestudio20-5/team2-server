@@ -237,7 +237,7 @@ class UserServiceImpl(
             if (userEntity.username == userRequest.username) {
                 userEntity.username = userRequest.username
             } else {
-                throw Jisik2n400("해당 닉네임을 가진 유저가 있습니다.")
+                throw Jisik2n409("해당 닉네임을 가진 유저가 있습니다.")
             }
         }
 
