@@ -48,5 +48,7 @@ internal class QuestionTestHelper @Autowired constructor(
             userQuestionLikeRepository.save(newUserQuestionLikeEntity)
             question.userQuestionLikes.add(newUserQuestionLikeEntity)
         }
+        question.likeCount = num
+        questionRepository.save(question)
     }
 }

@@ -33,6 +33,8 @@ class UserEntity(
     @Column(nullable = true)
     var profileImage: String?,
 
+    var isActive: Boolean?,
+
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL])
     val questions: MutableSet<QuestionEntity> = mutableSetOf(),
 
@@ -58,6 +60,7 @@ class UserEntity(
                     lastLogin = null,
                     isMale = request.isMale,
                     profileImage = null,
+                    isActive = true,
                     questions = mutableSetOf(),
                     answers = mutableSetOf()
                 )

@@ -120,7 +120,11 @@ class AuthInterceptor1(
             if (authTokenService.verifyToken(prefixRemovedAccessToken) == true) {
                 val userId = authTokenService.getCurrentUserId(prefixRemovedAccessToken)
                 val userEntity = userRepository.findByIdOrNull(userId)
-                request.setAttribute("userEntity", userEntity)
+                if (userEntity?.isActive == false) {
+                    throw Jisik2n400("접근할 수 없는 token입니다.")
+                } else {
+                    request.setAttribute("userEntity", userEntity)
+                }
             } else {
                 throw Jisik2n401("access token이 적절하지 않습니다.")
             }

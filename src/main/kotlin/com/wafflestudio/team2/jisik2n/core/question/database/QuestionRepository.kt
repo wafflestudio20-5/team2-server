@@ -99,6 +99,7 @@ class QuestionRepositoryImpl(
             questionEntity.answerCount,
             questionEntity.likeCount,
             questionEntity.createdAt,
+            questionEntity.tag
         ).from(questionEntity)
             .leftJoin(questionEntity.answers, answerEntity)
             .where(
@@ -162,7 +163,8 @@ class QuestionRepositoryImpl(
                 },
                 tq[questionEntity.answerCount]!!,
                 tq[questionEntity.likeCount]!!,
-                tq[questionEntity.createdAt]!!
+                tq[questionEntity.createdAt]!!,
+                if (tq[questionEntity.tag] == "") listOf() else tq[questionEntity.tag]!!.split("/")
             )
         }
 

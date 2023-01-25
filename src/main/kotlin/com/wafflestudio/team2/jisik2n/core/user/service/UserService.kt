@@ -46,6 +46,8 @@ interface UserService {
 
     fun putAccount(userEntity: UserEntity, userRequest: UserRequest): UserResponse
 
+    fun deleteAccount(userEntity: UserEntity): String
+
     fun regenerateToken(tokenRequest: TokenRequest): AuthToken
 }
 
@@ -86,7 +88,15 @@ class UserServiceImpl(
 
     @Transactional
     override fun login(loginRequest: LoginRequest): LoginResponse {
-        val userEntity = userRepository.findByUid(loginRequest.uid) ?: throw Jisik2n404("해당 아이디로 가입한 유저가 없습니다.")
+        val userEntity = userRepository.findByUid(loginRequest.uid)
+
+        if (userEntity == null || !userEntity.uid.equals(loginRequest.uid)) {
+            throw Jisik2n404("해당 아이디로 가입한 유저가 없습니다.")
+        }
+
+        if (userEntity.isActive == false) {
+            throw Jisik2n400("탈퇴한 회원의 아이디입니다.")
+        }
 
         if (!this.passwordEncoder.matches(loginRequest.password, userEntity.password)) {
             throw Jisik2n401("비밀번호가 일치하지 않습니다.")
@@ -100,7 +110,7 @@ class UserServiceImpl(
         val tokenEntity = tokenRepository.findByKeyUid(loginRequest.uid)!!
         tokenEntity.accessToken = accessToken
 
-        if (authTokenService.getCurrentExpiration(tokenEntity.refreshToken) < LocalDateTime.now()) {
+        if (authTokenService.verifyToken(tokenEntity.refreshToken) == false) {
             val refreshToken = authTokenService.generateRefreshTokenByUid(loginRequest.uid)
             tokenEntity.refreshToken = refreshToken
         }
@@ -157,7 +167,7 @@ class UserServiceImpl(
 
         val kakaoUsername = "kakao-$username"
         if (userRepository.findByUsername(kakaoUsername) == null) {
-            userRepository.save(UserEntity(kakaoUsername, snsId, kakaoUsername, null, null, gender, null))
+            userRepository.save(UserEntity(kakaoUsername, snsId, kakaoUsername, null, null, gender, null, null))
 
             val accessToken = authTokenService.generateAccessTokenByUid(kakaoUsername)
             val refreshToken = authTokenService.generateRefreshTokenByUid(kakaoUsername)
@@ -227,13 +237,19 @@ class UserServiceImpl(
             if (userEntity.username == userRequest.username) {
                 userEntity.username = userRequest.username
             } else {
-                throw Jisik2n400("해당 닉네임을 가진 유저가 있습니다.")
+                throw Jisik2n409("해당 닉네임을 가진 유저가 있습니다.")
             }
         }
 
         userEntity.profileImage = userRequest.profileImage
         userEntity.isMale = userRequest.isMale
         return UserResponse(userEntity.username, userEntity.profileImage, userEntity.isMale)
+    }
+
+    @Transactional
+    override fun deleteAccount(userEntity: UserEntity): String {
+        userEntity.isActive = false
+        return "탈퇴가 완료되었습니다"
     }
 
     override fun regenerateToken(tokenRequest: TokenRequest): AuthToken {
