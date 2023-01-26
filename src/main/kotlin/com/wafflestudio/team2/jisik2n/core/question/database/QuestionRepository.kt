@@ -5,7 +5,6 @@ import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
 import com.wafflestudio.team2.jisik2n.common.SearchOrderType
 import com.wafflestudio.team2.jisik2n.core.answer.database.QAnswerEntity.answerEntity
-import com.wafflestudio.team2.jisik2n.core.photo.database.QPhotoEntity.photoEntity
 import com.wafflestudio.team2.jisik2n.core.question.database.QQuestionEntity.questionEntity
 import com.wafflestudio.team2.jisik2n.core.question.dto.SearchResponse
 import com.wafflestudio.team2.jisik2n.core.user.dto.QuestionsOfMyAllProfile
@@ -121,7 +120,6 @@ class QuestionRepositoryImpl(
             questionEntity.tag,
         ).from(questionEntity)
             .leftJoin(questionEntity.answers, answerEntity)
-            .leftJoin(questionEntity.photos, photoEntity)
             .where(booleanBuilder)
             .orderBy(
                 when (order) { // Order by date or like
