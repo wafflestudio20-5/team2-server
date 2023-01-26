@@ -113,6 +113,7 @@ class UserController(
         @RequestBody request: Map<String, String>
     ): String {
         return userService.deleteAccountWithPassword(userEntity, request)
+
     }
 
     @PostMapping("regenerateToken")
