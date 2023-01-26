@@ -103,8 +103,16 @@ class UserController(
     fun deleteAccount(
         @UserContext userEntity: UserEntity
     ): String {
-        println("test")
         return userService.deleteAccount(userEntity)
+    }
+
+    @Authenticated
+    @DeleteMapping("deleteAccountWithPassword")
+    fun deleteAccountWithPassword(
+        @UserContext userEntity: UserEntity,
+        @RequestBody request: Map<String, String>
+    ): String {
+        return userService.deleteAccountWithPassword(userEntity, request)
     }
 
     @PostMapping("regenerateToken")
