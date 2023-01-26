@@ -106,6 +106,15 @@ class UserController(
         return userService.deleteAccount(userEntity)
     }
 
+    @Authenticated
+    @DeleteMapping("deleteAccountWithPassword")
+    fun deleteAccountWithPassword(
+        @UserContext userEntity: UserEntity,
+        @RequestBody request: Map<String, String>
+    ): String {
+        return userService.deleteAccountWithPassword(userEntity, request)
+    }
+
     @PostMapping("regenerateToken")
     fun regenerateToken(@RequestBody tokenRequest: TokenRequest): AuthToken {
         return userService.regenerateToken(tokenRequest)
