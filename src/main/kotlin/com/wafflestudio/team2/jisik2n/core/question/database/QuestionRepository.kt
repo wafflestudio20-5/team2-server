@@ -5,6 +5,7 @@ import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
 import com.wafflestudio.team2.jisik2n.common.SearchOrderType
 import com.wafflestudio.team2.jisik2n.core.answer.database.QAnswerEntity.answerEntity
+import com.wafflestudio.team2.jisik2n.core.photo.database.QPhotoEntity.photoEntity
 import com.wafflestudio.team2.jisik2n.core.question.database.QQuestionEntity.questionEntity
 import com.wafflestudio.team2.jisik2n.core.question.dto.SearchResponse
 import com.wafflestudio.team2.jisik2n.core.user.dto.QuestionsOfMyAllProfile
@@ -13,6 +14,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Component
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
 import com.wafflestudio.team2.jisik2n.core.userQuestionLike.database.QUserQuestionLikeEntity
+import com.wafflestudio.team2.jisik2n.external.s3.service.S3Service
 
 interface QuestionRepository : JpaRepository<QuestionEntity, Long>, CustomQuestionRepository {
     fun findAllByUser(user: UserEntity): List<QuestionEntity>
@@ -33,7 +35,8 @@ interface CustomQuestionRepository {
 
 @Component
 class QuestionRepositoryImpl(
-    private val queryFactory: JPAQueryFactory
+    private val queryFactory: JPAQueryFactory,
+    private val s3Service: S3Service,
 ) : CustomQuestionRepository {
     override fun getQuestionsOfMyQuestions(username: String): List<QuestionsOfMyQuestions> {
         val questionEntity: QQuestionEntity = QQuestionEntity.questionEntity
@@ -118,8 +121,10 @@ class QuestionRepositoryImpl(
             questionEntity.likeCount,
             questionEntity.createdAt,
             questionEntity.tag,
+            questionEntity.photos,
         ).from(questionEntity)
             .leftJoin(questionEntity.answers, answerEntity)
+            .leftJoin(questionEntity.photos, photoEntity)
             .where(booleanBuilder)
             .orderBy(
                 when (order) { // Order by date or like
@@ -128,6 +133,7 @@ class QuestionRepositoryImpl(
                     SearchOrderType.ANSWER -> questionEntity.answerCount.desc()
                 },
                 questionEntity.id.desc(),
+                photoEntity.photosOrder.asc(),
             )
             .distinct()
             .offset(pageNum * amount) // pagination
@@ -173,7 +179,10 @@ class QuestionRepositoryImpl(
                 tq[questionEntity.answerCount]!!,
                 tq[questionEntity.likeCount]!!,
                 tq[questionEntity.createdAt]!!,
-                if (tq[questionEntity.tag] == "") listOf() else tq[questionEntity.tag]!!.split("/")
+                if (tq[questionEntity.tag] == "") listOf() else tq[questionEntity.tag]!!.split("/"),
+                tq[questionEntity.photos] ?.let { path ->
+                    s3Service.getUrlFromFilename(path)
+                },
             )
         }
 
