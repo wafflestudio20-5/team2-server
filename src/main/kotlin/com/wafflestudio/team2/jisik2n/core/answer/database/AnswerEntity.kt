@@ -19,6 +19,7 @@ import javax.persistence.OneToMany
 
 @Entity(name = "answers")
 class AnswerEntity(
+    @Column(columnDefinition = "text")
     var content: String,
 
     var selected: Boolean = false,
