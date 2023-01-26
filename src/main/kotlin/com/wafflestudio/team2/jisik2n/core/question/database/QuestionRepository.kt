@@ -121,10 +121,8 @@ class QuestionRepositoryImpl(
             questionEntity.likeCount,
             questionEntity.createdAt,
             questionEntity.tag,
-            questionEntity.photos,
         ).from(questionEntity)
             .leftJoin(questionEntity.answers, answerEntity)
-            .leftJoin(questionEntity.photos, photoEntity)
             .where(booleanBuilder)
             .orderBy(
                 when (order) { // Order by date or like
@@ -133,20 +131,20 @@ class QuestionRepositoryImpl(
                     SearchOrderType.ANSWER -> questionEntity.answerCount.desc()
                 },
                 questionEntity.id.desc(),
-                photoEntity.photosOrder.asc(),
             )
             .distinct()
             .offset(pageNum * amount) // pagination
             .limit(amount)
             .fetch()
 
+        val searchedQuestionIds = tupleQuestionList.map { it[questionEntity.id] }
         // Additional query for getting answer content
         val tupleAnswerList = queryFactory
             .select(questionEntity.id, answerEntity.content)
             .from(answerEntity)
             .rightJoin(answerEntity.question, questionEntity)
             .where(
-                questionEntity.id.`in`(tupleQuestionList.map { it[questionEntity.id] }),
+                questionEntity.id.`in`(searchedQuestionIds),
                 answerEntity.content.contains(keyword)
             )
             .orderBy(
@@ -157,8 +155,24 @@ class QuestionRepositoryImpl(
                 },
                 questionEntity.id.desc(),
                 answerEntity.id.asc(),
-            )
-            .fetch()
+            ).fetch()
+
+        // Additional query for getting first photo
+        val tuplePhotoPathList = queryFactory
+            .select(questionEntity.id, photoEntity.path)
+            .from(photoEntity)
+            .rightJoin(photoEntity.question, questionEntity)
+            .where(
+                questionEntity.id.`in`(searchedQuestionIds),
+                photoEntity.photosOrder.eq(0)
+            ).orderBy(
+                when (order) { // Order by date or like
+                    SearchOrderType.DATE -> questionEntity.createdAt.desc()
+                    SearchOrderType.LIKE -> questionEntity.likeCount.desc()
+                    SearchOrderType.ANSWER -> questionEntity.answerCount.desc()
+                },
+                questionEntity.id.desc(),
+            ).fetch()
 
         // Map to SearchResponse with queried tuples
         val searchResponses = tupleQuestionList.map { tq ->
@@ -180,9 +194,12 @@ class QuestionRepositoryImpl(
                 tq[questionEntity.likeCount]!!,
                 tq[questionEntity.createdAt]!!,
                 if (tq[questionEntity.tag] == "") listOf() else tq[questionEntity.tag]!!.split("/"),
-                tq[questionEntity.photos] ?.let { path ->
-                    s3Service.getUrlFromFilename(path)
-                },
+                tuplePhotoPathList
+                    .find { tp -> tp[questionEntity.id] == tq[questionEntity.id] }
+                    ?. let { tp ->
+                        tuplePhotoPathList.remove(tp)
+                        s3Service.getUrlFromFilename(tp[photoEntity.path]!!)
+                    }
             )
         }
 
