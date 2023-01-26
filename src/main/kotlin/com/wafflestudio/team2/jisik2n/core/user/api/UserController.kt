@@ -103,6 +103,7 @@ class UserController(
     fun deleteAccount(
         @UserContext userEntity: UserEntity
     ): String {
+        println("test")
         return userService.deleteAccount(userEntity)
     }
 
