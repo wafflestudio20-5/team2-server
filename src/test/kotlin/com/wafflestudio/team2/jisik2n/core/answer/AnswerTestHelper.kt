@@ -27,6 +27,7 @@ internal class AnswerTestHelper @Autowired constructor(
             user = user,
             question = question
         )
+        question.answers.add(answer)
 
         return answerRepository.save(answer)
     }
