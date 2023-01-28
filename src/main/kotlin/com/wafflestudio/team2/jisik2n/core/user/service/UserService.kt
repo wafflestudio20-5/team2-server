@@ -10,6 +10,7 @@ import com.wafflestudio.team2.jisik2n.core.answer.database.AnswerRepository
 import com.wafflestudio.team2.jisik2n.core.question.database.QuestionRepository
 import com.wafflestudio.team2.jisik2n.core.user.database.*
 import com.wafflestudio.team2.jisik2n.core.user.dto.*
+import com.wafflestudio.team2.jisik2n.external.s3.service.S3Service
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -60,6 +61,7 @@ class UserServiceImpl(
     private val questionRepository: QuestionRepository,
     private val answerRepository: AnswerRepository,
     private val passwordEncoder: PasswordEncoder,
+    private val s3Service: S3Service,
 ) : UserService {
 
     override fun signup(signupRequest: SignupRequest): AuthToken {
@@ -231,12 +233,8 @@ class UserServiceImpl(
     override fun putAccount(userEntity: UserEntity, userRequest: UserRequest): UserResponse {
         if (userRepository.findByUsername(userRequest.username) == null) {
             userEntity.username = userRequest.username
-        } else {
-            if (userEntity.username == userRequest.username) {
-                userEntity.username = userRequest.username
-            } else {
-                throw Jisik2n409("해당 닉네임을 가진 유저가 있습니다")
-            }
+        } else if (userEntity.username != userRequest.username) {
+            throw Jisik2n409("해당 닉네임을 가진 유저가 있습니다")
         }
 
         userEntity.profileImage = userRequest.profileImage
