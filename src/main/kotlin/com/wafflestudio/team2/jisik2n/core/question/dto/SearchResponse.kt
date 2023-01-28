@@ -11,5 +11,6 @@ data class SearchResponse @QueryProjection constructor(
     val answerCount: Long,
     val questionLikeCount: Long,
     val questionCreatedAt: LocalDateTime,
-    val questionTag: List<String>
+    val questionTag: List<String>,
+    val photo: String? = null,
 )
