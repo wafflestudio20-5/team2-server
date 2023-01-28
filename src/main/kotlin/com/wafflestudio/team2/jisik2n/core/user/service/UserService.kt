@@ -10,8 +10,6 @@ import com.wafflestudio.team2.jisik2n.core.answer.database.AnswerRepository
 import com.wafflestudio.team2.jisik2n.core.question.database.QuestionRepository
 import com.wafflestudio.team2.jisik2n.core.user.database.*
 import com.wafflestudio.team2.jisik2n.core.user.dto.*
-import com.wafflestudio.team2.jisik2n.core.userAnswerInteraction.service.UserAnswerInteractionService
-import com.wafflestudio.team2.jisik2n.external.s3.service.S3Service
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -48,6 +46,8 @@ interface UserService {
 
     fun deleteAccount(userEntity: UserEntity): String
 
+    fun deleteAccountWithPassword(userEntity: UserEntity, request: Map<String, String>): String
+
     fun regenerateToken(tokenRequest: TokenRequest): AuthToken
 }
 
@@ -59,9 +59,7 @@ class UserServiceImpl(
     private val authTokenService: AuthTokenService,
     private val questionRepository: QuestionRepository,
     private val answerRepository: AnswerRepository,
-    private val userAnswerInteractionService: UserAnswerInteractionService,
     private val passwordEncoder: PasswordEncoder,
-    private val s3Service: S3Service
 ) : UserService {
 
     override fun signup(signupRequest: SignupRequest): AuthToken {
@@ -91,15 +89,15 @@ class UserServiceImpl(
         val userEntity = userRepository.findByUid(loginRequest.uid)
 
         if (userEntity == null || !userEntity.uid.equals(loginRequest.uid)) {
-            throw Jisik2n404("해당 아이디로 가입한 유저가 없습니다.")
+            throw Jisik2n404("해당 아이디로 가입한 유저가 없습니다")
         }
 
         if (userEntity.isActive == false) {
-            throw Jisik2n400("탈퇴한 회원의 아이디입니다.")
+            throw Jisik2n400("탈퇴한 회원의 아이디입니다")
         }
 
         if (!this.passwordEncoder.matches(loginRequest.password, userEntity.password)) {
-            throw Jisik2n401("비밀번호가 일치하지 않습니다.")
+            throw Jisik2n401("비밀번호가 일치하지 않습니다")
         }
 
         val accessToken = authTokenService.generateAccessTokenByUid(loginRequest.uid)
@@ -237,7 +235,7 @@ class UserServiceImpl(
             if (userEntity.username == userRequest.username) {
                 userEntity.username = userRequest.username
             } else {
-                throw Jisik2n409("해당 닉네임을 가진 유저가 있습니다.")
+                throw Jisik2n409("해당 닉네임을 가진 유저가 있습니다")
             }
         }
 
@@ -252,16 +250,26 @@ class UserServiceImpl(
         return "탈퇴가 완료되었습니다"
     }
 
+    @Transactional
+    override fun deleteAccountWithPassword(userEntity: UserEntity, request: Map<String, String>): String {
+        if (this.passwordEncoder.matches(request["password"], userEntity.password)) {
+            userEntity.isActive = false
+            return "탈퇴가 완료되었습니다"
+        } else {
+            throw Jisik2n401("비밀번호가 일치하지 않습니다")
+        }
+    }
+
     override fun regenerateToken(tokenRequest: TokenRequest): AuthToken {
         return authTokenService.regenerateToken(tokenRequest)
     }
 
     private fun checkDuplicatedUid(uid: String) {
-        userRepository.findByUid(uid)?.let { throw Jisik2n409("이미 가입한 아이디입니다.") }
+        userRepository.findByUid(uid)?.let { throw Jisik2n409("이미 가입한 아이디입니다") }
     }
 
     private fun checkDuplicatedUsername(username: String) {
-        userRepository.findByUsername(username)?.let { throw Jisik2n409("이미 생성된 별명입니다.") }
+        userRepository.findByUsername(username)?.let { throw Jisik2n409("이미 생성된 별명입니다") }
     }
 
     private fun getKakaoUserInfo(accessToken: String): HashMap<String, String> {
