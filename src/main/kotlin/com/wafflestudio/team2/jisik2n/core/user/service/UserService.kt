@@ -237,9 +237,10 @@ class UserServiceImpl(
             throw Jisik2n409("해당 닉네임을 가진 유저가 있습니다")
         }
 
-        userEntity.profileImage = userRequest.profileImage
+        val profileImagePath = userRequest.profileImage ?. let { s3Service.getFilenameFromUrl(it) }
+        userEntity.profileImage = profileImagePath
         userEntity.isMale = userRequest.isMale
-        return UserResponse(userEntity.username, userEntity.profileImage, userEntity.isMale)
+        return UserResponse(userEntity.username, userRequest.profileImage, userEntity.isMale)
     }
 
     @Transactional
