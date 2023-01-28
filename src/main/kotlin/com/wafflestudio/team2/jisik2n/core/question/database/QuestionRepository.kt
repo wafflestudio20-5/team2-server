@@ -1,5 +1,6 @@
 package com.wafflestudio.team2.jisik2n.core.question.database
 
+import com.querydsl.core.BooleanBuilder
 import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
 import com.wafflestudio.team2.jisik2n.common.SearchOrderType
@@ -91,7 +92,24 @@ class QuestionRepositoryImpl(
      *     Return Accurate pagination
      */
     override fun searchAndOrderPagination(order: SearchOrderType, isClosed: Boolean?, keyword: String, amount: Long, pageNum: Long): List<SearchResponse> {
+        val booleanBuilder = BooleanBuilder()
         // Query distinctive selection based on question entity only
+        if (keyword.isNotEmpty()) {
+            booleanBuilder.and(
+                questionEntity.title.contains(keyword) // Search for keywords
+                    .or((questionEntity.content.contains(keyword)))
+                    .or((answerEntity.content.contains(keyword)))
+            )
+        }
+        // Filter with closed if isClosed is given
+        booleanBuilder.and(
+            when (isClosed) {
+                true -> questionEntity.close.eq(true)
+                false -> questionEntity.close.eq(false)
+                null -> null
+            }
+        )
+
         val tupleQuestionList = queryFactory.select(
             questionEntity.id,
             questionEntity.title,
@@ -99,19 +117,10 @@ class QuestionRepositoryImpl(
             questionEntity.answerCount,
             questionEntity.likeCount,
             questionEntity.createdAt,
-            questionEntity.tag
+            questionEntity.tag,
         ).from(questionEntity)
             .leftJoin(questionEntity.answers, answerEntity)
-            .where(
-                questionEntity.title.contains(keyword) // Search for keywords
-                    .or((questionEntity.content.contains(keyword)))
-                    .or((answerEntity.content.contains(keyword))),
-                when (isClosed) { // Filter with close
-                    true -> questionEntity.close.eq(true)
-                    false -> questionEntity.close.eq(false)
-                    null -> null
-                }
-            )
+            .where(booleanBuilder)
             .orderBy(
                 when (order) { // Order by date or like
                     SearchOrderType.DATE -> questionEntity.createdAt.desc()
