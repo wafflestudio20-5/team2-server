@@ -14,6 +14,7 @@ class QuestionEntity(
     @Column(nullable = true)
     var title: String? = null,
 
+    @Column(columnDefinition = "text")
     var content: String,
 
     // "/" 으로 나누어서 구분
