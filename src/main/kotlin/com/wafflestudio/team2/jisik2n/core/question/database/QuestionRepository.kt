@@ -1,9 +1,11 @@
 package com.wafflestudio.team2.jisik2n.core.question.database
 
+import com.querydsl.core.BooleanBuilder
 import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
 import com.wafflestudio.team2.jisik2n.common.SearchOrderType
 import com.wafflestudio.team2.jisik2n.core.answer.database.QAnswerEntity.answerEntity
+import com.wafflestudio.team2.jisik2n.core.photo.database.QPhotoEntity.photoEntity
 import com.wafflestudio.team2.jisik2n.core.question.database.QQuestionEntity.questionEntity
 import com.wafflestudio.team2.jisik2n.core.question.dto.SearchResponse
 import com.wafflestudio.team2.jisik2n.core.user.dto.QuestionsOfMyAllProfile
@@ -12,6 +14,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Component
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
 import com.wafflestudio.team2.jisik2n.core.userQuestionLike.database.QUserQuestionLikeEntity
+import com.wafflestudio.team2.jisik2n.external.s3.service.S3Service
 
 interface QuestionRepository : JpaRepository<QuestionEntity, Long>, CustomQuestionRepository {
     fun findAllByUser(user: UserEntity): List<QuestionEntity>
@@ -32,7 +35,8 @@ interface CustomQuestionRepository {
 
 @Component
 class QuestionRepositoryImpl(
-    private val queryFactory: JPAQueryFactory
+    private val queryFactory: JPAQueryFactory,
+    private val s3Service: S3Service,
 ) : CustomQuestionRepository {
     override fun getQuestionsOfMyQuestions(username: String): List<QuestionsOfMyQuestions> {
         val questionEntity: QQuestionEntity = QQuestionEntity.questionEntity
@@ -42,6 +46,7 @@ class QuestionRepositoryImpl(
                 QuestionsOfMyQuestions::class.java,
                 questionEntity.id,
                 questionEntity.title,
+                questionEntity.content,
                 questionEntity.createdAt,
                 questionEntity.answerCount
             )
@@ -91,7 +96,24 @@ class QuestionRepositoryImpl(
      *     Return Accurate pagination
      */
     override fun searchAndOrderPagination(order: SearchOrderType, isClosed: Boolean?, keyword: String, amount: Long, pageNum: Long): List<SearchResponse> {
+        val booleanBuilder = BooleanBuilder()
         // Query distinctive selection based on question entity only
+        if (keyword.isNotEmpty()) {
+            booleanBuilder.and(
+                questionEntity.title.contains(keyword) // Search for keywords
+                    .or((questionEntity.content.contains(keyword)))
+                    .or((answerEntity.content.contains(keyword)))
+            )
+        }
+        // Filter with closed if isClosed is given
+        booleanBuilder.and(
+            when (isClosed) {
+                true -> questionEntity.close.eq(true)
+                false -> questionEntity.close.eq(false)
+                null -> null
+            }
+        )
+
         val tupleQuestionList = queryFactory.select(
             questionEntity.id,
             questionEntity.title,
@@ -99,19 +121,10 @@ class QuestionRepositoryImpl(
             questionEntity.answerCount,
             questionEntity.likeCount,
             questionEntity.createdAt,
-            questionEntity.tag
+            questionEntity.tag,
         ).from(questionEntity)
             .leftJoin(questionEntity.answers, answerEntity)
-            .where(
-                questionEntity.title.contains(keyword) // Search for keywords
-                    .or((questionEntity.content.contains(keyword)))
-                    .or((answerEntity.content.contains(keyword))),
-                when (isClosed) { // Filter with close
-                    true -> questionEntity.close.eq(true)
-                    false -> questionEntity.close.eq(false)
-                    null -> null
-                }
-            )
+            .where(booleanBuilder)
             .orderBy(
                 when (order) { // Order by date or like
                     SearchOrderType.DATE -> questionEntity.createdAt.desc()
@@ -125,13 +138,14 @@ class QuestionRepositoryImpl(
             .limit(amount)
             .fetch()
 
+        val searchedQuestionIds = tupleQuestionList.map { it[questionEntity.id] }
         // Additional query for getting answer content
         val tupleAnswerList = queryFactory
             .select(questionEntity.id, answerEntity.content)
             .from(answerEntity)
             .rightJoin(answerEntity.question, questionEntity)
             .where(
-                questionEntity.id.`in`(tupleQuestionList.map { it[questionEntity.id] }),
+                questionEntity.id.`in`(searchedQuestionIds),
                 answerEntity.content.contains(keyword)
             )
             .orderBy(
@@ -142,8 +156,24 @@ class QuestionRepositoryImpl(
                 },
                 questionEntity.id.desc(),
                 answerEntity.id.asc(),
-            )
-            .fetch()
+            ).fetch()
+
+        // Additional query for getting first photo
+        val tuplePhotoPathList = queryFactory
+            .select(questionEntity.id, photoEntity.path)
+            .from(photoEntity)
+            .rightJoin(photoEntity.question, questionEntity)
+            .where(
+                questionEntity.id.`in`(searchedQuestionIds),
+                photoEntity.photosOrder.eq(0)
+            ).orderBy(
+                when (order) { // Order by date or like
+                    SearchOrderType.DATE -> questionEntity.createdAt.desc()
+                    SearchOrderType.LIKE -> questionEntity.likeCount.desc()
+                    SearchOrderType.ANSWER -> questionEntity.answerCount.desc()
+                },
+                questionEntity.id.desc(),
+            ).fetch()
 
         // Map to SearchResponse with queried tuples
         val searchResponses = tupleQuestionList.map { tq ->
@@ -164,7 +194,13 @@ class QuestionRepositoryImpl(
                 tq[questionEntity.answerCount]!!,
                 tq[questionEntity.likeCount]!!,
                 tq[questionEntity.createdAt]!!,
-                if (tq[questionEntity.tag] == "") listOf() else tq[questionEntity.tag]!!.split("/")
+                if (tq[questionEntity.tag] == "") listOf() else tq[questionEntity.tag]!!.split("/"),
+                tuplePhotoPathList
+                    .find { tp -> tp[questionEntity.id] == tq[questionEntity.id] }
+                    ?. let { tp ->
+                        tuplePhotoPathList.remove(tp)
+                        s3Service.getUrlFromFilename(tp[photoEntity.path]!!)
+                    }
             )
         }
 
