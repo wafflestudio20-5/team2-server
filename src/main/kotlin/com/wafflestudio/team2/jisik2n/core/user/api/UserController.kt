@@ -54,7 +54,6 @@ class UserController(
 
     @PostMapping("logout")
     fun logout(@RequestBody tokenRequest: TokenRequest): String {
-        println("test")
         return userService.logout(tokenRequest)
     }
 

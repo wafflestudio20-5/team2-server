@@ -2,10 +2,7 @@ package com.wafflestudio.team2.jisik2n.core.user.service
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import com.wafflestudio.team2.jisik2n.common.Jisik2n400
-import com.wafflestudio.team2.jisik2n.common.Jisik2n401
-import com.wafflestudio.team2.jisik2n.common.Jisik2n404
-import com.wafflestudio.team2.jisik2n.common.Jisik2n409
+import com.wafflestudio.team2.jisik2n.common.*
 import com.wafflestudio.team2.jisik2n.core.answer.database.AnswerRepository
 import com.wafflestudio.team2.jisik2n.core.question.database.QuestionRepository
 import com.wafflestudio.team2.jisik2n.core.user.database.*
@@ -93,7 +90,7 @@ class UserServiceImpl(
         }
 
         if (userEntity.isActive == false) {
-            throw Jisik2n400("탈퇴한 회원의 아이디입니다")
+            throw Jisik2n403("탈퇴한 회원의 아이디입니다")
         }
 
         if (!this.passwordEncoder.matches(loginRequest.password, userEntity.password)) {
