@@ -68,9 +68,11 @@ class UserController(
     @Authenticated
     @GetMapping("myAnswers")
     fun getMyAnswers(
-        @UserContext userEntity: UserEntity
+        @UserContext userEntity: UserEntity,
+        @RequestParam(required = false, defaultValue = "20") amount: Long,
+        @RequestParam(required = false, defaultValue = "0") pageNum: Long,
     ): List<AnswersOfMyAnswers> {
-        return userService.getMyAnswers(userEntity)
+        return userService.getMyAnswers(userEntity, amount, pageNum)
     }
 
     @Authenticated

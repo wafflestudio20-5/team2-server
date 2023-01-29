@@ -5,7 +5,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory
 import com.wafflestudio.team2.jisik2n.core.answer.database.QAnswerEntity.answerEntity
 import com.wafflestudio.team2.jisik2n.core.answer.dto.AnswerResponse
 import com.wafflestudio.team2.jisik2n.core.photo.database.QPhotoEntity.photoEntity
-import com.wafflestudio.team2.jisik2n.core.question.database.QQuestionEntity
 import com.wafflestudio.team2.jisik2n.core.question.database.QQuestionEntity.questionEntity
 import com.wafflestudio.team2.jisik2n.core.user.database.QUserEntity.userEntity
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
@@ -31,7 +30,7 @@ interface CustomAnswerRepository {
         loginUser: UserEntity?
     ): List<AnswerResponse>
 
-    fun getAnswersOfMyAnswers(username: String): List<AnswersOfMyAnswers>
+    fun getAnswersOfMyAnswers(userId: Long, amount: Long, pageNum: Long): List<AnswersOfMyAnswers>
 
     fun getAnswersOfMyAllProfile(username: String): List<AnswersOfMyAllProfile>
 }
@@ -124,9 +123,11 @@ class CustomAnswerRepositoryImpl(
         }
     }
 
-    override fun getAnswersOfMyAnswers(username: String): List<AnswersOfMyAnswers> {
-        val answerEntity: QAnswerEntity = QAnswerEntity.answerEntity
-        val questionEntity: QQuestionEntity = QQuestionEntity.questionEntity
+    override fun getAnswersOfMyAnswers(
+        userId: Long,
+        amount: Long,
+        pageNum: Long
+    ): List<AnswersOfMyAnswers> {
         return queryFactory.select(
             Projections.constructor(
                 AnswersOfMyAnswers::class.java,
@@ -135,10 +136,18 @@ class CustomAnswerRepositoryImpl(
                 answerEntity.createdAt
             )
         )
-            .from(answerEntity).where(answerEntity.user.username.eq(username))
-            .leftJoin(questionEntity).on(answerEntity.question.eq(questionEntity)).fetchJoin()
+            .from(answerEntity)
+            .join(answerEntity.question, questionEntity)
+            .join(answerEntity.user, userEntity)
+            .where(answerEntity.user.id.eq(userId))
             .orderBy(answerEntity.createdAt.asc())
+            .offset(amount * pageNum)
+            .limit(amount)
             .fetch()
+        // .from(answerEntity).where(answerEntity.user.username.eq(username))
+        // .leftJoin(questionEntity).on(answerEntity.question.eq(questionEntity)).fetchJoin()
+        // .orderBy(answerEntity.createdAt.asc())
+        // .fetch()
     }
 
     override fun getAnswersOfMyAllProfile(username: String): List<AnswersOfMyAllProfile> {
