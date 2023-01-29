@@ -81,6 +81,7 @@ class QuestionRepositoryImpl(
                 QuestionsOfMyQuestions::class.java,
                 questionEntity.id,
                 questionEntity.title,
+                questionEntity.content,
                 questionEntity.createdAt,
                 questionEntity.answerCount
             )
