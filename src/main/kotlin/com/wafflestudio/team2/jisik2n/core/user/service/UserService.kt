@@ -220,10 +220,11 @@ class UserServiceImpl(
     override fun getMyLikeQuestions(userEntity: UserEntity): List<QuestionsOfMyQuestions> {
         return questionRepository.getQuestionsOfMyLikeQuestions(userEntity.username)
     }
+
     override fun getMyAllProfile(userEntity: UserEntity): MyAllProfileResponse {
         val questions: List<QuestionsOfMyAllProfile> = questionRepository.getQuestionsOfMyAllProfile(userEntity.username)
         val answers: List<AnswersOfMyAllProfile> = answerRepository.getAnswersOfMyAllProfile(userEntity.username)
-        return MyAllProfileResponse.of(userEntity, questions, answers)
+        return MyAllProfileResponse.of(userEntity, questions, answers) { s3Service.getUrlFromFilename(it) }
     }
 
     @Transactional
