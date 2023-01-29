@@ -176,6 +176,9 @@ class UserServiceImpl(
             return LoginResponse.of(tokenEntity, kakaoUsername)
         } else {
             val userEntity = userRepository.findByUsername(kakaoUsername)!!
+            if (userEntity.isActive == false) {
+                throw Jisik2n403("탈퇴한 회원의 아이디입니다")
+            }
             val accessToken = authTokenService.generateAccessTokenByUid(kakaoUsername)
 
             val lastLogin = LocalDateTime.from(authTokenService.getCurrentIssuedAt(accessToken))
