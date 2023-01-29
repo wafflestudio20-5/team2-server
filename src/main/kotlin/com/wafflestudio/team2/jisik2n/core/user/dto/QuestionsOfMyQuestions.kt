@@ -5,6 +5,7 @@ import java.time.LocalDateTime
 data class QuestionsOfMyQuestions(
     val id: Long,
     val title: String,
+    val content: String,
     val createdAt: LocalDateTime,
     val answerCount: Long
 )
