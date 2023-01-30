@@ -12,17 +12,6 @@ import org.springframework.web.multipart.MultipartFile
 class PhotoController(
     private val s3Service: S3Service,
 ) {
-    @PostMapping("/test", consumes = ["multipart/form-data"])
-    fun uploadPhotoTest(@RequestParam image: MultipartFile): String {
-        return s3Service.upload(image)
-    }
-
-    @DeleteMapping("/test")
-    fun deletePhotoTest(@RequestParam(name = "url") url: String): ResponseEntity<String> {
-        s3Service.deleteWithUrl(url)
-        return ResponseEntity<String>(url, HttpStatus.OK)
-    }
-
     @Authenticated
     @PostMapping(consumes = ["multipart/form-data"])
     fun uploadPhoto(@RequestParam image: MultipartFile): String {
