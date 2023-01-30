@@ -1,6 +1,7 @@
 package com.wafflestudio.team2.jisik2n.core.photo.api
 
 import com.wafflestudio.team2.jisik2n.common.Authenticated
+import com.wafflestudio.team2.jisik2n.core.photo.dto.PhotoContentResponse
 import com.wafflestudio.team2.jisik2n.external.s3.service.S3Service
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -17,6 +18,13 @@ class PhotoController(
     fun uploadPhoto(@RequestParam image: MultipartFile): String {
         return s3Service.upload(image)
     }
+
+    @Authenticated
+    @PostMapping("/content", consumes = ["multipart/form-data"])
+    fun uploadContentPhoto(
+        @RequestPart image: MultipartFile,
+        @RequestParam order: Int,
+    ) = PhotoContentResponse(s3Service.upload(image), order)
 
     @Authenticated
     @DeleteMapping
