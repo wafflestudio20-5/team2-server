@@ -80,9 +80,11 @@ class UserController(
     @Authenticated
     @GetMapping("myLikeQuestions")
     fun getMyLikeQuestions(
-        @UserContext userEntity: UserEntity
+        @UserContext userEntity: UserEntity,
+        @RequestParam(required = false, defaultValue = "20") amount: Long,
+        @RequestParam(required = false, defaultValue = "0") pageNum: Long,
     ): List<QuestionsOfMyQuestions> {
-        return userService.getMyLikeQuestions(userEntity)
+        return userService.getMyLikeQuestions(userEntity, amount, pageNum)
     }
 
     @Authenticated

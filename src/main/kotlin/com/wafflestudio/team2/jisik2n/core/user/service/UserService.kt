@@ -36,7 +36,7 @@ interface UserService {
 
     fun getMyAnswers(userEntity: UserEntity, amount: Long, pageNum: Long): List<AnswersOfMyAnswers>
 
-    fun getMyLikeQuestions(userEntity: UserEntity): List<QuestionsOfMyQuestions>
+    fun getMyLikeQuestions(userEntity: UserEntity, amount: Long, pageNum: Long): List<QuestionsOfMyQuestions>
 
     fun getMyAllProfile(userEntity: UserEntity): MyAllProfileResponse
 
@@ -220,8 +220,8 @@ class UserServiceImpl(
         return answerRepository.getAnswersOfMyAnswers(userEntity.id, amount, pageNum)
     }
 
-    override fun getMyLikeQuestions(userEntity: UserEntity): List<QuestionsOfMyQuestions> {
-        return questionRepository.getQuestionsOfMyLikeQuestions(userEntity.username)
+    override fun getMyLikeQuestions(userEntity: UserEntity, amount: Long, pageNum: Long): List<QuestionsOfMyQuestions> {
+        return questionRepository.getQuestionsOfMyLikeQuestions(userEntity.id, amount, pageNum)
     }
 
     override fun getMyAllProfile(userEntity: UserEntity): MyAllProfileResponse {
