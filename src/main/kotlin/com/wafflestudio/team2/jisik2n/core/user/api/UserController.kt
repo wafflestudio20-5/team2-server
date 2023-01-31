@@ -60,25 +60,31 @@ class UserController(
     @Authenticated
     @GetMapping("myQuestions")
     fun getMyQuestions(
-        @UserContext userEntity: UserEntity
+        @UserContext userEntity: UserEntity,
+        @RequestParam(required = false, defaultValue = "20") amount: Long,
+        @RequestParam(required = false, defaultValue = "0") pageNum: Long,
     ): List<QuestionsOfMyQuestions> {
-        return userService.getMyQuestions(userEntity)
+        return userService.getMyQuestions(userEntity, amount, pageNum)
     }
 
     @Authenticated
     @GetMapping("myAnswers")
     fun getMyAnswers(
-        @UserContext userEntity: UserEntity
+        @UserContext userEntity: UserEntity,
+        @RequestParam(required = false, defaultValue = "20") amount: Long,
+        @RequestParam(required = false, defaultValue = "0") pageNum: Long,
     ): List<AnswersOfMyAnswers> {
-        return userService.getMyAnswers(userEntity)
+        return userService.getMyAnswers(userEntity, amount, pageNum)
     }
 
     @Authenticated
     @GetMapping("myLikeQuestions")
     fun getMyLikeQuestions(
-        @UserContext userEntity: UserEntity
+        @UserContext userEntity: UserEntity,
+        @RequestParam(required = false, defaultValue = "20") amount: Long,
+        @RequestParam(required = false, defaultValue = "0") pageNum: Long,
     ): List<QuestionsOfMyQuestions> {
-        return userService.getMyLikeQuestions(userEntity)
+        return userService.getMyLikeQuestions(userEntity, amount, pageNum)
     }
 
     @Authenticated
