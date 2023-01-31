@@ -41,6 +41,7 @@ class UserController(
 
     @GetMapping("kakaoLogin")
     fun kakaoLogin(@RequestParam(value = "accessToken", required = false) accessToken: String): LoginResponse {
+        println("test")
         return userService.kakaoLogin(accessToken)
     }
 
