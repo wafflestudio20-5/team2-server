@@ -19,6 +19,7 @@ internal class UserTestHelper @Autowired constructor(
 
     fun createTestUser(id: Long): UserEntity {
         val user = UserEntity(
+            uid = "uid$id",
             username = "usernameTest$id",
             password = "passwordTest$id",
             isMale = true,
