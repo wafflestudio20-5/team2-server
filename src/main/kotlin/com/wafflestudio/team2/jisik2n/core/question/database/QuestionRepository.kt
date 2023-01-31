@@ -12,12 +12,14 @@ import com.wafflestudio.team2.jisik2n.core.user.dto.QuestionsOfMyAllProfile
 import com.wafflestudio.team2.jisik2n.core.user.dto.QuestionsOfMyQuestions
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Component
-import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
 import com.wafflestudio.team2.jisik2n.core.userQuestionLike.database.QUserQuestionLikeEntity
 import com.wafflestudio.team2.jisik2n.external.s3.service.S3Service
+import org.springframework.data.domain.Pageable
 
 interface QuestionRepository : JpaRepository<QuestionEntity, Long>, CustomQuestionRepository {
-    fun findAllByUser(user: UserEntity): List<QuestionEntity>
+    fun findAllBy(pageable: Pageable): List<QuestionEntity>
+
+    fun countBy(): Long
 }
 
 interface CustomQuestionRepository {

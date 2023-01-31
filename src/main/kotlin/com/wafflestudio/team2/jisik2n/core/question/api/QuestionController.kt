@@ -75,4 +75,9 @@ class QuestionController(
     ): QuestionDto {
         return questionService.getQuestion(id)
     }
+
+    @GetMapping("random")
+    fun getRandomQuestion(): QuestionDto {
+        return questionService.getRandomQuestion()
+    }
 }

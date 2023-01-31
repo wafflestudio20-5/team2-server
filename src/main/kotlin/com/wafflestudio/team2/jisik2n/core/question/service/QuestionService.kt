@@ -13,6 +13,8 @@ import com.wafflestudio.team2.jisik2n.core.question.dto.SearchResponse
 import com.wafflestudio.team2.jisik2n.core.question.dto.UpdateQuestionRequest
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
 import com.wafflestudio.team2.jisik2n.external.s3.service.S3Service
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -29,6 +31,7 @@ interface QuestionService {
     fun createQuestion(request: CreateQuestionRequest, userEntity: UserEntity): QuestionDto
     fun updateQuestion(questionId: Long, request: UpdateQuestionRequest, userEntity: UserEntity): QuestionDto
     fun deleteQuestion(questionId: Long, userEntity: UserEntity)
+    fun getRandomQuestion(): QuestionDto
 }
 
 @Service
@@ -109,5 +112,14 @@ class QuestionServiceImpl(
         }
 
         questionRepository.delete(questionEntity)
+    }
+
+    override fun getRandomQuestion(): QuestionDto {
+        val count: Long = questionRepository.countBy()
+        val idx = (Math.random() * count).toInt()
+        val pageable: Pageable = PageRequest.of(idx, 1)
+        val question: List<QuestionEntity> = questionRepository.findAllBy(pageable)
+
+        return QuestionDto.of(question[0], s3Service)
     }
 }
