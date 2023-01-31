@@ -16,7 +16,8 @@ data class MyAllProfileResponse(
         fun of(
             userEntity: UserEntity,
             questions: List<QuestionsOfMyAllProfile>,
-            answers: List<AnswersOfMyAllProfile>
+            answers: List<AnswersOfMyAllProfile>,
+            getImageUrl: (String) -> String,
         ): MyAllProfileResponse {
             return MyAllProfileResponse(
                 id = userEntity.id,
@@ -24,7 +25,7 @@ data class MyAllProfileResponse(
                 snsId = userEntity.snsId,
                 username = userEntity.username,
                 isMale = userEntity.isMale,
-                profileImage = userEntity.profileImage,
+                profileImage = userEntity.profileImage?.let { getImageUrl(it) },
                 questions = questions,
                 answers = answers
             )

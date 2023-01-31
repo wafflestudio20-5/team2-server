@@ -21,7 +21,7 @@ interface QuestionRepository : JpaRepository<QuestionEntity, Long>, CustomQuesti
 }
 
 interface CustomQuestionRepository {
-    fun getQuestionsOfMyQuestions(username: String): List<QuestionsOfMyQuestions>
+    fun getQuestionsOfMyQuestions(userId: Long, amount: Long, pageNum: Long): List<QuestionsOfMyQuestions>
     fun getQuestionsOfMyAllProfile(username: String): List<QuestionsOfMyAllProfile>
     fun getQuestionsOfMyLikeQuestions(username: String): List<QuestionsOfMyQuestions>
     fun searchAndOrderPagination(
@@ -38,9 +38,11 @@ class QuestionRepositoryImpl(
     private val queryFactory: JPAQueryFactory,
     private val s3Service: S3Service,
 ) : CustomQuestionRepository {
-    override fun getQuestionsOfMyQuestions(username: String): List<QuestionsOfMyQuestions> {
-        val questionEntity: QQuestionEntity = QQuestionEntity.questionEntity
-
+    override fun getQuestionsOfMyQuestions(
+        userId: Long,
+        amount: Long,
+        pageNum: Long,
+    ): List<QuestionsOfMyQuestions> {
         return queryFactory.select(
             Projections.constructor(
                 QuestionsOfMyQuestions::class.java,
@@ -51,8 +53,12 @@ class QuestionRepositoryImpl(
                 questionEntity.answerCount
             )
         )
-            .from(questionEntity).where(questionEntity.user.username.eq(username))
-            .orderBy(questionEntity.createdAt.asc()).fetch()
+            .from(questionEntity)
+            .where(questionEntity.user.id.eq(userId))
+            .orderBy(questionEntity.createdAt.asc())
+            .offset(pageNum * amount)
+            .limit(amount)
+            .fetch()
     }
 
     override fun getQuestionsOfMyAllProfile(username: String): List<QuestionsOfMyAllProfile> {
@@ -81,6 +87,7 @@ class QuestionRepositoryImpl(
                 QuestionsOfMyQuestions::class.java,
                 questionEntity.id,
                 questionEntity.title,
+                questionEntity.content,
                 questionEntity.createdAt,
                 questionEntity.answerCount
             )

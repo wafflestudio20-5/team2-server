@@ -138,16 +138,11 @@ class CustomAnswerRepositoryImpl(
         )
             .from(answerEntity)
             .join(answerEntity.question, questionEntity)
-            .join(answerEntity.user, userEntity)
             .where(answerEntity.user.id.eq(userId))
             .orderBy(answerEntity.createdAt.asc())
             .offset(amount * pageNum)
             .limit(amount)
             .fetch()
-        // .from(answerEntity).where(answerEntity.user.username.eq(username))
-        // .leftJoin(questionEntity).on(answerEntity.question.eq(questionEntity)).fetchJoin()
-        // .orderBy(answerEntity.createdAt.asc())
-        // .fetch()
     }
 
     override fun getAnswersOfMyAllProfile(username: String): List<AnswersOfMyAllProfile> {

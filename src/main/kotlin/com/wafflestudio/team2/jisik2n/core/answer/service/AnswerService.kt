@@ -11,8 +11,6 @@ import com.wafflestudio.team2.jisik2n.core.photo.service.PhotoService
 import com.wafflestudio.team2.jisik2n.core.question.database.QuestionRepository
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
 import com.wafflestudio.team2.jisik2n.core.userAnswerInteraction.database.UserAnswerInteractionRepository
-import com.wafflestudio.team2.jisik2n.core.userAnswerInteraction.service.UserAnswerInteractionService
-import com.wafflestudio.team2.jisik2n.external.s3.service.S3Service
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -45,8 +43,6 @@ class AnswerServiceImpl(
     private val questionRepository: QuestionRepository,
     private val userAnswerInteractionRepository: UserAnswerInteractionRepository,
     private val photoService: PhotoService,
-    private val s3Service: S3Service,
-    private val userAnswerInteractionService: UserAnswerInteractionService,
 ) : AnswerService {
     override fun getAnswersOfQuestion(questionId: Long, loginUser: UserEntity?): List<AnswerResponse> {
         if (!questionRepository.existsById(questionId)) {
@@ -89,6 +85,7 @@ class AnswerServiceImpl(
 
         // Add 1 to answer count
         question.answerCount++
+        question.answers.add(newAnswer)
 
         // Add photos to newAnswer
         photoService.initiallyAddPhotos(newAnswer, answerRequest.photos)
@@ -174,6 +171,7 @@ class AnswerServiceImpl(
 
             // -1 to answer count
             answer.question.answerCount--
+            answer.question.answers.remove(answer)
 
             answerRepository.deleteById(answerId)
         }

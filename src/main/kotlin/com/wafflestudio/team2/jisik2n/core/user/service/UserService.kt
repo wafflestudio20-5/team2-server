@@ -32,7 +32,7 @@ interface UserService {
 
     fun logout(token: TokenRequest): String
 
-    fun getMyQuestions(userEntity: UserEntity): List<QuestionsOfMyQuestions>
+    fun getMyQuestions(userEntity: UserEntity, amount: Long, pageNum: Long): List<QuestionsOfMyQuestions>
 
     fun getMyAnswers(userEntity: UserEntity, amount: Long, pageNum: Long): List<AnswersOfMyAnswers>
 
@@ -176,6 +176,9 @@ class UserServiceImpl(
             return LoginResponse.of(tokenEntity, kakaoUsername)
         } else {
             val userEntity = userRepository.findByUsername(kakaoUsername)!!
+            if (userEntity.isActive == false) {
+                throw Jisik2n403("탈퇴한 회원의 아이디입니다")
+            }
             val accessToken = authTokenService.generateAccessTokenByUid(kakaoUsername)
 
             val lastLogin = LocalDateTime.from(authTokenService.getCurrentIssuedAt(accessToken))
@@ -209,8 +212,8 @@ class UserServiceImpl(
         }
     }
 
-    override fun getMyQuestions(userEntity: UserEntity): List<QuestionsOfMyQuestions> {
-        return questionRepository.getQuestionsOfMyQuestions(userEntity.username)
+    override fun getMyQuestions(userEntity: UserEntity, amount: Long, pageNum: Long): List<QuestionsOfMyQuestions> {
+        return questionRepository.getQuestionsOfMyQuestions(userEntity.id, amount, pageNum)
     }
 
     override fun getMyAnswers(userEntity: UserEntity, amount: Long, pageNum: Long): List<AnswersOfMyAnswers> {
@@ -220,10 +223,11 @@ class UserServiceImpl(
     override fun getMyLikeQuestions(userEntity: UserEntity): List<QuestionsOfMyQuestions> {
         return questionRepository.getQuestionsOfMyLikeQuestions(userEntity.username)
     }
+
     override fun getMyAllProfile(userEntity: UserEntity): MyAllProfileResponse {
         val questions: List<QuestionsOfMyAllProfile> = questionRepository.getQuestionsOfMyAllProfile(userEntity.username)
         val answers: List<AnswersOfMyAllProfile> = answerRepository.getAnswersOfMyAllProfile(userEntity.username)
-        return MyAllProfileResponse.of(userEntity, questions, answers)
+        return MyAllProfileResponse.of(userEntity, questions, answers) { s3Service.getUrlFromFilename(it) }
     }
 
     @Transactional
