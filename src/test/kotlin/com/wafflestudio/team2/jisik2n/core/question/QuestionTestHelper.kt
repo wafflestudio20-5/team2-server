@@ -1,7 +1,6 @@
 package com.wafflestudio.team2.jisik2n.core.question
 
 import com.wafflestudio.team2.jisik2n.core.photo.database.PhotoRepository
-import com.wafflestudio.team2.jisik2n.core.photo.dto.PhotoRequest
 import com.wafflestudio.team2.jisik2n.core.question.database.QuestionEntity
 import com.wafflestudio.team2.jisik2n.core.question.database.QuestionRepository
 import com.wafflestudio.team2.jisik2n.core.user.UserTestHelper
@@ -27,7 +26,7 @@ internal class QuestionTestHelper @Autowired constructor(
         questionRepository.deleteAll()
     }
 
-    fun createTestQuestion(id: Long, user: UserEntity, photos: List<PhotoRequest> = listOf()): QuestionEntity {
+    fun createTestQuestion(id: Long, user: UserEntity, photos: List<String> = listOf()): QuestionEntity {
         val question = QuestionEntity(
             title = "titleTest$id",
             content = "contentTest$id",

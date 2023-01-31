@@ -4,7 +4,6 @@ import com.wafflestudio.team2.jisik2n.common.Jisik2n400
 import com.wafflestudio.team2.jisik2n.common.Jisik2n401
 import com.wafflestudio.team2.jisik2n.common.SearchOrderType
 import com.wafflestudio.team2.jisik2n.core.photo.database.PhotoRepository
-import com.wafflestudio.team2.jisik2n.core.photo.dto.PhotoRequest
 import com.wafflestudio.team2.jisik2n.core.photo.service.PhotoService
 import com.wafflestudio.team2.jisik2n.core.photo.service.PhotoServiceImpl
 import com.wafflestudio.team2.jisik2n.core.question.database.QuestionEntity
@@ -107,7 +106,7 @@ internal class QuestionServiceTest @Autowired constructor(
     @Test
     fun `Update Question`() {
         val user = userTestHelper.createTestUser(1)
-        val photos = listOf(PhotoRequest("photo#1", 1))
+        val photos = listOf("photo#1")
         val question: QuestionEntity = questionTestHelper.createTestQuestion(1, user, photos)
 
         val mockQuestionService: QuestionService = spyk(
@@ -152,7 +151,7 @@ internal class QuestionServiceTest @Autowired constructor(
     @Test
     fun `Update Question - Wrong user`() {
         val user = userTestHelper.createTestUser(1)
-        val photos = listOf(PhotoRequest("photo#1", 1))
+        val photos = listOf("photo#1")
         val question: QuestionEntity = questionTestHelper.createTestQuestion(1, user, photos)
         val updateQuestionRequest = UpdateQuestionRequest(
             title = "updateTitle",
