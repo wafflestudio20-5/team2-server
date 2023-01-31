@@ -16,6 +16,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.time.LocalDateTime
 import javax.transaction.Transactional
+import kotlin.collections.HashMap
 
 interface UserService {
     fun signup(signupRequest: SignupRequest): AuthToken
@@ -164,7 +165,7 @@ class UserServiceImpl(
 
         val kakaoUsername = "kakao-$username"
         if (userRepository.findByUsername(kakaoUsername) == null) {
-            userRepository.save(UserEntity(kakaoUsername, snsId, kakaoUsername, null, null, gender, null, null))
+            userRepository.save(UserEntity(kakaoUsername, snsId, kakaoUsername, null, LocalDateTime.now(), gender, null, true))
 
             val accessToken = authTokenService.generateAccessTokenByUid(kakaoUsername)
             val refreshToken = authTokenService.generateRefreshTokenByUid(kakaoUsername)
