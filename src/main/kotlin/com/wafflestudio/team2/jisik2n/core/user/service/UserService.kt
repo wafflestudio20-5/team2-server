@@ -16,6 +16,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.time.LocalDateTime
 import javax.transaction.Transactional
+import kotlin.collections.HashMap
 
 interface UserService {
     fun signup(signupRequest: SignupRequest): AuthToken
@@ -32,11 +33,11 @@ interface UserService {
 
     fun logout(token: TokenRequest): String
 
-    fun getMyQuestions(userEntity: UserEntity): List<QuestionsOfMyQuestions>
+    fun getMyQuestions(userEntity: UserEntity, amount: Long, pageNum: Long): List<QuestionsOfMyQuestions>
 
-    fun getMyAnswers(userEntity: UserEntity): List<AnswersOfMyAnswers>
+    fun getMyAnswers(userEntity: UserEntity, amount: Long, pageNum: Long): List<AnswersOfMyAnswers>
 
-    fun getMyLikeQuestions(userEntity: UserEntity): List<QuestionsOfMyQuestions>
+    fun getMyLikeQuestions(userEntity: UserEntity, amount: Long, pageNum: Long): List<QuestionsOfMyQuestions>
 
     fun getMyAllProfile(userEntity: UserEntity): MyAllProfileResponse
 
@@ -164,7 +165,7 @@ class UserServiceImpl(
 
         val kakaoUsername = "kakao-$username"
         if (userRepository.findByUsername(kakaoUsername) == null) {
-            userRepository.save(UserEntity(kakaoUsername, snsId, kakaoUsername, null, null, gender, null, null))
+            userRepository.save(UserEntity(kakaoUsername, snsId, kakaoUsername, null, LocalDateTime.now(), gender, null, true))
 
             val accessToken = authTokenService.generateAccessTokenByUid(kakaoUsername)
             val refreshToken = authTokenService.generateRefreshTokenByUid(kakaoUsername)
@@ -212,16 +213,16 @@ class UserServiceImpl(
         }
     }
 
-    override fun getMyQuestions(userEntity: UserEntity): List<QuestionsOfMyQuestions> {
-        return questionRepository.getQuestionsOfMyQuestions(userEntity.username)
+    override fun getMyQuestions(userEntity: UserEntity, amount: Long, pageNum: Long): List<QuestionsOfMyQuestions> {
+        return questionRepository.getQuestionsOfMyQuestions(userEntity.id, amount, pageNum)
     }
 
-    override fun getMyAnswers(userEntity: UserEntity): List<AnswersOfMyAnswers> {
-        return answerRepository.getAnswersOfMyAnswers(userEntity.username)
+    override fun getMyAnswers(userEntity: UserEntity, amount: Long, pageNum: Long): List<AnswersOfMyAnswers> {
+        return answerRepository.getAnswersOfMyAnswers(userEntity.id, amount, pageNum)
     }
 
-    override fun getMyLikeQuestions(userEntity: UserEntity): List<QuestionsOfMyQuestions> {
-        return questionRepository.getQuestionsOfMyLikeQuestions(userEntity.username)
+    override fun getMyLikeQuestions(userEntity: UserEntity, amount: Long, pageNum: Long): List<QuestionsOfMyQuestions> {
+        return questionRepository.getQuestionsOfMyLikeQuestions(userEntity.id, amount, pageNum)
     }
 
     override fun getMyAllProfile(userEntity: UserEntity): MyAllProfileResponse {

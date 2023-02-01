@@ -8,22 +8,25 @@ import com.wafflestudio.team2.jisik2n.core.answer.database.QAnswerEntity.answerE
 import com.wafflestudio.team2.jisik2n.core.photo.database.QPhotoEntity.photoEntity
 import com.wafflestudio.team2.jisik2n.core.question.database.QQuestionEntity.questionEntity
 import com.wafflestudio.team2.jisik2n.core.question.dto.SearchResponse
+import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
 import com.wafflestudio.team2.jisik2n.core.user.dto.QuestionsOfMyAllProfile
 import com.wafflestudio.team2.jisik2n.core.user.dto.QuestionsOfMyQuestions
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Component
-import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
-import com.wafflestudio.team2.jisik2n.core.userQuestionLike.database.QUserQuestionLikeEntity
+import com.wafflestudio.team2.jisik2n.core.userQuestionLike.database.QUserQuestionLikeEntity.userQuestionLikeEntity
 import com.wafflestudio.team2.jisik2n.external.s3.service.S3Service
+import org.springframework.data.domain.Pageable
 
 interface QuestionRepository : JpaRepository<QuestionEntity, Long>, CustomQuestionRepository {
-    fun findAllByUser(user: UserEntity): List<QuestionEntity>
+    fun findAllBy(pageable: Pageable): List<QuestionEntity>
+    fun findAllByUser(user: UserEntity): List<QuestionEntity>?
+    fun countBy(): Long
 }
 
 interface CustomQuestionRepository {
-    fun getQuestionsOfMyQuestions(username: String): List<QuestionsOfMyQuestions>
+    fun getQuestionsOfMyQuestions(userId: Long, amount: Long, pageNum: Long): List<QuestionsOfMyQuestions>
     fun getQuestionsOfMyAllProfile(username: String): List<QuestionsOfMyAllProfile>
-    fun getQuestionsOfMyLikeQuestions(username: String): List<QuestionsOfMyQuestions>
+    fun getQuestionsOfMyLikeQuestions(userId: Long, amount: Long, pageNum: Long): List<QuestionsOfMyQuestions>
     fun searchAndOrderPagination(
         order: SearchOrderType,
         isClosed: Boolean? = null,
@@ -38,9 +41,11 @@ class QuestionRepositoryImpl(
     private val queryFactory: JPAQueryFactory,
     private val s3Service: S3Service,
 ) : CustomQuestionRepository {
-    override fun getQuestionsOfMyQuestions(username: String): List<QuestionsOfMyQuestions> {
-        val questionEntity: QQuestionEntity = QQuestionEntity.questionEntity
-
+    override fun getQuestionsOfMyQuestions(
+        userId: Long,
+        amount: Long,
+        pageNum: Long,
+    ): List<QuestionsOfMyQuestions> {
         return queryFactory.select(
             Projections.constructor(
                 QuestionsOfMyQuestions::class.java,
@@ -51,8 +56,12 @@ class QuestionRepositoryImpl(
                 questionEntity.answerCount
             )
         )
-            .from(questionEntity).where(questionEntity.user.username.eq(username))
-            .orderBy(questionEntity.createdAt.asc()).fetch()
+            .from(questionEntity)
+            .where(questionEntity.user.id.eq(userId))
+            .orderBy(questionEntity.createdAt.asc())
+            .offset(pageNum * amount)
+            .limit(amount)
+            .fetch()
     }
 
     override fun getQuestionsOfMyAllProfile(username: String): List<QuestionsOfMyAllProfile> {
@@ -73,9 +82,7 @@ class QuestionRepositoryImpl(
             .from(questionEntity).where(questionEntity.user.username.eq(username)).fetch()
     }
 
-    override fun getQuestionsOfMyLikeQuestions(username: String): List<QuestionsOfMyQuestions> {
-        val questionEntity: QQuestionEntity = QQuestionEntity.questionEntity
-        val userQuestionLikeEntity: QUserQuestionLikeEntity = QUserQuestionLikeEntity.userQuestionLikeEntity
+    override fun getQuestionsOfMyLikeQuestions(userId: Long, amount: Long, pageNum: Long): List<QuestionsOfMyQuestions> {
         return queryFactory.select(
             Projections.constructor(
                 QuestionsOfMyQuestions::class.java,
@@ -86,8 +93,18 @@ class QuestionRepositoryImpl(
                 questionEntity.answerCount
             )
         )
-            .from(questionEntity).join(questionEntity.userQuestionLikes, userQuestionLikeEntity).where(userQuestionLikeEntity.user.username.eq(username))
-            .orderBy(questionEntity.createdAt.asc()).fetch()
+            .from(userQuestionLikeEntity)
+            .join(userQuestionLikeEntity.question, questionEntity)
+            .where(userQuestionLikeEntity.user.id.eq(userId))
+            .orderBy(questionEntity.createdAt.asc())
+            .offset(pageNum * amount)
+            .limit(amount)
+            .fetch()
+//            .from(questionEntity)
+//            .join(questionEntity.userQuestionLikes, userQuestionLikeEntity)
+//            .where(userQuestionLikeEntity.user.id.eq(userId))
+//            .orderBy(questionEntity.createdAt.asc())
+//            .fetch()
     }
 
     /**
