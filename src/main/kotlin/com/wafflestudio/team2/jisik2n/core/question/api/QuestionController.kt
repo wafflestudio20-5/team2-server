@@ -49,6 +49,13 @@ class QuestionController(
         return questionService.createQuestion(request, userEntity)
     }
 
+    @GetMapping("/{id}")
+    fun getQuestion(
+        @PathVariable id: Long,
+    ): QuestionDto {
+        return questionService.getQuestion(id)
+    }
+
     @Authenticated
     @PutMapping("/{questionId}")
     fun updateQuestion(
@@ -69,10 +76,13 @@ class QuestionController(
         return ResponseEntity<String>("$questionId", HttpStatus.OK)
     }
 
-    @GetMapping("/{id}")
-    fun getQuestion(
-        @PathVariable id: Long,
-    ): QuestionDto {
-        return questionService.getQuestion(id)
+    @GetMapping("random")
+    fun getRandomQuestion(): QuestionDto {
+        return questionService.getRandomQuestion()
+    }
+
+    @GetMapping("admin")
+    fun getAdminQuestion(): QuestionDto {
+        return questionService.getAdminQuestion()
     }
 }

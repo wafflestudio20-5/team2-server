@@ -1,9 +1,6 @@
 package com.wafflestudio.team2.jisik2n.core.question.service
 
-import com.wafflestudio.team2.jisik2n.common.Jisik2n400
-import com.wafflestudio.team2.jisik2n.common.Jisik2n401
-import com.wafflestudio.team2.jisik2n.common.Jisik2n403
-import com.wafflestudio.team2.jisik2n.common.SearchOrderType
+import com.wafflestudio.team2.jisik2n.common.*
 import com.wafflestudio.team2.jisik2n.core.photo.service.PhotoService
 import com.wafflestudio.team2.jisik2n.core.question.dto.CreateQuestionRequest
 import com.wafflestudio.team2.jisik2n.core.question.database.QuestionEntity
@@ -12,7 +9,10 @@ import com.wafflestudio.team2.jisik2n.core.question.dto.QuestionDto
 import com.wafflestudio.team2.jisik2n.core.question.dto.SearchResponse
 import com.wafflestudio.team2.jisik2n.core.question.dto.UpdateQuestionRequest
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
+import com.wafflestudio.team2.jisik2n.core.user.database.UserRepository
 import com.wafflestudio.team2.jisik2n.external.s3.service.S3Service
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -25,15 +25,18 @@ interface QuestionService {
         amount: Long = 20,
         pageNum: Long = 0
     ): List<SearchResponse>
-    fun getQuestion(questionId: Long): QuestionDto
     fun createQuestion(request: CreateQuestionRequest, userEntity: UserEntity): QuestionDto
+    fun getQuestion(questionId: Long): QuestionDto
     fun updateQuestion(questionId: Long, request: UpdateQuestionRequest, userEntity: UserEntity): QuestionDto
     fun deleteQuestion(questionId: Long, userEntity: UserEntity)
+    fun getRandomQuestion(): QuestionDto
+    fun getAdminQuestion(): QuestionDto
 }
 
 @Service
 class QuestionServiceImpl(
     private val questionRepository: QuestionRepository,
+    private val userRepository: UserRepository,
     private val photoService: PhotoService,
     private val s3Service: S3Service,
 ) : QuestionService {
@@ -50,14 +53,6 @@ class QuestionServiceImpl(
     }
 
     @Transactional
-    override fun getQuestion(questionId: Long): QuestionDto {
-        val question: Optional<QuestionEntity> = questionRepository.findById(questionId)
-        if (question.isEmpty) throw Jisik2n400("존재하지 않는 질문 번호 입니다.(questionId: $questionId)")
-
-        return QuestionDto.of(question.get(), s3Service)
-    }
-
-    @Transactional
     override fun createQuestion(request: CreateQuestionRequest, userEntity: UserEntity): QuestionDto {
         val newQuestion = QuestionEntity(
             title = request.title,
@@ -70,6 +65,14 @@ class QuestionServiceImpl(
         questionRepository.save(newQuestion)
 
         return QuestionDto.of(newQuestion, s3Service)
+    }
+
+    @Transactional
+    override fun getQuestion(questionId: Long): QuestionDto {
+        val question: Optional<QuestionEntity> = questionRepository.findById(questionId)
+        if (question.isEmpty) throw Jisik2n400("존재하지 않는 질문 번호 입니다.(questionId: $questionId)")
+
+        return QuestionDto.of(question.get(), s3Service)
     }
 
     @Transactional
@@ -109,5 +112,25 @@ class QuestionServiceImpl(
         }
 
         questionRepository.delete(questionEntity)
+    }
+
+    override fun getRandomQuestion(): QuestionDto {
+        val count: Long = questionRepository.countBy()
+        val idx = (Math.random() * count).toInt()
+        val pageable: Pageable = PageRequest.of(idx, 1)
+        val question: List<QuestionEntity> = questionRepository.findAllBy(pageable)
+
+        return QuestionDto.of(question[0], s3Service)
+    }
+
+    override fun getAdminQuestion(): QuestionDto {
+        val user = userRepository.findByUid("jisik2n") ?: throw Jisik2n404("해당 유저는 존재하지 않습니다")
+        val questionList = questionRepository.findAllByUser(user)
+        if (questionList == emptyList<QuestionEntity>()) {
+            throw Jisik2n404("해당 질문은 존재하지 않습니다")
+        }
+        val question = questionList!![questionList.size - 1]
+
+        return QuestionDto.of(question, s3Service)
     }
 }
