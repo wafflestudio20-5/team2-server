@@ -11,8 +11,6 @@ import com.wafflestudio.team2.jisik2n.core.question.dto.UpdateQuestionRequest
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
 import com.wafflestudio.team2.jisik2n.core.user.database.UserRepository
 import com.wafflestudio.team2.jisik2n.external.s3.service.S3Service
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -111,12 +109,10 @@ class QuestionServiceImpl(
     }
 
     override fun getRandomQuestion(): QuestionDto {
-        val count: Long = questionRepository.countBy()
-        val idx = (Math.random() * count).toInt()
-        val pageable: Pageable = PageRequest.of(idx, 1)
-        val question: List<QuestionEntity> = questionRepository.findAllBy(pageable)
-
-        return QuestionDto.of(question[0], s3Service)
+        val totalCount: Long = questionRepository.count()
+        val idx = (Math.random() * totalCount).toLong()
+        return questionRepository.getIthQuestionDtoOrNull(idx)
+            ?: throw Jisik2n409("충돌이 발생했습니다.")
     }
 
     override fun getAdminQuestion(): QuestionDto {
