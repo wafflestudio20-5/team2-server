@@ -120,13 +120,10 @@ class QuestionServiceImpl(
     }
 
     override fun getAdminQuestion(): QuestionDto {
-        val user = userRepository.findByUid("jisik2n") ?: throw Jisik2n404("해당 유저는 존재하지 않습니다")
-        val questionList = questionRepository.findAllByUser(user)
-        if (questionList == emptyList<QuestionEntity>()) {
-            throw Jisik2n404("해당 질문은 존재하지 않습니다")
+        if (!userRepository.existsByUid(ADMIN_UID)) {
+            throw Jisik2n404("해당 유저는 존재하지 않습니다")
         }
-        val question = questionList!![questionList.size - 1]
-
-        return QuestionDto.of(question, s3Service)
+        return questionRepository.findLatestQuestionDtoByUserUidOrNull(ADMIN_UID)
+            ?: throw Jisik2n404("해당 질문은 존재하지 않습니다")
     }
 }

@@ -27,6 +27,7 @@ interface QuestionRepository : JpaRepository<QuestionEntity, Long>, CustomQuesti
 
 interface CustomQuestionRepository {
     fun findQuestionDtoByIdOrNull(id: Long): QuestionDto?
+    fun findLatestQuestionDtoByUserUidOrNull(uid: String): QuestionDto?
     fun getQuestionsOfMyQuestions(userId: Long, amount: Long, pageNum: Long): List<QuestionsOfMyQuestions>
     fun getQuestionsOfMyAllProfile(username: String): List<QuestionsOfMyAllProfile>
     fun getQuestionsOfMyLikeQuestions(userId: Long, amount: Long, pageNum: Long): List<QuestionsOfMyQuestions>
@@ -54,6 +55,17 @@ class QuestionRepositoryImpl(
         return question ?.let {
             QuestionDto.of(it, s3Service)
         }
+    }
+
+    override fun findLatestQuestionDtoByUserUidOrNull(uid: String): QuestionDto? {
+        val question = queryFactory
+            .selectFrom(questionEntity)
+            .join(questionEntity.user, userEntity).fetchJoin()
+            .leftJoin(questionEntity.photos, photoEntity).fetchJoin()
+            .where(userEntity.uid.eq(uid))
+            .orderBy(questionEntity.createdAt.desc())
+            .fetchFirst()
+        return question ?.let { QuestionDto.of(it, s3Service) }
     }
 
     override fun getQuestionsOfMyQuestions(
