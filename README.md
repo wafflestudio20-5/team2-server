@@ -38,3 +38,7 @@ iOS developer: 김령교, 박정헌, 박채현, 홍희주<br>
 Team2는 이 과정을 어떻게 구현하였을까요?<br>
 시연에서는 직접 두눈으로 보여드렸지만, 다른 팀꺼 본다고/직접 발표한다고/개인상의 일정 때문에 등등의 이유로 못 본 분들을 위해!<br>
 지식2n 리드미에서 핵심 기능이 무엇인지 깔끔하게 설명해드리겠습니다 :blush:<br>
+
+![선 테스트](https://user-images.githubusercontent.com/86216809/216279900-75f14993-ba79-419c-b408-1a43c8422719.jpg)
+![선테스트2](https://user-images.githubusercontent.com/86216809/216281117-c6794152-a900-4edc-a8ef-d42f8af943bc.jpg)
+![선테스트3](https://user-images.githubusercontent.com/86216809/216281153-d1754302-4ac8-4416-b368-ade4bd7fb56a.jpg)
