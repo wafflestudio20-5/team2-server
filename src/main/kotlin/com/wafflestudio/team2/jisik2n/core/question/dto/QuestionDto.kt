@@ -12,12 +12,12 @@ data class QuestionDto(
     val username: String,
     val profileImagePath: String? = null,
     val photos: List<String> = emptyList(),
-    val answerNumber: Int,
+    val answerNumber: Long,
     val createdAt: LocalDateTime?,
     val modifiedAt: LocalDateTime?,
     val close: Boolean,
     val closedAt: LocalDateTime?,
-    val userQuestionLikeNumber: Int,
+    val userQuestionLikeNumber: Long,
 ) {
     companion object {
         fun of(entity: QuestionEntity, s3Service: S3Service): QuestionDto = entity.run {
@@ -31,12 +31,12 @@ data class QuestionDto(
                 photos = this.photos
                     .sortedBy { it.photosOrder }
                     .map { s3Service.getUrlFromFilename(it.path) },
-                answerNumber = this.answers.size,
+                answerNumber = this.answerCount,
                 createdAt = this.createdAt,
                 modifiedAt = this.modifiedAt,
                 close = this.close,
                 closedAt = this.closedAt,
-                userQuestionLikeNumber = this.userQuestionLikes.size
+                userQuestionLikeNumber = likeCount
             )
         }
     }
