@@ -23,7 +23,7 @@ iOS developer: 김령교, 박정헌, 박채현, 홍희주<br>
 
 워크플로우&프로젝트 뷰<br>
 핵심적인 기능들을 추린 워크플로우는 다음과 같습니다.<br>
-![워크플로우1페이지](https://user-images.githubusercontent.com/86216809/216114256-a3580636-fe0d-4843-aaed-635a3cfd6efd.jpg)
+![워크플로우1페이지2](https://user-images.githubusercontent.com/86216809/216283042-1a5b266e-5d3b-4941-b51d-87a39b9b4e1d.jpg)
 ![워크플로우2페이지](https://user-images.githubusercontent.com/86216809/216114406-4a345997-a87d-4155-8893-a808e502a5e6.jpg)
 ![워크플로우3페이지](https://user-images.githubusercontent.com/86216809/216114630-658381d7-23e4-47d4-944e-9e3a0cebeddb.jpg)
 
@@ -32,12 +32,15 @@ iOS developer: 김령교, 박정헌, 박채현, 홍희주<br>
 ![워크플로우4페이지2](https://user-images.githubusercontent.com/86216809/216270581-d92030a7-0c0a-4d3d-b1af-15d00e5a8da6.jpg)
 
 
-지식2n의 핵심 기능
+지식2n 사용 설명서
 
 지식2n에는 다양한 기능이 있지만, 그중에서 가장 핵심적인 기능은 "질문하고, 답변해서, 반응하기"라고 할 수 있습니다.<br>
 Team2는 이 과정을 어떻게 구현하였을까요?<br>
 시연에서는 직접 두눈으로 보여드렸지만, 다른 팀꺼 본다고/직접 발표한다고/개인상의 일정 때문에 등등의 이유로 못 본 분들을 위해!<br>
 지식2n 리드미에서 핵심 기능이 무엇인지 깔끔하게 설명해드리겠습니다 :blush:<br>
 
-![선테스트4](https://user-images.githubusercontent.com/86216809/216281687-21a952c2-2fc2-4e91-87bb-2851a830ca57.jpg)
-![선테스트5](https://user-images.githubusercontent.com/86216809/216281742-c74a68f8-9a5a-4d95-9900-90f7deb16dab.jpg)
+
+![사용설명서1페이지](https://user-images.githubusercontent.com/86216809/216321167-7e3a28c6-46fb-4d1c-a961-bd693f13a139.jpg)
+![사용설명서2페이지](https://user-images.githubusercontent.com/86216809/216321186-a7a7fcd2-670a-4dae-83ad-20a309e47f4e.jpg)
+![사용설명서3페이지](https://user-images.githubusercontent.com/86216809/216321205-f6921b59-d910-43c9-92fb-b2f3cb6ebb11.jpg)
+![사용설명서4페이지](https://user-images.githubusercontent.com/86216809/216321218-4e7bab7c-62e4-4a16-9d3f-fbbfe6336906.jpg)
