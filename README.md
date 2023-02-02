@@ -28,10 +28,6 @@ iOS developer: 김령교, 박정헌, 박채현, 홍희주<br>
 ![워크플로우3페이지](https://user-images.githubusercontent.com/86216809/216114630-658381d7-23e4-47d4-944e-9e3a0cebeddb.jpg)
 
 
-이외에도 다음과 같이 다양한 기능을 담았습니다.
-![워크플로우4페이지2](https://user-images.githubusercontent.com/86216809/216270581-d92030a7-0c0a-4d3d-b1af-15d00e5a8da6.jpg)
-
-
 지식2n 사용 설명서
 
 지식2n에는 다양한 기능이 있지만, 그중에서 가장 핵심적인 기능은 "질문하고, 답변해서, 반응하기"라고 할 수 있습니다.<br>
@@ -44,3 +40,12 @@ Team2는 이 과정을 어떻게 구현하였을까요?<br>
 ![사용설명서2페이지](https://user-images.githubusercontent.com/86216809/216321186-a7a7fcd2-670a-4dae-83ad-20a309e47f4e.jpg)
 ![사용설명서3페이지](https://user-images.githubusercontent.com/86216809/216321205-f6921b59-d910-43c9-92fb-b2f3cb6ebb11.jpg)
 ![사용설명서4페이지](https://user-images.githubusercontent.com/86216809/216321218-4e7bab7c-62e4-4a16-9d3f-fbbfe6336906.jpg)
+
+
+이외에도 다음과 같이 다양한 기능을 담았습니다.
+
+![다양한기능1페이지](https://user-images.githubusercontent.com/86216809/216355237-d36ad792-eba0-47f8-b712-eaab34aeb8ea.jpg)
+![다양한기능2페이지](https://user-images.githubusercontent.com/86216809/216355256-ae32178c-2881-4f6a-8240-3b9d62e64b13.jpg)
+![다양한기능3페이지](https://user-images.githubusercontent.com/86216809/216355280-922da1b6-29a4-45b0-9fec-7cd5143635cb.jpg)
+![다양한기능4페이지](https://user-images.githubusercontent.com/86216809/216355299-cf1234c9-eb32-4e55-896b-c1e71f2776eb.jpg)
+![다양한기능5페이지](https://user-images.githubusercontent.com/86216809/216355327-c88b3d7b-e473-49de-b2ae-a2463390bde2.jpg)
