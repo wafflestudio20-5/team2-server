@@ -11,8 +11,6 @@ import com.wafflestudio.team2.jisik2n.core.question.dto.UpdateQuestionRequest
 import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
 import com.wafflestudio.team2.jisik2n.core.user.database.UserRepository
 import com.wafflestudio.team2.jisik2n.external.s3.service.S3Service
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -67,13 +65,9 @@ class QuestionServiceImpl(
         return QuestionDto.of(newQuestion, s3Service)
     }
 
-    @Transactional
-    override fun getQuestion(questionId: Long): QuestionDto {
-        val question: Optional<QuestionEntity> = questionRepository.findById(questionId)
-        if (question.isEmpty) throw Jisik2n400("존재하지 않는 질문 번호 입니다.(questionId: $questionId)")
-
-        return QuestionDto.of(question.get(), s3Service)
-    }
+    override fun getQuestion(questionId: Long) =
+        questionRepository.findQuestionDtoByIdOrNull(questionId)
+            ?: throw Jisik2n400("존재하지 않는 질문 번호 입니다.(questionId: $questionId)")
 
     @Transactional
     override fun updateQuestion(questionId: Long, request: UpdateQuestionRequest, userEntity: UserEntity): QuestionDto {
@@ -115,22 +109,17 @@ class QuestionServiceImpl(
     }
 
     override fun getRandomQuestion(): QuestionDto {
-        val count: Long = questionRepository.countBy()
-        val idx = (Math.random() * count).toInt()
-        val pageable: Pageable = PageRequest.of(idx, 1)
-        val question: List<QuestionEntity> = questionRepository.findAllBy(pageable)
-
-        return QuestionDto.of(question[0], s3Service)
+        val totalCount: Long = questionRepository.count()
+        val idx = (Math.random() * totalCount).toLong()
+        return questionRepository.getIthQuestionDtoOrNull(idx)
+            ?: throw Jisik2n409("충돌이 발생했습니다.")
     }
 
     override fun getAdminQuestion(): QuestionDto {
-        val user = userRepository.findByUid("jisik2n") ?: throw Jisik2n404("해당 유저는 존재하지 않습니다")
-        val questionList = questionRepository.findAllByUser(user)
-        if (questionList == emptyList<QuestionEntity>()) {
-            throw Jisik2n404("해당 질문은 존재하지 않습니다")
+        if (!userRepository.existsByUid(ADMIN_UID)) {
+            throw Jisik2n404("해당 유저는 존재하지 않습니다")
         }
-        val question = questionList!![questionList.size - 1]
-
-        return QuestionDto.of(question, s3Service)
+        return questionRepository.findLatestQuestionDtoByUserUidOrNull(ADMIN_UID)
+            ?: throw Jisik2n404("해당 질문은 존재하지 않습니다")
     }
 }

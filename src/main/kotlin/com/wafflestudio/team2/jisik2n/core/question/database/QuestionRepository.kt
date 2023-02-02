@@ -7,8 +7,9 @@ import com.wafflestudio.team2.jisik2n.common.SearchOrderType
 import com.wafflestudio.team2.jisik2n.core.answer.database.QAnswerEntity.answerEntity
 import com.wafflestudio.team2.jisik2n.core.photo.database.QPhotoEntity.photoEntity
 import com.wafflestudio.team2.jisik2n.core.question.database.QQuestionEntity.questionEntity
+import com.wafflestudio.team2.jisik2n.core.question.dto.QuestionDto
 import com.wafflestudio.team2.jisik2n.core.question.dto.SearchResponse
-import com.wafflestudio.team2.jisik2n.core.user.database.UserEntity
+import com.wafflestudio.team2.jisik2n.core.user.database.QUserEntity.userEntity
 import com.wafflestudio.team2.jisik2n.core.user.dto.QuestionsOfMyAllProfile
 import com.wafflestudio.team2.jisik2n.core.user.dto.QuestionsOfMyQuestions
 import org.springframework.data.jpa.repository.JpaRepository
@@ -19,11 +20,12 @@ import org.springframework.data.domain.Pageable
 
 interface QuestionRepository : JpaRepository<QuestionEntity, Long>, CustomQuestionRepository {
     fun findAllBy(pageable: Pageable): List<QuestionEntity>
-    fun findAllByUser(user: UserEntity): List<QuestionEntity>?
-    fun countBy(): Long
 }
 
 interface CustomQuestionRepository {
+    fun findQuestionDtoByIdOrNull(id: Long): QuestionDto?
+    fun findLatestQuestionDtoByUserUidOrNull(uid: String): QuestionDto?
+    fun getIthQuestionDtoOrNull(i: Long): QuestionDto?
     fun getQuestionsOfMyQuestions(userId: Long, amount: Long, pageNum: Long): List<QuestionsOfMyQuestions>
     fun getQuestionsOfMyAllProfile(username: String): List<QuestionsOfMyAllProfile>
     fun getQuestionsOfMyLikeQuestions(userId: Long, amount: Long, pageNum: Long): List<QuestionsOfMyQuestions>
@@ -41,6 +43,49 @@ class QuestionRepositoryImpl(
     private val queryFactory: JPAQueryFactory,
     private val s3Service: S3Service,
 ) : CustomQuestionRepository {
+    override fun findQuestionDtoByIdOrNull(id: Long): QuestionDto? {
+        val question = queryFactory
+            .selectFrom(questionEntity)
+            .join(questionEntity.user, userEntity).fetchJoin()
+            .leftJoin(questionEntity.photos, photoEntity).fetchJoin()
+            .where(questionEntity.id.eq(id))
+            .fetchOne()
+        return question ?.let {
+            QuestionDto.of(it, s3Service)
+        }
+    }
+
+    override fun findLatestQuestionDtoByUserUidOrNull(uid: String): QuestionDto? {
+        val question = queryFactory
+            .selectFrom(questionEntity)
+            .join(questionEntity.user, userEntity).fetchJoin()
+            .leftJoin(questionEntity.photos, photoEntity).fetchJoin()
+            .where(userEntity.uid.eq(uid))
+            .orderBy(questionEntity.createdAt.desc())
+            .fetchFirst()
+        return question ?.let { QuestionDto.of(it, s3Service) }
+    }
+
+    override fun getIthQuestionDtoOrNull(i: Long): QuestionDto? {
+        // Get question of i+1 th
+        val question = queryFactory
+            .selectFrom(questionEntity)
+            .join(questionEntity.user, userEntity).fetchJoin()
+            .offset(i)
+            .limit(1)
+            .fetchOne()
+            ?: return null
+
+        // Join photo of target question
+        queryFactory
+            .selectFrom(questionEntity)
+            .leftJoin(questionEntity.photos, photoEntity).fetchJoin()
+            .where(questionEntity.id.eq(question.id))
+            .fetch()
+
+        return QuestionDto.of(question, s3Service)
+    }
+
     override fun getQuestionsOfMyQuestions(
         userId: Long,
         amount: Long,
@@ -100,11 +145,6 @@ class QuestionRepositoryImpl(
             .offset(pageNum * amount)
             .limit(amount)
             .fetch()
-//            .from(questionEntity)
-//            .join(questionEntity.userQuestionLikes, userQuestionLikeEntity)
-//            .where(userQuestionLikeEntity.user.id.eq(userId))
-//            .orderBy(questionEntity.createdAt.asc())
-//            .fetch()
     }
 
     /**
