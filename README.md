@@ -135,7 +135,7 @@ Https을 연결하기 위해서, 저희는 먼저 가비아라는 사이트에�
 그리고 Amazon Certificate Manager를 통해 인증서를 발급받아 Beanstalk까지의 연결을 Https로 연결되도록 하였습니다.<br><br>
 
 
-### :stars: 4. 인증과 권한
+### :star: 4. 인증과 권한
 <img src="https://user-images.githubusercontent.com/86216809/216519993-fbe4c25b-1991-423a-b39e-e9ae6de4731b.jpg" width="800"/><br>
 **Interceptor**는 Request를 컨트롤러의 Handler로 들어오기 전에 낚아채어 원하는 로직을 수행한 후 Handler로 보내는 역할을 합니다.<br>
 저희 팀은 초반에는 주로 Interceptor에게 **Authorization**의 역할을 수행시켜,<br>
@@ -153,7 +153,7 @@ Https을 연결하기 위해서, 저희는 먼저 가비아라는 사이트에�
 
 <img src="https://user-images.githubusercontent.com/86216809/216520514-99304581-f7b6-461b-87ce-c2ae110da9ca.jpg" width="800"/><br>
 저희는 이런 상황을 해결하기 위해 기존의 Interceptor를 분화시켜 AuthInterceptor1, AuthInterceptor2로 두 개를 만들었습니다.<br>
-그리고 AuthInterceptor1에서는 **모든 Api에 접근**하여 <u>**토큰이 있다면 유저 정보를, 토큰이 없다면 null을 반환**</u>하도록 하였고,<br>
+그리고 AuthInterceptor1에서는 **모든 Api에 접근**하여 __**토큰이 있다면 유저 정보를, 토큰이 없다면 null을 반환**__하도록 하였고,<br>
 AuthInterceptor2에서는 **특정 Api에 접근**하여 <u>**유저 정보가 있다면 로직을 실행시키도록, null만 있다면 예외를 반환**</u>하도록 했습니다.<br>
 
 그리고 기존에 있던, 만료된 토큰은 401 예외를 반환(401 반환 즉시 프론트에서 재발급 요청)시키는 일과<br> 
@@ -177,21 +177,22 @@ ScrollView는 자기보다 큰 이미지가 걸려있으면 스크롤을 할 수
 TableView는 화면을 넘기면 자동으로 스크롤할 수 있기 때문에 질문이 많이 쌓이면 아래로 스와이프를 할 수 있게 됩니다.<br><br>
    
 
-### :stars: 6. 사진 업로드
+### :star: 6. 사진 업로드
 <p>
    <img src="https://user-images.githubusercontent.com/86216809/216584340-87c95c9d-b1b3-4ca0-83cd-593ef5c31974.jpg" width="49%">
-   <img src="https://user-images.githubusercontent.com/86216809/216584438-7a0f3703-7abb-4520-a1cf-252adb7e677a.jpg" width="49%">
-<p>
-지식2n을 만드는 데에 가장 큰 난관이었던 **사진 업로드**!<br>
-저희는 질문등록/답변등록/프사 수정에 사진 업로드가 필요하였고, 그러한 사진들을 저장하기 위해 **S3**을 사용하였습니다.<br> 
+   <img src="https://user-images.githubusercontent.com/86216809/216584438-7a0f3703-7abb-4520-a1cf-252adb7e677a.jpg" width="49%"><br>
+    지식2n을 만드는 데에 가장 큰 난관이었던 <b>사진 업로드</b>!<br>
+저희는 질문등록/답변등록/프사 수정에 사진 업로드가 필요하였고, 그러한 사진들을 저장하기 위해 <b>S3</b>을 사용하였습니다.<br> 
 S3는 AWS에서 제공하는 파일 서버 서비스로, S3에서는 사진들 뿐만 아니라 앱 압축 파일 등 다양한 데이터들을 저장할 수 있습니다.<br>
 S3을 사용하기 위해서는 서버와 S3 간의 통신이 중요한데, 이를 위해 S3 버킷을 만들고 스프링 서버와 연결하였어요.<br>
 사진을 보내기 위해서 iOS에서 갖고 있는 사진을 스프링에 넘기고, 스프링은 다시 그걸 S3에 넘겨서 파일 이름을 전달받는 과정이 이루어져야 합니다.<br>
 저희는 프로필 사진을 추가할 때는 단독으로, 질문에 사진들을 올릴 때는 사진 순서에 맞게 order를 부여하여<br>
 원하는 순서대로 사진을 추가하고자 하였습니다.<br><br>
+</p>
 
 
-### :stars: 6-1. 사진 업로드 - 질문을 수정할 때 사진을 추가하거나 없앤다면?
+
+### :star: 6-1. 사진 업로드 - 질문을 수정할 때 사진을 추가하거나 없앤다면?
 <img src="https://user-images.githubusercontent.com/86216809/216649840-be06c7a0-89c6-45d9-a187-5b46f6103d96.jpg" width="800"/><br>
 이제 기본 구현 방식을 알았으니까, 사진 업로드의 응용 버전으로 들어가봅시다.<br>
 <u>3장의 사진과 함께 질문을 올렸는데, 그 중 2번째 사진을 삭제하고 새로운 사진을 추가하면 어떻게 될까요?</u><br>
