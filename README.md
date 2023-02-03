@@ -4,11 +4,42 @@
 [![Deploy](https://github.com/wafflestudio20-5/team2-server/actions/workflows/deploy.yml/badge.svg)](https://github.com/wafflestudio20-5/team2-server/actions/workflows/deploy.yml)
 
 <div align="center">
-    <img src="https://user-images.githubusercontent.com/86216809/216102204-712654a2-13e1-46f5-89c3-0cd68ea590d7.jpg" width="150" height="150" />
+   <a href="https://github.com/wafflestudio/team2-server">
+    <img src="https://user-images.githubusercontent.com/86216809/216102204-712654a2-13e1-46f5-89c3-0cd68ea590d7.jpg" alt="Logo" width="150" height="150">
+  </a>
+   
+   <p>
+      <span style="font-size: x-large; font-weight: bold">지식2n</span></br>
+      <q style="font-size: medium">세상의 모든 질문에는 답변이 있다.</q>
+   </p>
+   <p align="center">
+   <div style=" padding-bottom: 1rem;">
+         <span style="font-size: large;font-weight: bold">Stack</span><br>
+         <img src="https://img.shields.io/badge/iOS-000000?style=for-the-badge&logo=Apple&logoColor=white" />
+         <img src="https://img.shields.io/badge/Swift-F05138?style=for-the-badge&logo=Swift&logoColor=white" />
+         <img src="https://img.shields.io/badge/UIKit-2396F3?style=for-the-badge&logo=UIKit&logoColor=white" />
+         <img src="https://img.shields.io/badge/Fastlane-68BD49?style=for-the-badge&logo=fastlane&logoColor=white"/>
+         <img src="https://img.shields.io/badge/GitHub Actions-2088FF?style=for-the-badge&logo=GitHub Actions&logoColor=white" /> </br>
+         <img src="https://img.shields.io/badge/Spring-60B33F?style=for-the-badge&logo=Spring&logoColor=white" />
+         <img src="https://img.shields.io/badge/Kotlin-7F52FF?style=for-the-badge&logo=Kotlin&logoColor=white" />
+         <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=Docker&logoColor=white" />
+         <img src="https://img.shields.io/badge/EC2-FF9900?style=for-the-badge&logo=Amazon EC2&logoColor=white" />
+         <img src="https://img.shields.io/badge/RDS-527FFF?style=for-the-badge&logo=Amazon RDS&logoColor=white" />
+         <img src="https://img.shields.io/badge/S3-569A31?style=for-the-badge&logo=Amazon S3&logoColor=white" />
+         <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white" /> </br>
+         <img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white" />
+         <img src="https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=Notion&logoColor=white" />
+         <img src="https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=Slack&logoColor=white" />
+         <img src="https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=Postman&logoColor=white"/></br>
+         <a href="https://github.com/wafflestudio/team2-server/issues">Request Feature</a>
+    ·
+    <a href="https://github.com/wafflestudio/team2-server/issues">Report Bug</a>
+    ·
+    <a href="https://wafflestudio.com/">Wafflestudio</a>
+   </div>
+   </p>
 </div>
 
-# 지식2n
-## 세상의 모든 질문에는 답변이 있다
 
 앱 소개
 ![지식인소개3](https://user-images.githubusercontent.com/86216809/216120258-43bcc3c8-0067-4de2-b01f-56861b400243.jpg)
@@ -133,3 +164,25 @@ Https
    TableView는 자신의 화면을 넘기면 자동으로 스크롤할 수 있게 하기 때문에 질문이 많이 쌓이면 아래로 스와이프를 할 수 있게 됩니다.
    
 
+사진 업로드
+   <p>
+      <img src="https://user-images.githubusercontent.com/86216809/216584340-87c95c9d-b1b3-4ca0-83cd-593ef5c31974.jpg" width="49%">
+      <img src="https://user-images.githubusercontent.com/86216809/216584438-7a0f3703-7abb-4520-a1cf-252adb7e677a.jpg" width="49%">
+   <p>
+   저희는 지식2n에서 필요한 사진들을 저장하기 위해 S3을 사용하였습니다. S3는 AWS에서 제공하는 파일 서버 서비스로,<br>
+   사진들 뿐만 아니라 앱 압축 파일 등 다양한 데이터들을 S3에 저장하여 사용하였습니다.<br>
+   S3을 사용하기 위해서는 서버와 S3 간의 통신이 중요한데, 이를 위해 S3 버킷을 만들고 스프링 서버와 연결하였어요.<br>
+   사진을 보내기 위해서는 iOS에서 갖고 있는 사진을 스프링에 넘기고, 스프링은 다시 그걸 S3에 넘겨서 파일 이름을 전달받는 과정이 이루어져야 합니다.<br>
+   저희는 프로필 사진을 추가할 때는 단독으로, 질문에 사진들을 올릴 때는 사진 순서에 맞게 order를 부여하여<br>
+   원하는 순서대로 사진을 추가하고자 하였습니다.
+
+
+사진 업로드 - 질문 수정할 때 사진들 없애기
+   ![구현_여러장의사진](https://user-images.githubusercontent.com/86216809/216581707-ef5fbef0-f825-4f0a-8077-645e40056fef.jpg)
+   사진 업로드의 응용 버전으로 들어가봅시다.
+   3장의 사진과 함께 질문을 올렸는데, 그 중 2번째 사진을 삭제하면 어떻게 될까요?
+   휴대폰에서 두번째 사진을 삭제하고 답변등록 버튼을 누르면, iOS에서는 삭제된 사진을 제외하고 남은 두개의 사진을 order에 맞게 List<String> 형태로 배열합니다.
+   수정된 List<String>을 포함하여 질문을 스프링에 전송하면, 스프링은 삭제된 사진 리스트와 남은 사진 리스트 두개를 만듭니다.
+   이러한 리스트 두개를 S3에 보내면, S3는 삭제된 사진 객체들은 제거하고 남은 사진들은 다시 저장합니다.
+   (이때, uuid는 다시 다르게 설정되기 때문에 남은 사진들도 객체 이름은 바뀝니다.)
+   그렇게 다시 남은 사진들을 스프링으로 반환하고, 스프링은 다시 수정된 사진 리스트를 
