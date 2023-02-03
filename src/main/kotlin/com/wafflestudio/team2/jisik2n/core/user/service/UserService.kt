@@ -163,37 +163,37 @@ class UserServiceImpl(
                 null
             }
 
-        val kakaoUsername = "kakao-$username"
-        if (userRepository.findByUsername(kakaoUsername) == null) {
-            userRepository.save(UserEntity(kakaoUsername, snsId, kakaoUsername, null, LocalDateTime.now(), gender, null, true))
+        val kakaoUid = "kakao-$username"
+        if (userRepository.findByUid(kakaoUid) == null) {
+            userRepository.save(UserEntity(kakaoUid, snsId, kakaoUid, null, LocalDateTime.now(), gender, null, true))
 
-            val accessToken = authTokenService.generateAccessTokenByUid(kakaoUsername)
-            val refreshToken = authTokenService.generateRefreshTokenByUid(kakaoUsername)
+            val accessToken = authTokenService.generateAccessTokenByUid(kakaoUid)
+            val refreshToken = authTokenService.generateRefreshTokenByUid(kakaoUid)
 
-            val tokenEntity = TokenEntity.of(accessToken, refreshToken, kakaoUsername)
+            val tokenEntity = TokenEntity.of(accessToken, refreshToken, kakaoUid)
 
             tokenRepository.save(tokenEntity)
 
-            return LoginResponse.of(tokenEntity, kakaoUsername)
+            return LoginResponse.of(tokenEntity, kakaoUid)
         } else {
-            val userEntity = userRepository.findByUsername(kakaoUsername)!!
+            val userEntity = userRepository.findByUid(kakaoUid)!!
             if (userEntity.isActive == false) {
                 throw Jisik2n403("탈퇴한 회원의 아이디입니다")
             }
-            val accessToken = authTokenService.generateAccessTokenByUid(kakaoUsername)
+            val accessToken = authTokenService.generateAccessTokenByUid(kakaoUid)
 
             val lastLogin = LocalDateTime.from(authTokenService.getCurrentIssuedAt(accessToken))
             userEntity.lastLogin = lastLogin
 
-            val tokenEntity = tokenRepository.findByKeyUid(kakaoUsername)!!
+            val tokenEntity = tokenRepository.findByKeyUid(kakaoUid)!!
             tokenEntity.accessToken = accessToken
 
             if (authTokenService.getCurrentExpiration(tokenEntity.refreshToken) < LocalDateTime.now()) {
-                val refreshToken = authTokenService.generateRefreshTokenByUid(kakaoUsername)
+                val refreshToken = authTokenService.generateRefreshTokenByUid(kakaoUid)
                 tokenEntity.refreshToken = refreshToken
             }
 
-            return LoginResponse.of(tokenEntity, kakaoUsername)
+            return LoginResponse.of(tokenEntity, userEntity.username)
         }
     }
 
