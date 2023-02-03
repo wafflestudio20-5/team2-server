@@ -63,13 +63,13 @@ Team2에서 만든 공간에서 즐겁게 뛰어놀아 주세요.<br>
 
 지식2n은 **질문하고, 답변해서, 반응하기**을 핵심 기능으로 하며, 그밖에도 다양한 기능을 제공합니다.<br>
 시연에서는 직접 두눈으로 보여드렸지만, 다른 팀꺼 본다고/직접 발표한다고/개인상의 일정 때문에 등등의 이유로 못 본 분들을 위해!<br>
-지식2n 사용 설명서에서 지식2n은 어떤 기능을 갖추고 있는지 깔끔하게 설명해드리겠습니다 :blush:<br>
+지식2n 사용 설명서에서 지식2n은 어떤 기능을 갖추고 있는지 깔끔하게 설명해드리겠습니다 :blush:<br><br>
 
-핵심 기능은 다음과 같습니다.<br>
+지식2n의 핵심 기능은 다음과 같습니다.<br>
 <img src="https://user-images.githubusercontent.com/86216809/216321167-7e3a28c6-46fb-4d1c-a961-bd693f13a139.jpg" width="800"/><br>
 <img src="https://user-images.githubusercontent.com/86216809/216321186-a7a7fcd2-670a-4dae-83ad-20a309e47f4e.jpg" width="800"/><br>
 <img src="https://user-images.githubusercontent.com/86216809/216321205-f6921b59-d910-43c9-92fb-b2f3cb6ebb11.jpg" width="800"/><br>
-<img src="https://user-images.githubusercontent.com/86216809/216321218-4e7bab7c-62e4-4a16-9d3f-fbbfe6336906.jpg" width="800"/><br>
+<img src="https://user-images.githubusercontent.com/86216809/216321218-4e7bab7c-62e4-4a16-9d3f-fbbfe6336906.jpg" width="800"/><br><br>
 
 
 이외에도 다음과 같이 다양한 기능을 담았습니다.<br>
@@ -80,48 +80,57 @@ Team2에서 만든 공간에서 즐겁게 뛰어놀아 주세요.<br>
 <img src="https://user-images.githubusercontent.com/86216809/216355327-c88b3d7b-e473-49de-b2ae-a2463390bde2.jpg" width="800"/><br>
 
 
-우리, 이것도 구현했다!
+## :sparkles: 지식2n의 자랑거리들 
 
 지식2n을 만들면서 기능적으로 여러 난관을 겪었습니다.<br>
-처음에 난관을 만났을 때는 우왕좌왕했지만, 구글링도 하고 다른 사람들과 지식을 공유하면서 난관들을 하나씩 극복해갔습니다.<br>
-그러한 시련과 극복을 거친 끝에, 이렇게 멋있는 앱이 탄생할 수 있었습니다.
+처음에 난관을 만났을 때는 당황했지만, 구글링도 하고 다른 사람들과 지식을 공유하면서 난관들을 하나씩 극복해갔습니다.<br>
+그러한 시련과 극복을 거친 끝에, 이렇게 자랑스러운 앱이 탄생할 수 있었습니다.
 
 아래의 글부터는, 지식2n에서 자랑하고 싶은 내용을 하나씩 짚어가며 소개하고자 합니다.<br>
-Team2 리드미의 하이라이트라고 볼 수 있을 것 같네요 :blush:<br>
+Team2 리드미의 하이라이트라고 볼 수 있을 것 같네요:blush:<br>
 그러면 지금부터 시작하겠습니다!<br>
-(아래의 사진부터는 발표 자료로, 발표 자료를 보강하는 내용을 글로 적도록 하겠습니다.)
+(아래의 사진부터는 발표 자료로, 발표 자료를 보강하는 내용을 글로 적도록 하겠습니다.)<br><br>
 
 
-소셜 로그인(카카오)
-   ![구현_카카오로그인](https://user-images.githubusercontent.com/86216809/216363896-10e9e3b3-b943-44f7-907f-ec0c4985df6a.jpg)
-    와플 토이프로젝트를 만들며 필수적으로 해결하라고 한 요소 중 하나였던 카카오 로그인!<br>
-    지식2n에서는 다양한 소셜 로그인 중 카카오 로그인을 도입하였습니다.<br>
-    우선 Team2는 Kakao Developer에 통해 지식2n 앱을 등록하고, iOS를 기반으로 하고 있기 때문에 iOS 플랫폼을 도입하였습니다.<br>
-    카카오 로그인에서 정말 중요하게 다뤄지는 것 중 하나가 토큰인데요, 토큰을 주고받는 순서를 간단히 잡으면<br>
-    'iOS는 카카오 토큰을 받음->받은 카카오 토큰을 스프링에 전달->스프링은 다시 카카오한테 토큰을 줘서 유저 정보를 전달받음->전달받은 유저 정보를 스프링 db에 전달'<br>
-    순서로 전개됩니다.<br>
-    이 과정을 통해, 지식2n에서도 카카오 유저의 필요한 정보들을 받을 수 있고, 버튼 하나를 클릭하면서 간단하게 로그인을 실행시킬 수 있습니다.
+### 1. 소셜 로그인(카카오)
+<img src="https://user-images.githubusercontent.com/86216809/216363896-10e9e3b3-b943-44f7-907f-ec0c4985df6a.jpg" width="800"/><br>
+와플 토이프로젝트를 만들며 필수적으로 도입하라고 한 요소 중 하나였던 소셜 로그인!<br>
+지식2n에서는 다양한 소셜 로그인 중 카카오 로그인을 도입하였습니다.<br>
+발표 자료에서 도식화되어 있는 내용을 조금 더 구체적으로 설명하자면,<br>
+저희는 먼저 Kakao Developer에 지식2n앱을 등록하고, iOS를 기반으로 하고 있기 때문에 iOS 플랫폼을 도입하였습니다.<br>
+카카오 로그인은 토큰을 통해 인증이 이루어지는데,<br>
+**iOS는 카카오 토큰을 받음->받은 카카오 토큰을 스프링에 전달->스프링은 다시 카카오한테 토큰을 줘서 유저 정보를 전달받음->전달받은 유저 정보를 스프링 db에 전달**<br>
+순서로 로그인이 진행됩니다.
+
+만약 카카오 로그인을 한번도 하지 않은 회원이라면 db에 새로운 유저 정보를 저장하고,<br>
+이전에 카카오 로그인을 했던 유저라면 db의 last_login 칼럼에 현재 시간 정보를 제공합니다.<br>
+이 과정을 통해, 지식2n은 카카오 유저들이 간편하게 앱을 사용할 수 있도록 하였습니다.<br><br>
 
 
-정렬&페이지네이션
-   ![구현_정렬페이지네이션](https://user-images.githubusercontent.com/86216809/216401869-81343a47-2a59-4f24-92b7-1b09afb1621d.jpg)
-   답변하기, 나의질문 등 지식2n에서는 다양한 질문을 다루어야 하기 때문에, 기준에 따른 정렬과 페이지네이션이 중요합니다.<br>
-   이를 구현하기 위해 QueryDsl을 적극적으로 사용하였으며, 자세히 살펴보면<br>
-   orderBy와 desc를 통해 최신순, 좋아요순, 답변수순을 통해 질문들을 역방향으로 정렬하였으며(답변수순은 앱 미반영)<br>
-   offset(page*amount), limit(amount)를 통해 각 페이지 첫번째 글부터 amount 번째까지의 글을 불러오도록 하였습니다.
+### 2. 정렬&페이지네이션
+<img src="https://user-images.githubusercontent.com/86216809/216401869-81343a47-2a59-4f24-92b7-1b09afb1621d.jpg" width="800"/><br>
+답변하기, 나의질문 등 지식2n에서는 다양한 질문을 다루어야 하기 때문에, 기준에 따른 **정렬과 페이지네이션**이 중요합니다.<br>
+이를 구현하기 위해 QueryDsl을 적극적으로 활용하였습니다.<br>
+orderBy와 desc를 통해 최신순, 좋아요순, 답변수순을 통해 질문들을 역방향으로 정렬하였으며(답변수순은 앱 내에서는 미반영)<br>
+offset(page*amount), limit(amount)를 통해 각 페이지에서 첫번째 글부터 amount 번째까지의 글을 불러오도록 하였습니다.<br><br>
 
 
-Https
-   ![구현_https1페이지](https://user-images.githubusercontent.com/86216809/216403204-103aa762-fe35-4f1d-aa7a-412348a5a131.jpg)
-   ![구현_https2페이지](https://user-images.githubusercontent.com/86216809/216403249-5a4d6183-b3c2-4b79-9b8f-758b24df7719.jpg)
-   Https(Hypertext Transfer Protocol Secure)는 Http에 SSL 보안을 얹은 것으로, Http에 비해 보안성과 사이트 로딩 속도가 뛰어납니다.<br>
-   Https 구현을 설명하기 위해서는 먼저 알아둬야할 건, 저희는 AWS의 Elastic Beanstalk를 통해 백 서버를 배포시켰습니다.<br>
-   Elastic Beanstalk는 Docker를 통한 EC2 배포, AWS 데이터베이스인 RDS를 하나로 묶어 구성할 뿐만 아니라<br>
-   로드 밸런싱, 프로비저닝, 오토 스케일링 등 앱의 최적화를 위해 필요한 작업들을 자동으로 해줍니다.<br>
-   여기에서 Https와 관련이 깊은 것은 로드 밸런싱으로, 로드 밸런싱은 트래픽이 많은 서버의 과부화를 방지하기 위해<br>
-   트래픽을 여러 서버에 균등하게 분배하는 역할을 하고 있습니다.<br>
-   Https을 연결하기 위해서, 구매한 도메인을 Route 53에 등록한 이후 도메인을 Elastic Beanstalk의 로드 밸런서와 DNS를 연결시켰습니다.<br>
-   또한 Amazon Certificate Manager를 통해 연결이 잘 이뤄지도록 인증서를 발급받았습니다.
+### 3. Https
+<img src="https://user-images.githubusercontent.com/86216809/216403204-103aa762-fe35-4f1d-aa7a-412348a5a131.jpg" width="800"/><br>
+**Https(Hypertext Transfer Protocol Secure)**는 Http에 SSL 보안을 얹은 것으로, Http에 비해 보안성과 사이트 로딩 속도가 뛰어납니다.<br>
+지식2n의 Https 구현을 설명하기 위해서는 먼저 저희의 배포 방식에 대해 알아두어야 합니다.<br>
+저희는 AWS의 **Elastic Beanstalk**를 통해 백 서버를 배포시켰습니다.<br>
+Elastic Beanstalk는 EC2(인스턴스), RDS(데이터베이스) 뿐만이 아니라<br>
+앱 배포화 최적화를 위해 필요한 로드 밸런서, 프로비저닝, 오토 스케일링 등의 작업들을 자동으로 해줍니다.<br>
+그로 인해, 다양한 항목을 왔다갔다 하지 않은 채 비교적 간단하게 앱을 배포할 수 있었습니다.<br><br>
+
+<img src="https://user-images.githubusercontent.com/86216809/216403249-5a4d6183-b3c2-4b79-9b8f-758b24df7719.jpg" width="800"/><br>
+그런데 Elastic Beanstalk를 활용한 배포와 Https가 무슨 상관이냐고요?<br>
+Elastic Beanstalk의 다양한 최적화 중 우리는 **로드 밸런서**에 주목해야 합니다.<br>
+로드 밸런싱은 트래픽이 많은 서버의 과부화를 방지하기 위해 트래픽을 여러 서버에 균등하게 분배하는 역할을 하고 있습니다.<br>
+Https을 연결하기 위해서, 저희는 먼저 가비아라는 사이트에서 Https 도메인을 구매하였습니다.<br>
+구매한 도메인은 AWS의 Route 53에 등록한 이후, DNS를 Elastic Beanstalk의 로드 밸런서와 연결시켰습니다.<br>
+그리고 Amazon Certificate Manager를 통해 인증서를 발급받아 Beanstalk까지의 연결을 Https로 연결되도록 하였습니다.<br><br>
 
 
 인증과 권한
