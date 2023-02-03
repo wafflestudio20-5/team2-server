@@ -48,14 +48,15 @@
 Team2에서 만든 공간에서 즐겁게 뛰어놀아 주세요.<br>
 
 ## :family: 누가 만들었나요?
-Spring developer: 우혁준, 이지원, 조성규<br>
-iOS developer: 김령교, 박정헌, 박채현, 홍희주<br>
+**Spring developer**: 우혁준, 이지원, 조성규<br>
+**iOS developer**: 김령교, 박정헌, 박채현, 홍희주<br>
 
-워크플로우&프로젝트 뷰<br>
+## :four_leaf_clover: 워크플로우
 핵심적인 기능들을 추린 워크플로우는 다음과 같습니다.<br>
-![워크플로우1페이지2](https://user-images.githubusercontent.com/86216809/216283042-1a5b266e-5d3b-4941-b51d-87a39b9b4e1d.jpg)
-![워크플로우2페이지](https://user-images.githubusercontent.com/86216809/216114406-4a345997-a87d-4155-8893-a808e502a5e6.jpg)
-![워크플로우3페이지](https://user-images.githubusercontent.com/86216809/216114630-658381d7-23e4-47d4-944e-9e3a0cebeddb.jpg)
+<img src="https://user-images.githubusercontent.com/86216809/216618572-aef1b188-8887-42e7-bd42-27392dcf06a9.jpg" width="400"/><br>
+<img src="https://user-images.githubusercontent.com/86216809/216618602-f42c723d-5c96-4932-a638-45f1c3b5df95.jpg" width="400"/><br>
+<img src="https://user-images.githubusercontent.com/86216809/216618542-bcbc2592-d261-46ef-a372-de57ece2cdf8.jpg" width="400"/><br>
+
 
 
 지식2n 사용 설명서
