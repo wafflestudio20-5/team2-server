@@ -17,18 +17,18 @@
          <img src="https://img.shields.io/badge/Swift-F05138?style=for-the-badge&logo=Swift&logoColor=white" />
          <img src="https://img.shields.io/badge/UIKit-2396F3?style=for-the-badge&logo=UIKit&logoColor=white" />
          <img src="https://img.shields.io/badge/Fastlane-68BD49?style=for-the-badge&logo=fastlane&logoColor=white"/>
-         <img src="https://img.shields.io/badge/GitHub Actions-2088FF?style=for-the-badge&logo=GitHub Actions&logoColor=white" /> </br>
+         <img src="https://img.shields.io/badge/GitHub Actions-2088FF?style=for-the-badge&logo=GitHub Actions&logoColor=white" /> <br>
          <img src="https://img.shields.io/badge/Spring-60B33F?style=for-the-badge&logo=Spring&logoColor=white" />
          <img src="https://img.shields.io/badge/Kotlin-7F52FF?style=for-the-badge&logo=Kotlin&logoColor=white" />
          <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=Docker&logoColor=white" />
          <img src="https://img.shields.io/badge/EC2-FF9900?style=for-the-badge&logo=Amazon EC2&logoColor=white" />
          <img src="https://img.shields.io/badge/RDS-527FFF?style=for-the-badge&logo=Amazon RDS&logoColor=white" />
          <img src="https://img.shields.io/badge/S3-569A31?style=for-the-badge&logo=Amazon S3&logoColor=white" />
-         <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white" /> </br>
+         <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white" /> <br>
          <img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white" />
          <img src="https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=Notion&logoColor=white" />
          <img src="https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=Slack&logoColor=white" />
-         <img src="https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=Postman&logoColor=white"/></br>
+         <img src="https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=Postman&logoColor=white"/><br>
          <a href="https://github.com/wafflestudio/team2-server/issues">Request Feature</a>
     ·
     <a href="https://github.com/wafflestudio/team2-server/issues">Report Bug</a>
@@ -39,14 +39,15 @@
 </div>
 
 
-## :grey_questions: 지식2n은 어떤 서비스인가요?
-![지식인소개3](https://user-images.githubusercontent.com/86216809/216120258-43bcc3c8-0067-4de2-b01f-56861b400243.jpg)
-지식2n은 "세상의 모든 질문에는 답변이 있다"는 캐치프레이즈를 가진, 질문하고 답변하는 앱입니다.<br>
-이 공간에서 여러분들은 어떠한 궁금한 거라도 질문할 수 있고, 내가 알고 있는 어떤 지식도 답변을 달 수 있습니다.<br>
-저희 앱의 이름의 유래는 '세상에 질문이 n개 있다면, 그에 대한 답변도 n개 있지 않을까?','그렇다면 총 2n개의 글이 달리지 않을까?'에서 시작했습니다.<br>
+## :blue_book: 지식2n은 어떤 서비스인가요?
+<img src="https://user-images.githubusercontent.com/86216809/216120258-43bcc3c8-0067-4de2-b01f-56861b400243.jpg" width="800"/><br>
+지식2n은 **세상의 모든 질문에는 답변이 있다**는 캐치프레이즈를 가진, 질문하고 답변하는 앱입니다.<br>
+이곳에서 여러분들은 어떠한 궁금한 거라도 질문할 수 있고, 내가 알고 있는 어떤 지식도 답변을 달 수 있습니다.<br>
+이름의 유래는 '세상에 질문이 n개 있다면, 그에 대한 답변도 n개 있지 않을까?'<br>
+'그렇다면 총 2n개의 글이 달리지 않을까?'에서 시작했습니다.<br>
 Team2에서 만든 공간에서 즐겁게 뛰어놀아 주세요.<br>
 
-누가 만들었나요?<br>
+## :family: 누가 만들었나요?
 Spring developer: 우혁준, 이지원, 조성규<br>
 iOS developer: 김령교, 박정헌, 박채현, 홍희주<br>
 
