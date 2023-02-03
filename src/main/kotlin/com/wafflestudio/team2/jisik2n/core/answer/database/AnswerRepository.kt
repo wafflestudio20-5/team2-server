@@ -70,24 +70,15 @@ class CustomAnswerRepositoryImpl(
             .where(answerEntity.`in`(answers))
             .fetch()
 
-        // Find user`s most recent answer date
         val userRecentAnswerDateTuple = queryFactory
             .select(
                 userEntity.id,
-                answerEntity.createdAt.min()
+                answerEntity.createdAt.max()
             )
             .from(answerEntity)
             .join(answerEntity.user, userEntity)
-            .groupBy(
-                answerEntity.user.id,
-                answerEntity.selected,
-                answerEntity.createdAt,
-            )
+            .groupBy(userEntity.id)
             .where(userEntity.`in`(answers.map { it.user }))
-            .orderBy(
-                answerEntity.selected.desc(),
-                answerEntity.createdAt.asc(),
-            )
             .fetch()
 
         return answers.map {
@@ -115,7 +106,7 @@ class CustomAnswerRepositoryImpl(
                 profileImagePath = it.user.profileImage
                     ?.let { path -> s3Service.getUrlFromFilename(path) },
                 userRecentAnswerDate = userRecentAnswerDateTuple.find { t -> it.user.id == t[userEntity.id] }!!
-                    .let { t -> t[answerEntity.createdAt.min()]!! },
+                    .let { t -> t[answerEntity.createdAt.max()]!! },
                 userIsAgreed = it.userAnswerInteractions
                     .find { userAnswerInteraction -> userAnswerInteraction.user == loginUser }
                     ?.run { isAgree }
