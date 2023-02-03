@@ -7,14 +7,12 @@
    <a href="https://github.com/wafflestudio/team2-server">
     <img src="https://user-images.githubusercontent.com/86216809/216102204-712654a2-13e1-46f5-89c3-0cd68ea590d7.jpg" alt="Logo" width="150" height="150">
   </a>
+
+   <h3 align="center">지식2n</h3>
+   <h5>"세상의 모든 질문에는 답변이 있다"</h5>
    
-   <p>
-      <span style="font-size: x-large; font-weight: bold">지식2n</span></br>
-      <q style="font-size: medium">세상의 모든 질문에는 답변이 있다.</q>
-   </p>
    <p align="center">
    <div style=" padding-bottom: 1rem;">
-         <span style="font-size: large;font-weight: bold">Stack</span><br>
          <img src="https://img.shields.io/badge/iOS-000000?style=for-the-badge&logo=Apple&logoColor=white" />
          <img src="https://img.shields.io/badge/Swift-F05138?style=for-the-badge&logo=Swift&logoColor=white" />
          <img src="https://img.shields.io/badge/UIKit-2396F3?style=for-the-badge&logo=UIKit&logoColor=white" />
@@ -41,7 +39,7 @@
 </div>
 
 
-앱 소개
+## :grey_questions: 지식2n은 어떤 서비스인가요?
 ![지식인소개3](https://user-images.githubusercontent.com/86216809/216120258-43bcc3c8-0067-4de2-b01f-56861b400243.jpg)
 지식2n은 "세상의 모든 질문에는 답변이 있다"는 캐치프레이즈를 가진, 질문하고 답변하는 앱입니다.<br>
 이 공간에서 여러분들은 어떠한 궁금한 거라도 질문할 수 있고, 내가 알고 있는 어떤 지식도 답변을 달 수 있습니다.<br>
