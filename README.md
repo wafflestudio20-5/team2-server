@@ -7,9 +7,9 @@
    <a href="https://github.com/wafflestudio/team2-server">
     <img src="https://user-images.githubusercontent.com/86216809/216102204-712654a2-13e1-46f5-89c3-0cd68ea590d7.jpg" alt="Logo" width="150" height="150">
   </a>
-
-   <h1 align="center">지식2n</h1>
    <h3>"세상의 모든 질문에는 답변이 있다"</h3>
+   <h1 align="center">지식2n</h1>
+   
    
    <p align="center">
    <div style=" padding-bottom: 1rem;">
