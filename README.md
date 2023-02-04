@@ -29,9 +29,9 @@
          <img src="https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=Notion&logoColor=white" />
          <img src="https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=Slack&logoColor=white" />
          <img src="https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=Postman&logoColor=white"/><br>
-         <a href="https://github.com/wafflestudio/team2-server/issues">Request Feature</a>
+         <a href="https://github.com/wafflestudio20-5/team2-iOS/issues">iOS Issues</a>
     ·
-    <a href="https://github.com/wafflestudio/team2-server/issues">Report Bug</a>
+    <a href="https://github.com/wafflestudio20-5/team2-server/issues">Server Issues</a>
     ·
     <a href="https://wafflestudio.com/">Wafflestudio</a>
    </div>
@@ -136,7 +136,7 @@ Https을 연결하기 위해서, 저희는 먼저 가비아라는 사이트에�
 
 
 ### :star: 4. 인증과 권한
-<img src="https://user-images.githubusercontent.com/86216809/216519993-fbe4c25b-1991-423a-b39e-e9ae6de4731b.jpg" width="800"/><br>
+<img src="https://user-images.githubusercontent.com/86216809/216742592-0e5b4c33-4eb6-4015-95fb-9965e161299b.jpg" width="800"/><br>
 **Interceptor**는 Request를 컨트롤러의 Handler로 들어오기 전에 낚아채어 원하는 로직을 수행한 후 Handler로 보내는 역할을 합니다.<br>
 저희 팀은 초반에는 주로 Interceptor에게 **Authorization**의 역할을 수행시켜,<br>
 토큰을 받으면 해당 토큰의 유저 정보가 있는지 검증하고, 만약 틀렸거나 토큰 자체가 없다면 예외를 반환시켰습니다.<br>
