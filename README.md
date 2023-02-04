@@ -53,7 +53,17 @@ Team2에서 만든 공간에서 즐겁게 뛰어놀아 주세요.<br>
 <img src="https://user-images.githubusercontent.com/86216809/216618602-f42c723d-5c96-4932-a638-45f1c3b5df95.jpg" width="400"/><br>
 <img src="https://user-images.githubusercontent.com/86216809/216618542-bcbc2592-d261-46ef-a372-de57ece2cdf8.jpg" width="400"/><br><br>
 
+## 🏗️ 서버 아키텍처
+ Upload photo
 
+## :twisted_rightwards_arrows: Git Branch 전략 (Git Flow)
+|Branch 이름|    내용    |
+|-----------|------------|
+|  main     | 실제 배포 branch  |
+|  develop  | 개발 버전 branch  |
+|  feature  | 기능 추가  |
+|  hotfix   | 버그 수정  |
+|  ci_cd    | CI/CD 관련 설정  |
 
 ## :school: 지식2n 사용 설명서
 
