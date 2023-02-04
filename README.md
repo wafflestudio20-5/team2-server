@@ -1,8 +1,5 @@
 
 
-![ktlint check](https://github.com/wafflestudio20-5/team2-server/actions/workflows/ktlint_check.yml/badge.svg)
-[![Deploy](https://github.com/wafflestudio20-5/team2-server/actions/workflows/deploy.yml/badge.svg)](https://github.com/wafflestudio20-5/team2-server/actions/workflows/deploy.yml)
-
 <div align="center">
    <a href="https://github.com/wafflestudio/team2-server">
     <img src="https://user-images.githubusercontent.com/86216809/216102204-712654a2-13e1-46f5-89c3-0cd68ea590d7.jpg" alt="Logo" width="150" height="150">
@@ -34,6 +31,9 @@
    </p>
 </div>
 
+![ktlint check](https://github.com/wafflestudio20-5/team2-server/actions/workflows/ktlint_check.yml/badge.svg)
+[![Deploy](https://github.com/wafflestudio20-5/team2-server/actions/workflows/deploy.yml/badge.svg)](https://github.com/wafflestudio20-5/team2-server/actions/workflows/deploy.yml)
+
 
 ## :blue_book: 지식2n은 어떤 서비스인가요?
 <img src="https://user-images.githubusercontent.com/86216809/216120258-43bcc3c8-0067-4de2-b01f-56861b400243.jpg" width="800"/><br>
@@ -54,7 +54,7 @@ Team2에서 만든 공간에서 즐겁게 뛰어놀아 주세요.<br>
 <img src="https://user-images.githubusercontent.com/86216809/216618542-bcbc2592-d261-46ef-a372-de57ece2cdf8.jpg" width="400"/><br><br>
 
 ## 🏗️ 서버 아키텍처
- Upload photo
+ ![image](https://user-images.githubusercontent.com/75843256/216746743-f0866b99-5caf-4018-8a51-7616b59f3451.png)
 
 ## :twisted_rightwards_arrows: Git Branch 전략 (Git Flow)
 |Branch 이름|    내용    |
